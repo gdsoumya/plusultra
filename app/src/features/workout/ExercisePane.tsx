@@ -1,11 +1,23 @@
 import { useState } from "react";
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 
 import { useExerciseInfo } from "../../data/exerciseInfo";
 import { exerciseTarget } from "../../domain/sets";
 import type { ExerciseEntry, Unit, WorkoutRecord } from "../../domain/types";
 import { round1 } from "../../domain/units";
-import { Badge, Button, Card, IconButton, Text, Thumbnail, control, space } from "../../ui";
+import {
+  Badge,
+  Button,
+  Card,
+  EmptyState,
+  IconButton,
+  Sheet,
+  Text,
+  Thumbnail,
+  control,
+  space,
+} from "../../ui";
+import { ExerciseDetail } from "../exercises/ExerciseDetail";
 import { ExerciseSheet } from "./ExerciseSheet";
 import { LastTimeRow } from "./LastTimeRow";
 import type { Values } from "./SetEditor";
@@ -54,32 +66,40 @@ export function ExercisePane(p: Props) {
   const { entry, index, count, unit } = p;
   const { info } = useExerciseInfo({ slug: entry.slug, name: entry.name });
   const [menu, setMenu] = useState(false);
+  const [details, setDetails] = useState(false);
   const last = index === count - 1;
   return (
     <View style={{ gap: space[4] }} testID={`exercise-${index}`}>
       <View style={{ flexDirection: "row", alignItems: "flex-start", gap: space[3] }}>
-        <Thumbnail uri={info?.images[0]} size={control.lg} />
-        <View style={{ flex: 1, gap: space[1] }}>
-          <Text variant="heading" numberOfLines={2}>
-            {entry.name}
-          </Text>
-          {entry.equipment || entry.label ? (
-            <Text variant="caption" numberOfLines={1} testID={`exercise-${index}-equipment`}>
-              {[entry.equipment, entry.label].filter(Boolean).join(" · ")}
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`${entry.name} details`}
+          onPress={() => setDetails(true)}
+          style={{ flex: 1, flexDirection: "row", alignItems: "flex-start", gap: space[3] }}
+        >
+          <Thumbnail uri={info?.images[0]} size={control.lg} />
+          <View style={{ flex: 1, gap: space[1] }}>
+            <Text variant="heading" numberOfLines={2}>
+              {entry.name}
             </Text>
-          ) : null}
-          <Text variant="caption" numberOfLines={1} testID={`exercise-${index}-summary`}>
-            {summary(entry, unit)}
-          </Text>
-          <View style={{ flexDirection: "row", gap: space[2] }}>
-            {entry.superset ? (
-              <Badge label={`Superset ${entry.superset}`} icon="link-outline" />
+            {entry.equipment || entry.label ? (
+              <Text variant="caption" numberOfLines={1} testID={`exercise-${index}-equipment`}>
+                {[entry.equipment, entry.label].filter(Boolean).join(" · ")}
+              </Text>
             ) : null}
-            {exerciseModified(entry) && (
-              <Badge label="Modified" icon="pencil" testID={`exercise-${index}-modified`} />
-            )}
+            <Text variant="caption" numberOfLines={1} testID={`exercise-${index}-summary`}>
+              {summary(entry, unit)}
+            </Text>
+            <View style={{ flexDirection: "row", gap: space[2] }}>
+              {entry.superset ? (
+                <Badge label={`Superset ${entry.superset}`} icon="link-outline" />
+              ) : null}
+              {exerciseModified(entry) && (
+                <Badge label="Modified" icon="pencil" testID={`exercise-${index}-modified`} />
+              )}
+            </View>
           </View>
-        </View>
+        </Pressable>
         <IconButton
           icon="settings-outline"
           label={`${entry.name} options`}
@@ -117,6 +137,23 @@ export function ExercisePane(p: Props) {
           testID="next-exercise"
         />
       )}
+      <Sheet
+        open={details}
+        onClose={() => setDetails(false)}
+        title={entry.name}
+        snapPoints={[0.6, 0.9]}
+        testID={`exercise-${index}-details`}
+      >
+        {info ? (
+          <ExerciseDetail exercise={info} />
+        ) : (
+          <EmptyState
+            icon="information-circle-outline"
+            title="No details"
+            message="This exercise is not in the catalog."
+          />
+        )}
+      </Sheet>
       <ExerciseSheet
         open={menu}
         entry={entry}

@@ -611,6 +611,17 @@ describe("WorkoutScreen", () => {
     expect(mockRouter.push).toHaveBeenCalledWith(`/exercise/${deadlift.slug}`);
   });
 
+  it("opens the exercise's details in a sheet from its picture and name", async () => {
+    const store = await seed();
+    const [deadlift] = saved(store).entries;
+    await mount(store);
+    await fireEvent.press(screen.getByRole("button", { name: `${deadlift.name} details` }));
+    expect(await screen.findByText("Primary muscles")).toBeOnTheScreen();
+    expect(screen.getByText("hamstrings")).toBeOnTheScreen();
+    await fireEvent.press(screen.getByLabelText("Close"));
+    await waitFor(() => expect(screen.queryByText("Primary muscles")).toBeNull());
+  });
+
   it("lists warmups as rows of their own and counts them in the totals", async () => {
     const store = await seed();
     const { sets } = saved(store).entries[0];
