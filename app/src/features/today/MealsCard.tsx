@@ -25,7 +25,7 @@ export function MealsCard({ plan, log, onLog, onOpen, menu }: Props) {
     <Card>
       <View style={{ flexDirection: "row", alignItems: "flex-start", gap: space[3] }}>
         <View style={{ flex: 1 }}>
-          <Text variant="caption">Meals</Text>
+          {plan && <Text variant="caption">Meals</Text>}
           <Text variant="heading">{plan?.name ?? "Meals"}</Text>
         </View>
         <CardMenu title="Meals" items={menu} />
