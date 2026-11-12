@@ -8,6 +8,8 @@ import { control, iconSize, radius, space, tabular, type ColorRole } from "./tok
 
 export type ListRowProps = {
   title: string;
+  /** Lines the title may take before it truncates. */
+  titleLines?: 1 | 2;
   subtitle?: string;
   icon?: IconName;
   /** Leading tile in place of the icon, e.g. a Thumbnail. */
@@ -33,6 +35,7 @@ const row: ViewStyle = {
 // The title truncates and the subtitle clamps to two lines, so the value never leaves the screen.
 export function ListRow({
   title,
+  titleLines = 1,
   subtitle,
   icon,
   leading,
@@ -61,7 +64,7 @@ export function ListRow({
         </View>
       )}
       <View style={{ flex: 1 }}>
-        <Text numberOfLines={1} color={tone}>
+        <Text numberOfLines={titleLines} color={tone}>
           {title}
         </Text>
         {subtitle && (

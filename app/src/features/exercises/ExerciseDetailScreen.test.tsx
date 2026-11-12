@@ -1,5 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import { fireEvent, render, screen } from "@testing-library/react-native";
+import { Image } from "react-native";
 
 import type { Api } from "../../api/clients";
 import { OFFLINE } from "../../api/errors";
@@ -40,6 +41,10 @@ const renderDetail = (store = createMemoryStore()) =>
   );
 
 describe("ExerciseDetailScreen", () => {
+  beforeEach(() => {
+    jest.spyOn(Image, "getSize").mockImplementation((_uri, ok) => ok(600, 400));
+  });
+
   it("renders the images, chips and details from the server", async () => {
     mockApi = apiWith(async () => ({ exercise: bench }));
     await renderDetail();
@@ -48,6 +53,8 @@ describe("ExerciseDetailScreen", () => {
       nativeEvent: { layout: { width: 320 } },
     });
     expect(screen.getAllByTestId("exercise-image")).toHaveLength(1);
+    // Sized to the picture's own aspect once known, so no bands above or below it.
+    expect(screen.getByTestId("exercise-image")).toHaveStyle({ width: 320, height: 213 });
     for (const muscle of ["chest", "triceps", "shoulders"]) {
       expect(screen.getByRole("checkbox", { name: muscle })).toBeOnTheScreen();
     }

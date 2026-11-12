@@ -56,7 +56,13 @@ describe("exerciseTarget", () => {
 
   it("is met when every set, warmups included, is done at the planned weight with the target reps or more", () => {
     const t = exerciseTarget(entry([did(10, 20), did(5), did(6), did(5, 102.5)]));
-    expect(t).toEqual({ met: true, reps: 26, plannedReps: 25, load: 1812.5, plannedLoad: 1700 });
+    expect(t).toMatchObject({
+      met: true,
+      reps: 26,
+      plannedReps: 25,
+      load: 1812.5,
+      plannedLoad: 1700,
+    });
   });
 
   it("misses on fewer reps, less weight, or a pending set, warmups included", () => {
@@ -97,7 +103,7 @@ describe("exerciseTarget", () => {
     const [planned] = sets(1, 5, 110);
     planned.weight = { value: 242.50848840336533, unit: "lb" };
     const set = { planned, completed: true, reps: 5, weight: planned.weight, rpe: 0 };
-    expect(exerciseTarget([set])).toEqual({
+    expect(exerciseTarget([set])).toMatchObject({
       met: true,
       reps: 5,
       plannedReps: 5,
@@ -110,7 +116,7 @@ describe("exerciseTarget", () => {
   it("counts both sides of a unilateral set against twice the planned reps", () => {
     const [planned] = sets(1, 8, 10);
     const set = { planned, completed: true, reps: 8, repsLeft: 8, weight: planned.weight, rpe: 0 };
-    expect(exerciseTarget([set], true)).toEqual({
+    expect(exerciseTarget([set], true)).toMatchObject({
       met: true,
       reps: 16,
       plannedReps: 16,
@@ -120,6 +126,19 @@ describe("exerciseTarget", () => {
     expect(exerciseTarget([{ ...set, repsLeft: 7 }], true)).toMatchObject({ met: false, reps: 15 });
     expect(exerciseTarget([{ ...set, repsLeft: undefined }], true).reps).toBe(8);
     expect(exerciseTarget([set])).toMatchObject({ met: true, reps: 8, plannedReps: 8, load: 80 });
+  });
+
+  it("totals the time of timed sets, logged against planned", () => {
+    const timed = sets(3, 1, 0, { work: 60 }).map((planned, i) => ({
+      planned,
+      completed: i < 2,
+      reps: i < 2 ? 1 : 0,
+      weight: planned.weight,
+      rpe: 0,
+      workTime: i === 0 ? 50 : undefined,
+    }));
+    expect(exerciseTarget(timed)).toMatchObject({ work: 110, plannedWork: 180 });
+    expect(exerciseTarget(entry([]))).toMatchObject({ work: 0, plannedWork: 0 });
   });
 
   it("sums the load in the user's unit, so pound plans add up to whole pounds", () => {

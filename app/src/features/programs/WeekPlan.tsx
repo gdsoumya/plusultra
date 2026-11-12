@@ -38,7 +38,9 @@ export function WeekPlan({ programId, unit, weeks, days, plans, week, onWeek }: 
           <ListCard key={i}>
             <ListRow
               title={d.day ? `${d.day}. ${d.name}` : d.name}
-              subtitle={d.kind !== "training" ? d.kind : undefined}
+              subtitle={
+                d.kind !== "training" && !d.name.toLowerCase().includes(d.kind) ? d.kind : undefined
+              }
             />
             {plans
               .find((r) => r.week === d.week && r.day === d.day)

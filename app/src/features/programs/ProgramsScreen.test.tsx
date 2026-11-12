@@ -56,7 +56,9 @@ describe("ProgramsScreen", () => {
     expect(screen.getByText("Active")).toBeOnTheScreen();
     expect(screen.getByText("Drafts")).toBeOnTheScreen();
     expect(screen.getByText("Finished")).toBeOnTheScreen();
-    expect(screen.getByText("Meals, Anchored, 12 Oct 2026 to 22 Nov 2026")).toBeOnTheScreen();
+    expect(
+      screen.getByText("Meals, Anchored, 12\u00a0Oct\u00a02026 to 22\u00a0Nov\u00a02026"),
+    ).toBeOnTheScreen();
   });
 
   it("opens a program and the editor", async () => {

@@ -56,7 +56,9 @@ describe("ProgramDetailScreen", () => {
       await screen.findByRole("header", { name: "16-Week Strength & Recomp — Bulk block" }),
     ).toBeOnTheScreen();
     expect(screen.getByText("Workout, Active")).toBeOnTheScreen();
-    expect(screen.getByText("Anchored, 26 Oct 2026 to 20 Dec 2026")).toBeOnTheScreen();
+    expect(
+      screen.getByText("Anchored, 26\u00a0Oct\u00a02026 to 20\u00a0Dec\u00a02026"),
+    ).toBeOnTheScreen();
     expect(screen.getByText("8 weeks, 51 days")).toBeOnTheScreen();
     await press("Week 8");
     expect(screen.getByText("2. Tue test singles")).toBeOnTheScreen();
@@ -222,7 +224,9 @@ describe("ProgramDetailScreen", () => {
       await screen.findByText("Could not reach the server. Check your connection and try again."),
     ).toBeOnTheScreen();
     expect(screen.getByRole("header", { name: "16-Week Strength & Recomp — Bulk block" }));
-    expect(screen.getByText("Anchored, 26 Oct 2026 to 20 Dec 2026")).toBeOnTheScreen();
+    expect(
+      screen.getByText("Anchored, 26\u00a0Oct\u00a02026 to 20\u00a0Dec\u00a02026"),
+    ).toBeOnTheScreen();
   });
 
   it("shows the cached days and exercise info when offline", async () => {

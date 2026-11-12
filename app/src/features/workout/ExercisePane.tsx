@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Pressable, View } from "react-native";
 
 import { useExerciseInfo } from "../../data/exerciseInfo";
+import { clock } from "../../domain/dates";
 import { exerciseTarget } from "../../domain/sets";
 import type { ExerciseEntry, Unit, WorkoutRecord } from "../../domain/types";
 import { round1 } from "../../domain/units";
@@ -50,15 +51,26 @@ type Props = {
 
 // "On target · 15 / 15 reps · 1500 / 1500 kg": done against planned over every set, tonnage in the
 // user's unit; an ad hoc exercise has no plan to compare with, so just "10 reps · 200 kg". A
-// bodyweight exercise moves no logged weight, so it gets no tonnage.
+// bodyweight exercise moves no logged weight, so it gets no tonnage. A timed exercise counts sets
+// and time instead: "1 / 3 sets · 0:50 / 3:00".
 function summary(entry: ExerciseEntry, unit: Unit) {
   const t = exerciseTarget(entry.sets, entry.unilateral, unit);
+  const met = t.met ? "On target · " : "";
+  if (t.plannedWork) {
+    const done = entry.sets.filter((s) => s.completed).length;
+    return `${met}${done} / ${entry.sets.length} sets · ${clock(t.work)} / ${clock(t.plannedWork)}`;
+  }
   const [load, planned] = [round1(t.load), round1(t.plannedLoad)];
   const weighed = load > 0 || planned > 0;
   if (!t.plannedReps) return `${t.reps} reps${weighed ? ` · ${load} ${unit}` : ""}`;
   const tonnage = weighed ? ` · ${load} / ${planned} ${unit}` : "";
-  return `${t.met ? "On target · " : ""}${t.reps} / ${t.plannedReps} reps${tonnage}`;
+  return `${met}${t.reps} / ${t.plannedReps} reps${tonnage}`;
 }
+
+// shortcut: a note is "long" by its length, not its laid-out lines, since the web has no
+// onTextLayout; measure once React Native Web supports it.
+const noteLines = 3;
+const longNote = (desc: string) => desc.length > 200 || desc.split("\n").length > noteLines;
 
 // The shown exercise: picture, name and plan line, a gear for its settings, the full notes, every
 // set, and the way on to the next exercise.
@@ -67,6 +79,8 @@ export function ExercisePane(p: Props) {
   const { info } = useExerciseInfo({ slug: entry.slug, name: entry.name });
   const [menu, setMenu] = useState(false);
   const [details, setDetails] = useState(false);
+  const [noteOpen, setNoteOpen] = useState(false);
+  const folded = longNote(entry.desc) && !noteOpen;
   const last = index === count - 1;
   return (
     <View style={{ gap: space[4] }} testID={`exercise-${index}`}>
@@ -87,7 +101,7 @@ export function ExercisePane(p: Props) {
                 {[entry.equipment, entry.label].filter(Boolean).join(" · ")}
               </Text>
             ) : null}
-            <Text variant="caption" numberOfLines={1} testID={`exercise-${index}-summary`}>
+            <Text variant="caption" numberOfLines={2} testID={`exercise-${index}-summary`}>
               {summary(entry, unit)}
             </Text>
             <View style={{ flexDirection: "row", gap: space[2] }}>
@@ -109,10 +123,19 @@ export function ExercisePane(p: Props) {
       </View>
       <LastTimeRow entry={entry} record={p.record} unit={unit} index={index} />
       {entry.desc ? (
-        <Card style={{ padding: space[3] }}>
-          <Text color="textMuted" selectable>
+        <Card style={{ padding: space[3], gap: space[2] }}>
+          <Text color="textMuted" selectable numberOfLines={folded ? noteLines : undefined}>
             {entry.desc}
           </Text>
+          {longNote(entry.desc) && (
+            <Button
+              title={noteOpen ? "Less" : "More"}
+              variant="ghost"
+              compact
+              onPress={() => setNoteOpen(!noteOpen)}
+              style={{ alignSelf: "flex-start" }}
+            />
+          )}
         </Card>
       ) : null}
       <SetList

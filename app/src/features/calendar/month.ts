@@ -41,15 +41,20 @@ const isWorkout = (kind?: string) => kind === "training" || kind === "conditioni
 // The log is the user's word on a day; a record, the cached plan or the server's calendar speaks
 // when there is none.
 const statusOf = (
+  past: boolean,
   log?: { status: DayStatus },
   record?: WorkoutRecord,
   plan?: ResolvedDay,
   kind?: string,
-): DayStatus | undefined =>
-  log?.status ??
-  (record && (record.finalized ? "done" : "partial")) ??
-  (plan && (plan.exercises.length ? "planned" : "rest")) ??
-  (isWorkout(kind) ? "planned" : undefined);
+): DayStatus | undefined => {
+  const status =
+    log?.status ??
+    (record && (record.finalized ? "done" : "partial")) ??
+    (plan && (plan.exercises.length ? "planned" : "rest")) ??
+    (isWorkout(kind) ? "planned" : undefined);
+  // Adherence counts a planned day that passed without a result as skipped.
+  return past && status === "planned" ? "skipped" : status;
+};
 
 // The floating workout program's next day, which no date carries.
 function floatingNext(store: Store) {
@@ -59,7 +64,7 @@ function floatingNext(store: Store) {
   return day && { week: day.week, day: day.day, name: day.name };
 }
 
-export function buildMonth(store: Store, month: string): MonthData {
+export function buildMonth(store: Store, month: string, today: string): MonthData {
   const weeks = monthGrid(month);
   const from = weeks[0][0];
   const to = weeks[weeks.length - 1][6];
@@ -70,7 +75,13 @@ export function buildMonth(store: Store, month: string): MonthData {
   const kinds = store.getKv<Record<string, string>>(kindsKey(month)) ?? {};
   const days: Record<string, MonthDay> = {};
   for (const date of weeks.flat()) {
-    const status = statusOf(logs.get(date), records.get(date), plans.get(date), kinds[date]);
+    const status = statusOf(
+      date < today,
+      logs.get(date),
+      records.get(date),
+      plans.get(date),
+      kinds[date],
+    );
     const checkin = checkins.has(date);
     if (status || checkin) days[date] = { status, checkin };
   }

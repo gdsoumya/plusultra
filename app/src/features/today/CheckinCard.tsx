@@ -2,6 +2,7 @@ import { useState } from "react";
 import { View } from "react-native";
 
 import type { Checkin, Unit, Weight } from "../../domain/types";
+import { weekdayDate } from "../../domain/dates";
 import { formatWeight, inUnit, toKg } from "../../domain/units";
 import { Button, Card, Field, Icon, Numeral, Text, iconSize, space } from "../../ui";
 
@@ -57,7 +58,11 @@ export function CheckinCard({ checkins, today, unit, onSave }: Props) {
   return (
     <Card>
       <Text variant="caption">
-        {latest ? (latest.date === today ? "Weight today" : `Weight on ${latest.date}`) : "Weight"}
+        {latest
+          ? latest.date === today
+            ? "Weight today"
+            : `Weight on ${weekdayDate(latest.date)}`
+          : "Weight"}
       </Text>
       {latest && (
         <View style={{ flexDirection: "row", alignItems: "baseline", gap: space[3] }}>

@@ -40,7 +40,8 @@ export function runs(texts: string[]): string[] {
 // How an exercise went against its plan: met when every set (warmups too, P2-R32) is done at the
 // planned weight or more with at least the target reps (the bottom of a range); totals are reps and
 // load (tonnage) in `unit`, each set's weight shown in it first so the sum adds up as displayed. A
-// unilateral set counts both sides, each against the planned reps.
+// unilateral set counts both sides, each against the planned reps. Timed sets add up their seconds,
+// logged (workTime) against planned.
 export function exerciseTarget(sets: SetEntry[], unilateral = false, unit: Unit = "kg") {
   const target = (p: ResolvedSet) => (unilateral ? 2 : 1) * (p.minReps || p.reps);
   const reps = (s: SetEntry) => (unilateral ? s.reps + (s.repsLeft ?? 0) : s.reps);
@@ -58,5 +59,7 @@ export function exerciseTarget(sets: SetEntry[], unilateral = false, unit: Unit 
     plannedReps: sum(sets, (s) => target(s.planned)),
     load: sum(done, (s) => reps(s) * inUnit(s.weight, unit)),
     plannedLoad: sum(sets, (s) => target(s.planned) * inUnit(s.planned.weight, unit)),
+    work: sum(done, (s) => s.workTime ?? s.planned.work),
+    plannedWork: sum(sets, (s) => s.planned.work),
   };
 }

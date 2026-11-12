@@ -28,6 +28,9 @@ export type LineChartProps = {
 
 // Room for the y tick labels.
 const gutter = 40;
+// Weigh-ins under a trend line are muted; the key dot matches.
+const dotColor = (colors: { accent: string; textMuted: string }, trend: boolean) =>
+  trend ? colors.textMuted : colors.accent;
 
 export function LineChart({
   width,
@@ -44,6 +47,7 @@ export function LineChart({
 }: LineChartProps) {
   const { colors, fontScale } = useTheme();
   const fontSize = typography.caption.fontSize * fontScale;
+  // The band above the plot holds the end value, clear of the last points.
   const top = fontSize + space[2];
   const ys = [...points, ...(trend ?? [])].map((p) => p.y);
   const ticks = niceTicks(Math.min(...ys), Math.max(...ys));
@@ -95,7 +99,7 @@ export function LineChart({
             cx={p.x}
             cy={p.y}
             r={5}
-            fill={trend ? colors.border : colors.accent}
+            fill={dotColor(colors, !!trend)}
             stroke={colors.surface}
             strokeWidth={2}
           />
@@ -103,7 +107,7 @@ export function LineChart({
         {end && (
           <SvgText
             x={end.x}
-            y={end.y - space[3]}
+            y={fontSize}
             fill={colors.text}
             fontSize={fontSize}
             fontWeight="600"
@@ -121,7 +125,7 @@ export function LineChart({
         <View style={{ flexDirection: "row", gap: space[4] }}>
           <Key label={legend[0]}>
             <View
-              style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.border }}
+              style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.textMuted }}
             />
           </Key>
           <Key label={legend[1]}>

@@ -159,7 +159,8 @@ describe("meals screen", () => {
     }
     expect(screen.getByText(/^80 g · 303 kcal/)).toBeOnTheScreen();
     expect(screen.queryByRole("button", { name: rowNamed("Oats, rolled") })).toBeNull();
-    expect(screen.getByLabelText("Off target")).toBeOnTheScreen();
+    // No verdict on the day until every planned meal is eaten or marked not eaten.
+    expect(screen.queryByLabelText(/(On|Off) target/)).toBeNull();
   });
 
   it("enabling a meal logs it as planned and disabling zeroes its items", async () => {
@@ -183,6 +184,7 @@ describe("meals screen", () => {
     ).toBe(true);
     expect(log.totals).toEqual(mealTotals(plan.meals[0]));
     expect(screen.getByTestId("meal-0-eaten")).toBeChecked();
+    expect(screen.getByTestId("meal-0-eaten")).toHaveAccessibleName("Eaten");
     expect(screen.getByRole("button", { name: rowNamed("Oats, rolled") })).toBeOnTheScreen();
 
     await fireEvent.press(screen.getByTestId("meal-0-eaten"));
@@ -190,6 +192,7 @@ describe("meals screen", () => {
     expect(off.items).toHaveLength(plan.meals[0].items.length);
     expect(off.items.every((i) => i.qty === 0)).toBe(true);
     expect(logged().totals.kcal).toBe(0);
+    expect(screen.getByTestId("meal-0-eaten")).toHaveAccessibleName("Mark eaten");
   });
 
   it("enables every meal at once and reports the day on target", async () => {
@@ -261,6 +264,7 @@ describe("meals screen", () => {
     await pick("Paneer");
     await press("Add");
     expect(item("Breakfast", "Paneer")!.qty).toBe(100);
+    expect(screen.queryByText("ad hoc")).toBeNull();
     expect(screen.queryByTestId("meal-0-eaten")).toBeNull();
     expect(screen.queryByRole("button", { name: "Enable all" })).toBeNull();
     expect(screen.queryByLabelText(/(On|Off) target/)).toBeNull();
@@ -375,6 +379,7 @@ describe("meals screen", () => {
     const added = item("Lunch", "Paneer")!;
     expect(added).toMatchObject({ qty: 150, unit: "g", planned: false, foodRef: "food-paneer" });
     expect(added.macros.kcal).toBeCloseTo(397.5);
+    expect(screen.getByText("ad hoc")).toBeOnTheScreen();
     expect(store.getKv<Item[]>(RECENT_FOODS)?.[0]).toMatchObject({ foodName: "Paneer" });
   });
 

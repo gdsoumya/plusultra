@@ -139,6 +139,7 @@ export function AddItemSheet({ meal, store, api, onAdd, onClose }: Props) {
               <ListRow
                 key={food.id}
                 title={food.name}
+                titleLines={2}
                 subtitle={food.per100g ? `${macroLine(food.per100g)} per 100 g` : undefined}
                 onPress={() => pickFood(food)}
               />

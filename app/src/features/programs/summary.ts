@@ -40,9 +40,12 @@ export const sections = (all: ProgramSummary[]) =>
     }))
     .filter((s) => s.programs.length > 0);
 
+// A date never wraps mid-way; a long range breaks at "to".
+const date = (d: string) => formatDate(d).replaceAll(" ", "\u00a0");
+
 export function modeLabel(p: ProgramSummary): string {
   if (p.mode === "anchored" && p.startDate && p.endDate) {
-    return `Anchored, ${formatDate(p.startDate)} to ${formatDate(p.endDate)}`;
+    return `Anchored, ${date(p.startDate)} to ${date(p.endDate)}`;
   }
   if (p.mode === "floating") {
     return p.nextWeek ? `Floating, next week ${p.nextWeek} day ${p.nextDay}` : "Floating";

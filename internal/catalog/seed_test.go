@@ -68,7 +68,7 @@ func TestSeedVersionsTheCatalog(t *testing.T) {
 	if e == 0 || f == 0 {
 		t.Fatalf("fresh seed left %d exercises and %d foods", e, f)
 	}
-	if v, err := q.GetServerMeta(ctx, "catalog_version"); err != nil || v != "2-aaa" {
+	if v, err := q.GetServerMeta(ctx, "catalog_version"); err != nil || v != "3-aaa" {
 		t.Fatalf("catalog_version = %q, %v", v, err)
 	}
 	if _, err := os.Stat(filepath.Join(images, "squat-barbell", "0.jpg")); err != nil {
@@ -101,7 +101,7 @@ func TestSeedVersionsTheCatalog(t *testing.T) {
 	if ex, err := q.GetExerciseBySlug(ctx, sqlc.GetExerciseBySlugParams{Slug: "squat-barbell", UserID: &user}); err != nil || ex.Name != "Squat" {
 		t.Fatalf("new version did not reimport: %q, %v", ex.Name, err)
 	}
-	if v, _ := q.GetServerMeta(ctx, "catalog_version"); v != "2-bbb" {
+	if v, _ := q.GetServerMeta(ctx, "catalog_version"); v != "3-bbb" {
 		t.Fatalf("catalog_version = %q", v)
 	}
 	if e2, f2 := counts(ctx, t, pool); e2 != e || f2 != f+1 {

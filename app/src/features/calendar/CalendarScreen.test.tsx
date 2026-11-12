@@ -70,7 +70,7 @@ describe("CalendarScreen", () => {
     expect(screen.getByText("check-in")).toBeOnTheScreen();
   });
 
-  it("marks past planned days from the server when the pull has not cached them", async () => {
+  it("marks past planned days the server knows and the pull did not cache as skipped", async () => {
     const past = resolvedDaysRepo(store)
       .range("2026-11-01", "2026-11-10")
       .find((d) => d.payload.exercises.length)!;
@@ -85,7 +85,7 @@ describe("CalendarScreen", () => {
       .range("2026-10-01", "2026-11-10")
       .forEach((d) => store.delete("resolvedDays", d.id));
     await renderCalendar();
-    await waitFor(() => expect(cell(past.date!)).toHaveAccessibleName(/, planned(,|$)/));
+    await waitFor(() => expect(cell(past.date!)).toHaveAccessibleName(/, skipped(,|$)/));
   });
 
   it("plans future days for an anchored program only", async () => {

@@ -4,7 +4,7 @@ import { View } from "react-native";
 import { Button } from "../Button";
 import { Text } from "../Text";
 import { useTheme } from "../theme";
-import { space, stroke, tabular } from "../tokens";
+import { minTouch, space, stroke, tabular } from "../tokens";
 
 export type Table = { columns: string[]; rows: string[][] };
 
@@ -21,12 +21,6 @@ export function ChartFrame({ summary, table, children, testID }: ChartFrameProps
   const [asTable, setAsTable] = useState(false);
   return (
     <View style={{ gap: space[2] }} testID={testID}>
-      <Button
-        variant="ghost"
-        title={asTable ? "Show chart" : "Show table"}
-        onPress={() => setAsTable((v) => !v)}
-        style={{ alignSelf: "flex-end", paddingVertical: 0 }}
-      />
       {asTable ? (
         <DataTable table={table} />
       ) : (
@@ -34,6 +28,12 @@ export function ChartFrame({ summary, table, children, testID }: ChartFrameProps
           {children}
         </View>
       )}
+      <Button
+        variant="ghost"
+        title={asTable ? "Show chart" : "Show table"}
+        onPress={() => setAsTable((v) => !v)}
+        style={{ alignSelf: "flex-end", paddingVertical: 0, minHeight: minTouch }}
+      />
     </View>
   );
 }

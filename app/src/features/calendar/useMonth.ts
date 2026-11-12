@@ -5,7 +5,7 @@ import { useApi } from "../../api/useApi";
 import { useStore } from "../../data/StoreProvider";
 import { buildMonth, fetchMonth, type MonthData } from "./month";
 
-export function useMonth(month: string): MonthData {
+export function useMonth(month: string, today: string): MonthData {
   const api = useApi();
   const store = useStore();
   const [, refresh] = useReducer((n: number) => n + 1, 0);
@@ -18,5 +18,5 @@ export function useMonth(month: string): MonthData {
     fetched.add(month);
     fetchMonth(api, store, month).then(refresh, () => fetched.delete(month));
   }, [api, store, month, fetched]);
-  return buildMonth(store, month);
+  return buildMonth(store, month, today);
 }

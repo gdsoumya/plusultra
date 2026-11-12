@@ -14,7 +14,7 @@ export function StatTiles({ items, testID }: { items: Stat[]; testID?: string })
           key={s.label}
           accessible
           accessibilityLabel={`${s.label}: ${s.value}`}
-          style={{ flexGrow: 1, flexBasis: 96 }}
+          style={{ flexGrow: 1, flexBasis: "20%" }}
         >
           <Numeral value={s.value} />
           <Text variant="caption">{s.label}</Text>

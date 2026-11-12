@@ -110,7 +110,14 @@ export function MonthGrid({ month, weeks, days, today, onPress }: GridProps) {
                 >
                   {Number(date.slice(8))}
                 </Text>
-                <View style={{ flexDirection: "row", alignItems: "center", gap: space[1] }}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: space[1],
+                    minHeight: space[2],
+                  }}
+                >
                   {day?.status && <Marker status={day.status} />}
                   {day?.checkin && <CheckinMarker />}
                 </View>

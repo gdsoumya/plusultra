@@ -1,3 +1,4 @@
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { fireEvent, screen } from "@testing-library/react-native";
 import type { ViewStyle } from "react-native";
 
@@ -12,7 +13,7 @@ const planned: SetEntry["planned"] = {
   weight: { value: 140, unit: "kg" },
   rpe: 8,
   rest: 90,
-  work: 45,
+  work: 0,
   amrap: false,
   ask: false,
   auto: true,
@@ -49,6 +50,8 @@ const row = (s: SetEntry, unilateral = false, props: Partial<Parameters<typeof S
     />,
   );
 
+const glyph = (name: keyof typeof Ionicons.glyphMap) =>
+  String.fromCodePoint(Number(Ionicons.glyphMap[name]));
 const flat = (style: unknown): ViewStyle => Object.assign({}, ...[style].flat(Infinity));
 
 describe("SetRow", () => {
@@ -63,11 +66,10 @@ describe("SetRow", () => {
   });
 
   it("always shows the planned rest, work, RPE, AMRAP and ask before anything is pressed", async () => {
-    await row(set({ amrap: true, ask: true }));
+    await row(set({ amrap: true, ask: true, work: 45 }));
     expect(screen.getByTestId("set-0-0-caption")).toHaveTextContent(
       "Work · work 0:45 · auto · rest 1:30 · RPE 8 · AMRAP · ask",
     );
-    expect(screen.getByTestId("set-0-0-reps")).toHaveTextContent("12+");
     expect(screen.getByTestId("set-0-0-weight")).toHaveTextContent("?");
   });
 
@@ -98,6 +100,32 @@ describe("SetRow", () => {
     await row(set({}, { completed: true, reps: 12 }));
     expect(screen.getByTestId("set-0-0-done")).toBeChecked();
     expect(flat(screen.getByTestId("set-0-0-body").props.style).opacity).toBeLessThan(1);
+  });
+
+  it.each([
+    ["a done circle on a rep set", 0, "ellipse-outline"],
+    ["play on a timed set", 45, "play-circle"],
+  ] as const)("offers %s", async (_, work, name) => {
+    await row(set({ work }));
+    expect(screen.getByTestId("set-0-0-done")).toHaveTextContent(glyph(name));
+  });
+
+  it("shows just the reps for a bodyweight set, with the AMRAP plus", async () => {
+    await row(set({ amrap: true, weight: { value: 0, unit: "kg" } }));
+    expect(screen.queryByTestId("set-0-0-weight")).toBeNull();
+    expect(screen.getByTestId("set-0-0-values")).toHaveTextContent(/^12\+$/);
+  });
+
+  it("shows a timed set by its time", async () => {
+    await row(set({ work: 60, reps: 1, weight: { value: 0, unit: "kg" } }));
+    expect(screen.getByTestId("set-0-0-reps")).toHaveTextContent(/^1:00$/);
+    expect(screen.getByLabelText("Time 1:00")).toBeOnTheScreen();
+  });
+
+  it("shows the logged time of a done timed set", async () => {
+    await row(set({ work: 60, reps: 1 }, { completed: true, reps: 1, workTime: 50 }));
+    expect(screen.getByTestId("set-0-0-reps")).toHaveTextContent(/^0:50$/);
+    expect(screen.getByTestId("set-0-0-weight")).toHaveTextContent("140 kg");
   });
 
   it("opens the editor from any bubble", async () => {

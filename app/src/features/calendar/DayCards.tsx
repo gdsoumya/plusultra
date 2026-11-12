@@ -50,8 +50,8 @@ export function WorkoutCard({
         <ListRow
           icon="barbell-outline"
           title={record.dayName || "Workout"}
-          subtitle={`${done} of ${sets.length} sets done`}
-          value={record.finalized ? "Done" : record.finishedAt ? "Finished" : "In progress"}
+          titleLines={2}
+          subtitle={`${done} of ${sets.length} sets done · ${record.finalized ? "Done" : record.finishedAt ? "Finished" : "In progress"}`}
           onPress={onPress}
         />
       </MenuRow>

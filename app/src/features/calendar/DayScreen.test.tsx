@@ -119,7 +119,7 @@ describe("DayScreen", () => {
     await renderDay(record.date);
     const sets = record.entries.flatMap((e) => e.sets);
     const done = sets.filter((s) => s.completed).length;
-    expect(screen.getByText(`${done} of ${sets.length} sets done`)).toBeOnTheScreen();
+    expect(screen.getByText(`${done} of ${sets.length} sets done · Done`)).toBeOnTheScreen();
     expect(
       screen.getByText(`${Math.round(meal.totals.kcal)} of ${meal.target!.kcal} kcal`),
     ).toBeOnTheScreen();
@@ -392,6 +392,22 @@ describe("DayScreen", () => {
       dirty: true,
     });
     expect(screen.getByText("80.5 kg")).toBeOnTheScreen();
+  });
+
+  it("names the day of an earlier weigh-in like the rest of the app", async () => {
+    store.put("checkins", {
+      id: "checkin-earlier",
+      userId: "user-1",
+      date: "2026-01-03",
+      weight: { value: 80, unit: "kg" },
+      measurements: {},
+      version: 1,
+      updatedAt: "2026-01-03T08:00:00Z",
+      deviceId: "device-1",
+      dirty: false,
+    });
+    await renderDay("2026-01-05");
+    expect(screen.getByText("Weight on Sat 3 Jan")).toBeOnTheScreen();
   });
 
   it("sets a past day's status through the repository", async () => {

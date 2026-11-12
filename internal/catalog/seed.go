@@ -18,7 +18,7 @@ import (
 
 // seedFormat is bumped whenever an importer's output changes, so an image with
 // unchanged datasets still reseeds after that upgrade.
-const seedFormat = 2
+const seedFormat = 3
 
 // SeedDir is where the image carries the datasets.
 const SeedDir = "/seed"

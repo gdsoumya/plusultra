@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Pressable, View, type ViewStyle } from "react-native";
 
 import { clock } from "../../domain/dates";
+import { targetLabel } from "../../domain/sets";
 import type { SetEntry, Unit } from "../../domain/types";
 import { formatWeight } from "../../domain/units";
 import {
@@ -47,14 +48,18 @@ type Props = {
 const plannedReps = ({ planned: p }: SetEntry) => `${p.reps}${p.amrap ? "+" : ""}`;
 const isRange = ({ planned: p }: SetEntry) => p.minReps > 0 && p.minReps !== p.reps;
 
-// The plan's words (AMRAP, ask) until the user edits or completes the set.
+const isTimed = ({ planned: p }: SetEntry) => p.work > 0;
+
+// The plan's words (AMRAP, ask) until the user edits or completes the set. A timed set shows its
+// time in place of reps; bodyweight work has no weight to show.
 function labels(set: SetEntry, unit: Unit, unilateral: boolean) {
   const fromPlan = !set.edited && !set.completed;
   const { reps, repsLeft, weight } = shown(set, unilateral);
+  const time = fromPlan ? targetLabel(set.planned) : clock(set.workTime ?? set.planned.work);
   return {
-    reps: fromPlan ? plannedReps(set) : `${reps}`,
+    reps: isTimed(set) ? time : fromPlan ? plannedReps(set) : `${reps}`,
     repsLeft: fromPlan ? plannedReps(set) : `${repsLeft}`,
-    weight: fromPlan && set.planned.ask ? "?" : weight.value ? formatWeight(weight, unit) : "–",
+    weight: fromPlan && set.planned.ask ? "?" : weight.value ? formatWeight(weight, unit) : "",
   };
 }
 
@@ -90,18 +95,23 @@ export function SetRow(p: Props) {
   const text = labels(set, unit, unilateral);
   const group = setGroup(set.planned);
   const quiet = set.completed;
+  const timed = isTimed(set);
   const names = {
     repsLeft: "Left reps",
-    reps: unilateral ? "Right reps" : "Reps",
+    reps: timed ? "Time" : unilateral ? "Right reps" : "Reps",
     weight: "Weight",
   };
   const sides = { repsLeft: "L ", reps: unilateral ? "R " : "", weight: "" };
-  const logged = unilateral ? `L ${text.repsLeft} R ${text.reps}` : `${set.reps} reps`;
+  const logged = unilateral
+    ? `L ${text.repsLeft} R ${text.reps}`
+    : timed
+      ? text.reps
+      : `${set.reps} reps`;
   const doneLabel = set.completed
     ? `${title} done, ${logged}, tap to undo`
     : running
       ? `Stop ${title.toLowerCase()}`
-      : `${set.planned.work ? "Start" : "Complete"} ${title.toLowerCase()}${active ? ", next up" : ""}`;
+      : `${timed ? "Start" : "Complete"} ${title.toLowerCase()}${active ? ", next up" : ""}`;
 
   const value = (which: keyof typeof names) => (
     <Pressable
@@ -202,15 +212,27 @@ export function SetRow(p: Props) {
           >
             {unilateral && value("repsLeft")}
             {value("reps")}
-            <Text variant="caption">x</Text>
-            {value("weight")}
+            {text.weight ? (
+              <>
+                <Text variant="caption">x</Text>
+                {value("weight")}
+              </>
+            ) : null}
           </View>
         </View>
         {iconButton(
           doneLabel,
           p.onDone,
           <Icon
-            name={set.completed ? "checkmark-circle" : running ? "stop-circle" : "play-circle"}
+            name={
+              set.completed
+                ? "checkmark-circle"
+                : running
+                  ? "stop-circle"
+                  : timed
+                    ? "play-circle"
+                    : "ellipse-outline"
+            }
             size={iconSize.lg}
             color={set.completed ? "success" : active || running ? "accent" : "textMuted"}
           />,

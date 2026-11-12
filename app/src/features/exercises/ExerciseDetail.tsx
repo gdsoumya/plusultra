@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Image, View } from "react-native";
 
 import type { Exercise } from "../../gen/plusultra/v1/exercise_pb";
@@ -5,16 +6,27 @@ import { useResolvedExercise } from "../../data/exerciseInfo";
 import { Badge, Carousel, Chip, ChipStrip, space, Text } from "../../ui";
 import { DetailLine } from "../settings/parts";
 
-// 4:3 pages, one image each.
-const image = (uri: string, width: number) => (
-  <Image
-    source={{ uri }}
-    resizeMode="contain"
-    style={{ width, height: Math.round(width * 0.75) }}
-    testID="exercise-image"
-    accessible={false}
-  />
-);
+// One image per page, as tall as its own aspect needs (4:3 until known), so nothing letterboxes.
+function Page({ uri, width }: { uri: string; width: number }) {
+  const [ratio, setRatio] = useState(0.75);
+  useEffect(() => {
+    let live = true;
+    Image.getSize(uri, (w, h) => live && w > 0 && setRatio(h / w));
+    return () => {
+      live = false;
+    };
+  }, [uri]);
+  return (
+    <Image
+      source={{ uri }}
+      resizeMode="contain"
+      style={{ width, height: Math.round(width * ratio) }}
+      testID="exercise-image"
+      accessible={false}
+    />
+  );
+}
+const image = (uri: string, width: number) => <Page key={uri} uri={uri} width={width} />;
 
 function Chips({ label, items }: { label: string; items: string[] }) {
   return items.length ? (

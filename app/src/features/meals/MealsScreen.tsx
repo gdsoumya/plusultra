@@ -73,7 +73,6 @@ export default function MealsScreen({ date, store, api, userId = "" }: Props) {
   const meals = useMemo(() => log?.meals ?? uneatenMeals(plan), [log, plan]);
   const target = log ? log.target : plan?.target;
   const totals = log?.totals ?? dayTotals(meals);
-  const onTargetNow = onTarget(totals, target);
 
   const save = (meals: Meal[]) => {
     const base =
@@ -89,6 +88,10 @@ export default function MealsScreen({ date, store, api, userId = "" }: Props) {
   // The plan's meal for one that has the plan's items; any other meal is eaten as entered (P2-R42).
   const plannedMeal = (meal: Meal) =>
     meal.items.some((i) => i.planned) ? plan?.meals.find((m) => m.name === meal.name) : undefined;
+  // A verdict on the day waits until every planned meal is eaten; a disabled one may still be coming.
+  const onTargetNow = meals.every((m) => !plannedMeal(m) || mealEnabled(m))
+    ? onTarget(totals, target)
+    : undefined;
   const edited = editing && meals[editing.meal];
   const editedItem = edited?.items[editing!.item];
 
@@ -140,6 +143,7 @@ export default function MealsScreen({ date, store, api, userId = "" }: Props) {
                 index={i}
                 count={meals.length}
                 planned={plannedMeal(meal)}
+                planDay={!!plan}
                 onToggle={() =>
                   updateMeal(i, (m) =>
                     mealEnabled(m) ? disableMeal(m) : enableMeal(m, plannedMeal(m)),

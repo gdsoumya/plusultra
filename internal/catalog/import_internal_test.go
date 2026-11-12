@@ -141,7 +141,7 @@ func TestStubTakesSiblingMuscles(t *testing.T) {
 	}
 	want := map[string][2][]string{
 		"bench-press-band":     {{"chest"}, {"shoulders"}}, // its own column
-		"bench-press-dumbbell": {{"chest"}, {"shoulders"}}, // copied from the first variant with muscles
+		"bench-press-dumbbell": {{"chest"}, {"triceps"}},   // copied from the default variant
 		"dead-hang-bodyweight": {nil, nil},                 // nothing to copy from
 	}
 	for slug, w := range want {
@@ -151,6 +151,49 @@ func TestStubTakesSiblingMuscles(t *testing.T) {
 		}
 		if !slices.Equal(ex.PrimaryMuscles, w[0]) || !slices.Equal(ex.SecondaryMuscles, w[1]) {
 			t.Errorf("%s muscles = %v / %v, want %v / %v", slug, ex.PrimaryMuscles, ex.SecondaryMuscles, w[0], w[1])
+		}
+	}
+}
+
+func TestStubTakesSiblingImages(t *testing.T) {
+	ctx := context.Background()
+	q := sqlc.New(dbtest.New(t))
+	dir := datasetDir(t, `[
+	 {"id":"Real_Bench","name":"Barbell Bench Press","equipment":"barbell","images":["Real_Bench/0.jpg"],"instructions":["Press."]},
+	 {"id":"Real_Dumbbell","name":"Dumbbell Bench Press","equipment":"dumbbell","images":["Real_Dumbbell/0.jpg"]},
+	 {"id":"Real_Row","name":"Band Row","equipment":"bands","images":["Real_Row/0.jpg"]}]`)
+	for _, img := range []string{"Real_Bench/0.jpg", "Real_Dumbbell/0.jpg", "Real_Row/0.jpg"} {
+		if err := os.MkdirAll(filepath.Dir(filepath.Join(dir, "exercises", img)), 0o750); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(dir, "exercises", img), []byte("jpg"), 0o600); err != nil { //nolint:gosec // test temp dir
+			t.Fatal(err)
+		}
+	}
+	rows := []Row{
+		{Name: "Bench Press", Equipment: "band"},
+		{Name: "Bench Press", Equipment: "dumbbell", SourceID: "Real_Dumbbell"},
+		{Name: "Bench Press", Equipment: "barbell", Default: true, SourceID: "Real_Bench"},
+		{Name: "Row", Equipment: "cable", Default: true},
+		{Name: "Row", Equipment: "band", SourceID: "Real_Row"},
+		{Name: "Dead Hang", Equipment: "bodyweight", Default: true},
+	}
+	if _, err := importRows(ctx, q, rows, dir, t.TempDir()); err != nil {
+		t.Fatal(err)
+	}
+	want := map[string]struct{ images, steps []string }{
+		"bench-press-band":     {[]string{"bench-press-barbell/0.jpg"}, []string{"Press."}}, // the default wins over file order
+		"bench-press-dumbbell": {[]string{"bench-press-dumbbell/0.jpg"}, nil},               // its own
+		"row-cable":            {[]string{"row-band/0.jpg"}, nil},                           // no imaged default: first imaged sibling
+		"dead-hang-bodyweight": {nil, nil},
+	}
+	for slug, w := range want {
+		ex, err := q.GetExerciseBySlug(ctx, sqlc.GetExerciseBySlugParams{Slug: slug})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !slices.Equal(ex.Images, w.images) || !slices.Equal(ex.Instructions, w.steps) {
+			t.Errorf("%s images = %v steps = %v, want %v / %v", slug, ex.Images, ex.Instructions, w.images, w.steps)
 		}
 	}
 }

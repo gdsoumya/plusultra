@@ -6,7 +6,17 @@ import { programsRepo } from "../../data/repositories/programs";
 import { useStore } from "../../data/StoreProvider";
 import { useRefresh } from "../../data/useRefresh";
 import { useSync } from "../../data/useSync";
-import { Button, EmptyState, ListCard, ListRow, Screen, space, Text, useWide } from "../../ui";
+import {
+  Button,
+  EmptyState,
+  IconButton,
+  ListCard,
+  ListRow,
+  Screen,
+  space,
+  Text,
+  useWide,
+} from "../../ui";
 import { SyncBadge } from "../sync/SyncBadge";
 import { kindLabel, modeLabel, sections } from "./summary";
 
@@ -30,7 +40,11 @@ export default function ProgramsScreen() {
       right={
         <>
           <SyncBadge />
-          <Button title="New" icon="add" variant="secondary" compact={!wide} onPress={openEditor} />
+          {wide ? (
+            <Button title="New" icon="add" variant="secondary" onPress={openEditor} />
+          ) : (
+            <IconButton icon="add" label="New" onPress={openEditor} />
+          )}
         </>
       }
       refresh={refresh}

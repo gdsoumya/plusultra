@@ -25,6 +25,8 @@ type Props = {
   count: number;
   // The same meal in the plan; its totals are the meal's target.
   planned?: Meal;
+  // The day follows a plan, so an unplanned item is an extra worth tagging.
+  planDay: boolean;
   onToggle(): void;
   onItem(index: number): void;
   onAdd(): void;
@@ -40,6 +42,7 @@ export function MealCard({
   index,
   count,
   planned,
+  planDay,
   onToggle,
   onItem,
   onAdd,
@@ -59,8 +62,8 @@ export function MealCard({
         </View>
         {planned && (
           <Chip
-            label="Eaten"
-            icon="checkmark"
+            label={enabled ? "Eaten" : "Mark eaten"}
+            icon={enabled ? "checkmark-circle" : "ellipse-outline"}
             selected={enabled}
             onPress={onToggle}
             testID={`meal-${index}-eaten`}
@@ -89,14 +92,16 @@ export function MealCard({
             <ListRow
               key={`${item.foodName}-${i}`}
               title={item.foodName}
+              titleLines={2}
               subtitle={itemLine(
                 enabled || !item.planned
                   ? item
                   : (planned?.items.find((p) => p.foodName === item.foodName) ?? item),
               )}
               value={
-                [!item.planned && "ad hoc", item.edited && "edited"].filter(Boolean).join(" · ") ||
-                undefined
+                [planDay && !item.planned && "ad hoc", item.edited && "edited"]
+                  .filter(Boolean)
+                  .join(" · ") || undefined
               }
               onPress={enabled || !item.planned ? () => onItem(i) : undefined}
             />

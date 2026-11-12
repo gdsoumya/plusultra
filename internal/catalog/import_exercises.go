@@ -95,7 +95,7 @@ func importRows(ctx context.Context, q *sqlc.Queries, rows []Row, dir, imagesDir
 		}
 	}
 
-	fillStubMuscles(rows, drafts)
+	fillStubs(rows, drafts)
 	keep := slices.Sorted(maps.Keys(drafts))
 	for _, slug := range keep {
 		if _, err := q.UpsertExercise(ctx, *drafts[slug]); err != nil {
@@ -105,22 +105,40 @@ func importRows(ctx context.Context, q *sqlc.Queries, rows []Row, dir, imagesDir
 	return len(keep), prune(ctx, q, keep)
 }
 
-// fillStubMuscles gives a curated row without muscles those of another
-// equipment variant of the same movement, so no stub counts as "unknown".
-func fillStubMuscles(rows []Row, drafts map[string]*sqlc.UpsertExerciseParams) {
+// fillStubs gives a curated row without muscles those of another equipment
+// variant of the same movement, so no stub counts as "unknown", and a row
+// without images the images (and instructions, if it has none) of the default
+// variant, or else of the first imaged one; the photos show the same movement.
+// Image paths are shared, not copied: the route serves any <slug>/<file>.
+func fillStubs(rows []Row, drafts map[string]*sqlc.UpsertExerciseParams) {
 	byName := map[string][]*sqlc.UpsertExerciseParams{}
 	for _, r := range rows {
-		byName[r.Name] = append(byName[r.Name], drafts[slugify(r.Name, r.Equipment)])
+		p := drafts[slugify(r.Name, r.Equipment)]
+		if r.Default {
+			byName[r.Name] = append([]*sqlc.UpsertExerciseParams{p}, byName[r.Name]...)
+		} else {
+			byName[r.Name] = append(byName[r.Name], p)
+		}
 	}
 	for _, variants := range byName {
 		for _, p := range variants {
-			if len(p.PrimaryMuscles) > 0 {
-				continue
+			if len(p.PrimaryMuscles) == 0 {
+				for _, o := range variants {
+					if len(o.PrimaryMuscles) > 0 {
+						p.PrimaryMuscles, p.SecondaryMuscles = o.PrimaryMuscles, o.SecondaryMuscles
+						break
+					}
+				}
 			}
-			for _, o := range variants {
-				if len(o.PrimaryMuscles) > 0 {
-					p.PrimaryMuscles, p.SecondaryMuscles = o.PrimaryMuscles, o.SecondaryMuscles
-					break
+			if len(p.Images) == 0 {
+				for _, o := range variants {
+					if len(o.Images) > 0 {
+						p.Images = o.Images
+						if len(p.Instructions) == 0 {
+							p.Instructions = o.Instructions
+						}
+						break
+					}
 				}
 			}
 		}

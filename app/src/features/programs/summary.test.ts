@@ -44,7 +44,7 @@ describe("modeLabel", () => {
   it("describes anchored, floating and unstarted programs", () => {
     expect(
       modeLabel(at({ mode: "anchored", startDate: "2026-10-26", endDate: "2026-12-20" })),
-    ).toBe("Anchored, 26 Oct 2026 to 20 Dec 2026");
+    ).toBe("Anchored, 26\u00a0Oct\u00a02026 to 20\u00a0Dec\u00a02026");
     expect(modeLabel(at({ mode: "floating", nextWeek: 2, nextDay: 3 }))).toBe(
       "Floating, next week 2 day 3",
     );

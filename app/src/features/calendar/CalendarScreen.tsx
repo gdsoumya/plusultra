@@ -12,7 +12,7 @@ import { useMonth } from "./useMonth";
 
 export default function CalendarScreen({ today }: { today: string }) {
   const [month, setMonth] = useState(monthOf(today));
-  const { weeks, days, next } = useMonth(month);
+  const { weeks, days, next } = useMonth(month, today);
   const router = useRouter();
   // The month is read from the store on every render, so settling the refresh shows the sync.
   const refresh = useRefresh();
