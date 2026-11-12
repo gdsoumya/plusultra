@@ -22,6 +22,11 @@ export interface CachedExercise {
 const infoKey = (slug: string) => `exerciseInfo:${slug}`;
 const slugKey = (name: string) => `exerciseSlug:${name.toLowerCase()}`;
 
+// A catalog reseed changes images and instructions; a cached entry older than this is shown as is
+// and fetched again behind it.
+const maxAge = 7 * 24 * 60 * 60 * 1000;
+const fresh = (c?: CachedExercise) => !!c && Date.now() - Date.parse(c.fetchedAt) < maxAge;
+
 export function cachedExercise(store: Store, { slug, name }: ExerciseRef) {
   const key = slug || (name && store.getKv<string>(slugKey(name)));
   return key ? store.getKv<CachedExercise>(infoKey(key)) : undefined;
@@ -90,7 +95,7 @@ export function useExerciseInfo({ slug, name }: ExerciseRef) {
   const [done, setDone] = useState("");
 
   useEffect(() => {
-    if (!key || cachedExercise(store, { slug, name })) return;
+    if (!key || fresh(cachedExercise(store, { slug, name }))) return;
     let live = true;
     fetchExercise(api, store, { slug, name })
       .catch(() => {})

@@ -33,6 +33,21 @@ describe("useExerciseInfo", () => {
     expect(get).not.toHaveBeenCalled();
   });
 
+  it("refreshes a week-old entry behind the cached one, so reseeded images arrive", async () => {
+    rememberExercise(store, { ...exerciseNamed("Squat"), category: "stale" });
+    const key = "exerciseInfo:squat-barbell";
+    const old = store.getKv<{ fetchedAt: string }>(key)!;
+    store.setKv(key, { ...old, fetchedAt: "2026-11-01T00:00:00.000Z" });
+    jest.spyOn(Date, "now").mockReturnValue(Date.parse("2026-11-11T00:00:00Z"));
+    const { result } = await renderHook(() => useExerciseInfo({ slug: "squat-barbell" }), {
+      wrapper,
+    });
+    // Never a loading state: the stale entry shows until the fetch replaces it.
+    expect(result.current.loading).toBe(false);
+    await waitFor(() => expect(result.current.info?.category).not.toBe("stale"));
+    expect(store.getKv<{ fetchedAt: string }>(key)?.fetchedAt).not.toBe(old.fetchedAt);
+  });
+
   it("keeps only the image path and serves it from the session's server", async () => {
     const squat = exerciseNamed("Squat");
     rememberExercise(store, {
