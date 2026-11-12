@@ -23,3 +23,7 @@ updates:
     groups:
       app:
         patterns: ["*"]
+    ignore:
+      # eslint-config-expo bundles an eslint-plugin-react that breaks on ESLint 10.
+      - dependency-name: eslint
+        update-types: ["version-update:semver-major"]
