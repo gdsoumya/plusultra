@@ -11,6 +11,7 @@ import {
   ListRow,
   Loading,
   Sheet,
+  SheetFooter,
   space,
 } from "../../ui";
 import { statusLabel } from "../programs/summary";
@@ -41,11 +42,18 @@ const dayKey = (d: Pick<PickDay, "week" | "day" | "kind">) => `${d.week}:${d.day
 const programIcon = (p: ProgramSummary) =>
   p.kind === "meal" ? "restaurant-outline" : "barbell-outline";
 
-// Program, then week chips and day rows, then Create. The body mounts per opening so its state
-// starts from the planned day each time.
+// Program, then week chips and day rows that scroll, then Create pinned under them. The body
+// mounts per opening so its state starts from the planned day each time.
 export function ProgramDayPicker({ open, onClose, title, ...body }: Props) {
   return (
-    <Sheet open={open} onClose={onClose} title={title} snapPoints={[0.9]} testID="day-picker">
+    <Sheet
+      open={open}
+      onClose={onClose}
+      title={title}
+      snapPoints={[0.9]}
+      scroll={false}
+      testID="day-picker"
+    >
       {open && <Body {...body} onClose={onClose} />}
     </Sheet>
   );
@@ -163,15 +171,17 @@ function Body({ programs, loadDays, planned, onClose }: Omit<Props, "open" | "ti
           </>
         )}
       </ScrollView>
-      <Button
-        title="Create"
-        icon="add"
-        disabled={!picked}
-        onPress={() => {
-          picked?.create();
-          onClose();
-        }}
-      />
+      <SheetFooter testID="day-picker-footer">
+        <Button
+          title="Create"
+          icon="add"
+          disabled={!picked}
+          onPress={() => {
+            picked?.create();
+            onClose();
+          }}
+        />
+      </SheetFooter>
     </>
   );
 }

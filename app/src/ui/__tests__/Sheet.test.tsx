@@ -67,6 +67,17 @@ describe("Sheet", () => {
     expect(screen.queryByText("Sheet body")).toBeNull();
   });
 
+  it("pins the footer under the scrolling body", async () => {
+    await renderSheet({ footer: <Text>Save</Text> });
+    const footer = screen.getByTestId("sheet-footer");
+    expect(within(footer).getByText("Save")).toBeOnTheScreen();
+    expect(JSON.stringify(within(footer).queryByText("Sheet body"))).toBe("null");
+    // The footer is a sibling of the body's scroll view, not inside it.
+    const sheet = screen.getByTestId("sheet");
+    expect(sheet.children.at(-1)).toBe(footer);
+    expect(scrollViews()).toBe(1);
+  });
+
   it("asks to close when the backdrop is pressed", async () => {
     const onClose = await renderSheet();
     await fireEvent.press(screen.getByLabelText("Close"));

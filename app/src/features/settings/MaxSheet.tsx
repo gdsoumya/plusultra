@@ -67,7 +67,20 @@ export function MaxSheet({
   };
 
   return (
-    <Sheet open={open} onClose={onClose} title={name} snapPoints={[0.75]}>
+    <Sheet
+      open={open}
+      onClose={onClose}
+      title={name}
+      snapPoints={[0.75]}
+      footer={
+        <>
+          <Button title="Save" onPress={save} loading={busy} />
+          {data?.rm1 && (
+            <Button title="Clear 1RM" variant="secondary" onPress={() => store()} disabled={busy} />
+          )}
+        </>
+      }
+    >
       <Field
         label={`1RM (${unit})`}
         helper="Percentage weights in programs are taken from this"
@@ -85,10 +98,6 @@ export function MaxSheet({
       </ChipStrip>
       {custom && <RoundingFields value={draft} unit={unit} onChange={setDraft} />}
       <ErrorLine message={problem ?? error} />
-      <Button title="Save" onPress={save} loading={busy} />
-      {data?.rm1 && (
-        <Button title="Clear 1RM" variant="secondary" onPress={() => store()} disabled={busy} />
-      )}
     </Sheet>
   );
 }

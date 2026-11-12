@@ -36,17 +36,34 @@ export function ItemSheet({ item, plannedQty, onSave, onSaveMacros, onRemove, on
       }
     };
     return (
-      <Sheet open title={item.foodName} onClose={onClose} snapPoints={[0.9]} testID="item-sheet">
+      <Sheet
+        open
+        title={item.foodName}
+        onClose={onClose}
+        snapPoints={[0.9]}
+        testID="item-sheet"
+        footer={
+          <>
+            <Button title="Save macros" onPress={save} />
+            <Button title="Cancel" variant="ghost" onPress={() => setMacros(undefined)} />
+          </>
+        }
+      >
         <Text variant="caption">{perUnit ? `Per ${item.foodUnit}` : "Per 100 g"}</Text>
         <MacroFields value={macros} onChange={setMacros} />
         <ErrorLine message={problem} />
-        <Button title="Save macros" onPress={save} />
-        <Button title="Cancel" variant="ghost" onPress={() => setMacros(undefined)} />
       </Sheet>
     );
   }
   return (
-    <Sheet open title={item.foodName} onClose={onClose} snapPoints={[0.6]} testID="item-sheet">
+    <Sheet
+      open
+      title={item.foodName}
+      onClose={onClose}
+      snapPoints={[0.6]}
+      testID="item-sheet"
+      footer={<Button title="Save" disabled={!valid} onPress={() => valid && onSave(qty)} />}
+    >
       <Field
         label={`Quantity (${item.unit})`}
         numeric
@@ -58,7 +75,6 @@ export function ItemSheet({ item, plannedQty, onSave, onSaveMacros, onRemove, on
         selectTextOnFocus
       />
       {item.note ? <Text variant="caption">{item.note}</Text> : null}
-      <Button title="Save" disabled={!valid} onPress={() => valid && onSave(qty)} />
       <Button
         title="Edit macros"
         variant="secondary"

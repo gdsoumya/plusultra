@@ -75,7 +75,25 @@ export function ActivateSheet({ program, open, onClose, onActivated }: Props) {
   };
 
   return (
-    <Sheet open={open} onClose={close} title={`Activate ${program.name}`} snapPoints={[0.6]}>
+    <Sheet
+      open={open}
+      onClose={close}
+      title={`Activate ${program.name}`}
+      snapPoints={[0.6]}
+      footer={
+        <>
+          {blocker && (
+            <Button title="Finish it" variant="secondary" loading={busy} onPress={finishBlocker} />
+          )}
+          <Button
+            title="Start program"
+            loading={busy}
+            disabled={anchored && !validDate}
+            onPress={start}
+          />
+        </>
+      }
+    >
       <View style={{ flexDirection: "row", gap: space[2] }}>
         <Chip label="Anchored to dates" selected={anchored} onPress={() => setAnchored(true)} />
         <Chip label="Floating" selected={!anchored} onPress={() => setAnchored(false)} />
@@ -101,15 +119,6 @@ export function ActivateSheet({ program, open, onClose, onActivated }: Props) {
         </Text>
       )}
       <ErrorLine message={message} />
-      {blocker && (
-        <Button title="Finish it" variant="secondary" loading={busy} onPress={finishBlocker} />
-      )}
-      <Button
-        title="Start program"
-        loading={busy}
-        disabled={anchored && !validDate}
-        onPress={start}
-      />
     </Sheet>
   );
 }

@@ -56,7 +56,19 @@ export function NewKeySheet({
   };
 
   return (
-    <Sheet open={open} onClose={onClose} title={secret ? name : "New key"} snapPoints={[0.75]}>
+    <Sheet
+      open={open}
+      onClose={onClose}
+      title={secret ? name : "New key"}
+      snapPoints={[0.75]}
+      footer={
+        secret ? (
+          <Button title="Done" variant="secondary" onPress={onClose} />
+        ) : (
+          <Button title="Create key" onPress={submit} loading={busy} />
+        )
+      }
+    >
       {secret ? (
         <>
           <Card>
@@ -78,7 +90,6 @@ export function NewKeySheet({
                 .catch(() => setCopyFailed(true))
             }
           />
-          <Button title="Done" variant="secondary" onPress={onClose} />
         </>
       ) : (
         <>
@@ -115,7 +126,6 @@ export function NewKeySheet({
             ))}
           </ChipStrip>
           <ErrorLine message={problem ?? error} />
-          <Button title="Create key" onPress={submit} loading={busy} />
         </>
       )}
     </Sheet>

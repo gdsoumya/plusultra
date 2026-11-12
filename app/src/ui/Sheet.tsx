@@ -19,6 +19,8 @@ export type SheetProps = {
   snapPoints?: number[];
   /** Scrolls the body within the sheet's height. Defaults to true; false for a body that is a list. */
   scroll?: boolean;
+  /** The sheet's actions, pinned under the body so a long body never hides them. */
+  footer?: ReactNode;
   children: ReactNode;
   /** Also derives `<id>-handle`, `<id>-anchor` and the pan gesture's `<id>-pan`. */
   testID?: string;
@@ -30,6 +32,7 @@ export function Sheet({
   title,
   snapPoints = [0.5],
   scroll = true,
+  footer,
   children,
   testID,
 }: SheetProps) {
@@ -108,6 +111,7 @@ export function Sheet({
               ) : (
                 <View style={[styles.fill, styles.body]}>{children}</View>
               )}
+              {footer && <SheetFooter testID={id("footer")}>{footer}</SheetFooter>}
             </Animated.View>
           </View>
         </KeyboardAvoidingView>
@@ -116,8 +120,24 @@ export function Sheet({
   );
 }
 
+// The row of actions under a sheet's body; a body that scrolls itself places its own.
+export function SheetFooter({ children, testID }: { children: ReactNode; testID?: string }) {
+  const { colors } = useTheme();
+  return (
+    <View testID={testID} style={[styles.footer, { borderTopColor: colors.border }]}>
+      {children}
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   fill: { flex: 1 },
+  footer: {
+    borderTopWidth: StyleSheet.hairlineWidth,
+    paddingTop: space[3],
+    marginTop: space[3],
+    gap: space[2],
+  },
   anchor: { flex: 1, justifyContent: "flex-end" },
   sheet: {
     width: "100%",

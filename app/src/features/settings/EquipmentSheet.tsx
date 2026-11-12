@@ -46,7 +46,18 @@ export function EquipmentSheet({
   };
 
   return (
-    <Sheet open={open} onClose={onClose} title={item?.name ?? "New equipment"} snapPoints={[0.75]}>
+    <Sheet
+      open={open}
+      onClose={onClose}
+      title={item?.name ?? "New equipment"}
+      snapPoints={[0.75]}
+      footer={
+        <>
+          <Button title="Save" onPress={save} loading={busy} />
+          {item && <Button title="Remove" variant="danger" onPress={onRemove} disabled={busy} />}
+        </>
+      }
+    >
       {!item && (
         <Field
           label="Name"
@@ -59,8 +70,6 @@ export function EquipmentSheet({
       <RoundingFields value={draft} unit={unit} onChange={setDraft} />
       <Text variant="caption">{`Rounding values are in ${unit}. Changing units does not convert them.`}</Text>
       <ErrorLine message={problem ?? error} />
-      <Button title="Save" onPress={save} loading={busy} />
-      {item && <Button title="Remove" variant="danger" onPress={onRemove} disabled={busy} />}
     </Sheet>
   );
 }

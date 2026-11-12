@@ -90,7 +90,13 @@ export function CustomExerciseSheet({ open, busy, error, onCreate, onClose }: Pr
     );
   };
   return (
-    <Sheet open={open} onClose={onClose} title="New exercise" snapPoints={[0.75]}>
+    <Sheet
+      open={open}
+      onClose={onClose}
+      title="New exercise"
+      snapPoints={[0.75]}
+      footer={<Button title="Create" onPress={submit} loading={busy} />}
+    >
       <Field
         label="Name"
         helper="As scripts will name it, for example Zercher Squat"
@@ -125,7 +131,6 @@ export function CustomExerciseSheet({ open, busy, error, onCreate, onClose }: Pr
         onChangeText={setInstructions}
       />
       <ErrorLine message={problem ?? error} />
-      <Button title="Create" onPress={submit} loading={busy} />
     </Sheet>
   );
 }
@@ -162,7 +167,13 @@ export function CustomFoodSheet({ open, busy, error, onCreate, onClose }: Props<
     }
   };
   return (
-    <Sheet open={open} onClose={onClose} title="New food" snapPoints={[0.9]}>
+    <Sheet
+      open={open}
+      onClose={onClose}
+      title="New food"
+      snapPoints={[0.9]}
+      footer={<Button title="Create" onPress={submit} loading={busy} />}
+    >
       {mealFlags.scanBarcodes && (
         <Button
           title="Scan barcode"
@@ -175,7 +186,6 @@ export function CustomFoodSheet({ open, busy, error, onCreate, onClose }: Props<
       <Field label="Name" helper="Per 100 g below" value={name} onChangeText={setName} />
       <MacroFields value={macros} onChange={setMacros} />
       <ErrorLine message={problem ?? error} />
-      <Button title="Create" onPress={submit} loading={busy} />
       {scanning && <BarcodeScanner onScanned={scanned} onClose={() => setScanning(false)} />}
     </Sheet>
   );
