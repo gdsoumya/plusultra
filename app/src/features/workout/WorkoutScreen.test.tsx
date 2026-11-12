@@ -703,6 +703,8 @@ describe("WorkoutScreen", () => {
     await show(1);
     await fireEvent.press(screen.getByTestId("set-1-0-done"));
     await act(async () => {});
+    expect(beeps()).toBe(0);
+    await act(() => jest.advanceTimersByTime(5_000));
     expect(beeps()).toBe(1);
     expect(mockPlayer.seekTo).toHaveBeenCalledWith(0);
     await act(() => jest.advanceTimersByTime(20_000));
@@ -712,6 +714,40 @@ describe("WorkoutScreen", () => {
     await act(() => jest.advanceTimersByTime(30_000));
     await act(async () => {});
     expect(beeps()).toBe(3);
+    jest.useRealTimers();
+  });
+
+  it("counts down to get ready before a timed set, and Skip starts the set at once", async () => {
+    jest.useFakeTimers();
+    const store = await seed();
+    const i = saved(store).entries.findIndex((e) => e.sets[0].planned.countUp);
+    const { name } = saved(store).entries[i];
+    await mount(store);
+    await show(i);
+    await fireEvent.press(screen.getByTestId(`set-${i}-0-done`));
+    const ready = within(screen.getByTestId("ready-timer"));
+    expect(ready.getByText("Get ready")).toBeOnTheScreen();
+    expect(ready.getByText(`${name} · Set 1`)).toBeOnTheScreen();
+    expect(ready.getByText("0:05")).toBeOnTheScreen();
+    expect(screen.queryByTestId("set-timer")).toBeNull();
+    expect(beeps()).toBe(0);
+
+    await act(() => jest.advanceTimersByTime(3_000));
+    expect(ready.getByText("0:02")).toBeOnTheScreen();
+    await act(() => jest.advanceTimersByTime(2_000));
+    expect(screen.queryByTestId("ready-timer")).toBeNull();
+    expect(within(screen.getByTestId("set-timer")).getByText("0:00 / 0:30")).toBeOnTheScreen();
+    expect(beeps()).toBe(1);
+
+    await fireEvent.press(screen.getByRole("button", { name: "Stop" }));
+    await fireEvent.press(screen.getByRole("button", { name: "Skip" }));
+    expect(screen.queryByTestId("rest-timer")).toBeNull();
+    await fireEvent.press(screen.getByTestId(`set-${i}-1-done`));
+    expect(screen.getByTestId("ready-timer")).toBeOnTheScreen();
+    await fireEvent.press(screen.getByRole("button", { name: "Skip" }));
+    expect(screen.queryByTestId("ready-timer")).toBeNull();
+    expect(within(screen.getByTestId("set-timer")).getByText("Set 2")).toBeOnTheScreen();
+    expect(beeps()).toBe(2);
     jest.useRealTimers();
   });
 
@@ -727,6 +763,7 @@ describe("WorkoutScreen", () => {
     expect(screen.getByTestId(`set-${i}-0`)).toHaveTextContent(/work 0:30 · rest 1:00/);
 
     await fireEvent.press(screen.getByTestId(`set-${i}-0-done`));
+    await fireEvent.press(screen.getByRole("button", { name: "Skip" }));
     const bar = within(screen.getByTestId("set-timer"));
     expect(bar.getByText(name)).toBeOnTheScreen();
     expect(bar.getByText("Set 1")).toBeOnTheScreen();
@@ -755,6 +792,7 @@ describe("WorkoutScreen", () => {
     await mount(store);
     await show(i);
     await fireEvent.press(screen.getByTestId(`set-${i}-0-done`));
+    await fireEvent.press(screen.getByRole("button", { name: "Skip" }));
     expect(screen.getByTestId("set-timer")).toBeOnTheScreen();
 
     await fireEvent.press(screen.getByTestId(`exercise-${i}-menu`));
@@ -788,6 +826,7 @@ describe("WorkoutScreen", () => {
     await show(1);
     const startedAt = Date.now();
     await fireEvent.press(screen.getByTestId("set-1-0-done"));
+    await fireEvent.press(screen.getByRole("button", { name: "Skip" }));
     expect(within(screen.getByTestId("set-timer")).getByText("0:45")).toBeOnTheScreen();
     expect(Notifications.scheduleNotificationAsync).toHaveBeenCalledWith({
       content: { title: "Set is over", body: "Stop and rest." },
@@ -840,6 +879,7 @@ describe("WorkoutScreen", () => {
     await show(1);
     const startedAt = Date.now();
     await fireEvent.press(screen.getByTestId("set-1-0-done"));
+    await fireEvent.press(screen.getByRole("button", { name: "Skip" }));
     await act(async () => {});
     // Both ends are scheduled now, since no JS runs while the app is in the background.
     expect(jest.mocked(Notifications.scheduleNotificationAsync).mock.calls).toEqual([
@@ -895,6 +935,7 @@ describe("WorkoutScreen", () => {
     await mount(store);
     await show(1);
     await fireEvent.press(screen.getByTestId("set-1-0-done"));
+    await fireEvent.press(screen.getByRole("button", { name: "Skip" }));
     await act(() => jest.advanceTimersByTime(10_000));
     const stoppedAt = Date.now();
     await fireEvent.press(screen.getByRole("button", { name: "Stop" }));

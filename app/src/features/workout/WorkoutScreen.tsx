@@ -48,8 +48,11 @@ import {
 } from "./workoutEdits";
 
 type Target = { exercise: number; set: number };
-// The rest timer remembers the set it follows, so auto can chain into the next one.
-type Timer = Target & { kind: "rest" | "work" };
+// The rest timer remembers the set it follows, so auto can chain into the next one; ready is the
+// countdown before a timed set the user starts by hand.
+type Timer = Target & { kind: "rest" | "work" | "ready" };
+
+const readySeconds = 5;
 
 const notices = {
   rest: { title: "Rest is over", body: "Time for the next set." },
@@ -79,9 +82,13 @@ export default function WorkoutScreen({ id, unit }: { id: string; unit: Unit }) 
   );
   const sound = (kind: Beep) => focused.current && beep(kind);
   const timer = useTimer<Timer>((t, endedAt) => {
-    sound("end");
     // The set may have been removed while its timer ran.
     const s = record?.entries[t.exercise]?.sets[t.set];
+    if (t.kind === "ready") {
+      if (s) startSet(t.exercise, t.set, endedAt);
+      return;
+    }
+    sound("end");
     if (!s) return;
     if (t.kind === "work") complete(t.exercise, t.set, s.planned.work, endedAt);
     else if (s.planned.auto) chain(t.exercise, endedAt);
@@ -157,6 +164,12 @@ export default function WorkoutScreen({ id, unit }: { id: string; unit: Unit }) 
     sound("start");
   };
 
+  // A few seconds to get into position before a set the user starts by hand; Skip starts it now.
+  // shortcut: no notification while it counts, so a set end is only scheduled once it starts; add
+  // one if people background the app during these seconds.
+  const getReady = (exercise: number, set: number) =>
+    timer.start({ kind: "ready", exercise, set }, readySeconds);
+
   // Hoisted so the timer callback above may call them; hoisting loses the record narrowing.
   // auto: the next pending timed set of the exercise starts by itself.
   function chain(exercise: number, from?: number) {
@@ -201,7 +214,7 @@ export default function WorkoutScreen({ id, unit }: { id: string; unit: Unit }) 
     // A set that asks for its weight or RPE is filled in before it can be ticked.
     if (!s.edited && (s.planned.ask || s.planned.logRpe)) return setEditing({ exercise, set });
     if (isRunning(exercise, set)) return stopSet(exercise, set);
-    if (s.planned.work) return startSet(exercise, set);
+    if (s.planned.work) return getReady(exercise, set);
     complete(exercise, set);
   };
 
@@ -311,6 +324,17 @@ export default function WorkoutScreen({ id, unit }: { id: string; unit: Unit }) 
           onAction={timer.stop}
           onAdjust={timer.adjust}
           testID="rest-timer"
+        />
+      )}
+      {running?.kind === "ready" && runningSet && (
+        <TimerBar
+          icon="hourglass-outline"
+          title="Get ready"
+          detail={`${record.entries[running.exercise].name} · ${runningSet.planned.warmup ? "Warmup" : "Set"} ${setNumber(running)}`}
+          value={clock(timer.remaining)}
+          action="Skip"
+          onAction={() => startSet(running.exercise, running.set)}
+          testID="ready-timer"
         />
       )}
       {running?.kind === "work" && runningSet && (
