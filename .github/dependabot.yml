@@ -1,15 +1,25 @@
+# One grouped pull request per ecosystem a month, so related bumps (react + react-dom,
+# upload-artifact + download-artifact) land together and CI judges them as a set.
 version: 2
 updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: monthly
+    groups:
+      actions:
+        patterns: ["*"]
   - package-ecosystem: gomod
     directory: /
     schedule:
       interval: monthly
+    groups:
+      go:
+        patterns: ["*"]
   - package-ecosystem: npm
     directory: /app
     schedule:
       interval: monthly
-    open-pull-requests-limit: 5
+    groups:
+      app:
+        patterns: ["*"]
