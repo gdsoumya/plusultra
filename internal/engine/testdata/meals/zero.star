@@ -1,0 +1,7 @@
+meal_program("Zero", weeks=1)
+coffee = food("Coffee", ref="usda:171890", per100g={"kcal": 0})
+pill = food("Pill", per100g={"kcal": 0}, per_unit={"kcal": 5}, unit="pill")
+oats = food("Oats", ref="usda:173904")
+day(1, 1)
+meal("Breakfast", coffee(250), pill(10, unit="g"), oats(50))
+catalog_snapshot({"usda:171890": {"kcal": 2}, "usda:173904": {"kcal": 380}})

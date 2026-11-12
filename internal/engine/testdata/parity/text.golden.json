@@ -1,0 +1,334 @@
+{
+  "Program": {
+    "Name": "Text",
+    "Notes": "",
+    "Weeks": 2,
+    "Units": "kg",
+    "Loop": true,
+    "WeekDesc": {}
+  },
+  "Weeks": [
+    {
+      "Week": 1,
+      "Day": 1,
+      "Name": "Lower",
+      "Desc": "",
+      "Kind": "training",
+      "Exercises": [
+        {
+          "Name": "Squat",
+          "Equipment": "",
+          "Label": "t1",
+          "Alternates": [
+            "Squat"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "",
+          "Progression": "Custom (note)",
+          "Sets": [
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 100,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 100,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 100,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Week": 2,
+      "Day": 1,
+      "Name": "Lower",
+      "Desc": "",
+      "Kind": "training",
+      "Exercises": [
+        {
+          "Name": "Squat",
+          "Equipment": "",
+          "Label": "t1",
+          "Alternates": [
+            "Squat"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "",
+          "Progression": "Custom (note)",
+          "Sets": [
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 100,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 100,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 100,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "Progress": {
+    "Print": [
+      "t1: Squat: e1RM: 117.5 kg",
+      "t1: Squat: heavy Squat x5",
+      "t1: Squat: SQUAT True True"
+    ],
+    "State": {
+      "t1: Squat": {
+        "last": "\"heavy: Squat\""
+      }
+    },
+    "Weeks": [
+      {
+        "Week": 1,
+        "Day": 1,
+        "Name": "Lower",
+        "Desc": "",
+        "Kind": "training",
+        "Exercises": [
+          {
+            "Name": "Squat",
+            "Equipment": "",
+            "Label": "t1",
+            "Alternates": [
+              "Squat"
+            ],
+            "Current": 1,
+            "Desc": "",
+            "Superset": "",
+            "Progression": "Custom (note)",
+            "Sets": [
+              {
+                "Reps": 5,
+                "MinReps": 5,
+                "Weight": {
+                  "Value": 100,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 5,
+                "MinReps": 5,
+                "Weight": {
+                  "Value": 100,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 5,
+                "MinReps": 5,
+                "Weight": {
+                  "Value": 100,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "Week": 2,
+        "Day": 1,
+        "Name": "Lower",
+        "Desc": "",
+        "Kind": "training",
+        "Exercises": [
+          {
+            "Name": "Squat",
+            "Equipment": "",
+            "Label": "t1",
+            "Alternates": [
+              "Squat"
+            ],
+            "Current": 1,
+            "Desc": "",
+            "Superset": "",
+            "Progression": "Custom (note)",
+            "Sets": [
+              {
+                "Reps": 5,
+                "MinReps": 5,
+                "Weight": {
+                  "Value": 100,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 5,
+                "MinReps": 5,
+                "Weight": {
+                  "Value": 100,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 5,
+                "MinReps": 5,
+                "Weight": {
+                  "Value": 100,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

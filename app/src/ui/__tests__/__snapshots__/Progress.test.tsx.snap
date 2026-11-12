@@ -1,0 +1,619 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`Progress matches snapshot (1 x) 1`] = `
+<>
+  <View
+    accessibilityRole="progressbar"
+    accessibilityValue={
+      {
+        "max": 100,
+        "min": 0,
+        "now": 40,
+      }
+    }
+    accessible={true}
+    style={
+      {
+        "backgroundColor": "#2A2E37",
+        "borderRadius": 3,
+        "height": 6,
+        "overflow": "hidden",
+      }
+    }
+  >
+    <View
+      collapsable={false}
+      jestAnimatedProps={
+        {
+          "value": {},
+        }
+      }
+      jestAnimatedStyle={
+        {
+          "value": {},
+        }
+      }
+      jestInlineStyle={
+        {
+          "backgroundColor": "#B4F23C",
+          "borderRadius": 3,
+          "height": "100%",
+          "transitionDuration": 250,
+          "transitionProperty": "width",
+          "transitionTimingFunction": CubicBezierEasing {
+            "x1": 0.2,
+            "x2": 0,
+            "y1": 0,
+            "y2": 1,
+          },
+          "width": "40%",
+        }
+      }
+      style={
+        [
+          {
+            "backgroundColor": "#B4F23C",
+            "borderRadius": 3,
+            "height": "100%",
+            "width": "40%",
+          },
+        ]
+      }
+    />
+  </View>
+  <View
+    accessibilityRole="progressbar"
+    accessibilityValue={
+      {
+        "max": 100,
+        "min": 0,
+        "now": 75,
+      }
+    }
+    accessible={true}
+    style={
+      {
+        "alignItems": "center",
+        "height": 96,
+        "justifyContent": "center",
+        "width": 96,
+      }
+    }
+  >
+    <RNSVGSvgView
+      bbHeight={96}
+      bbWidth={96}
+      focusable={false}
+      height={96}
+      style={
+        [
+          {
+            "backgroundColor": "transparent",
+            "borderWidth": 0,
+          },
+          {
+            "position": "absolute",
+            "transform": [
+              {
+                "rotate": "-90deg",
+              },
+            ],
+          },
+          {
+            "flex": 0,
+            "height": 96,
+            "width": 96,
+          },
+        ]
+      }
+      transform={
+        [
+          {
+            "rotate": "-90deg",
+          },
+        ]
+      }
+      width={96}
+    >
+      <RNSVGGroup
+        fill={
+          {
+            "payload": 4278190080,
+            "type": 0,
+          }
+        }
+      >
+        <RNSVGCircle
+          cx={48}
+          cy={48}
+          fill={null}
+          propList={
+            [
+              "fill",
+              "stroke",
+              "strokeWidth",
+            ]
+          }
+          r={45}
+          stroke={
+            {
+              "payload": 4280954423,
+              "type": 0,
+            }
+          }
+          strokeWidth={6}
+        />
+        <RNSVGCircle
+          cx={48}
+          cy={48}
+          fill={null}
+          propList={
+            [
+              "fill",
+              "stroke",
+              "strokeWidth",
+              "strokeDasharray",
+              "strokeDashoffset",
+              "strokeLinecap",
+            ]
+          }
+          r={45}
+          stroke={
+            {
+              "payload": 4290048572,
+              "type": 0,
+            }
+          }
+          strokeDasharray={
+            [
+              282.7433388230814,
+              282.7433388230814,
+            ]
+          }
+          strokeDashoffset={70.68583470577035}
+          strokeLinecap={1}
+          strokeWidth={6}
+        />
+      </RNSVGGroup>
+    </RNSVGSvgView>
+    <Text
+      numberOfLines={1}
+      style={
+        [
+          {
+            "fontSize": 28,
+            "fontWeight": "700",
+            "letterSpacing": -0.4,
+            "lineHeight": 32,
+          },
+          {
+            "color": "#F2F3F5",
+          },
+          [
+            {
+              "fontVariant": [
+                "tabular-nums",
+              ],
+            },
+            undefined,
+          ],
+        ]
+      }
+    >
+      3/4
+    </Text>
+  </View>
+</>
+`;
+
+exports[`Progress matches snapshot (1.3 x) 1`] = `
+<>
+  <View
+    accessibilityRole="progressbar"
+    accessibilityValue={
+      {
+        "max": 100,
+        "min": 0,
+        "now": 40,
+      }
+    }
+    accessible={true}
+    style={
+      {
+        "backgroundColor": "#2A2E37",
+        "borderRadius": 3,
+        "height": 6,
+        "overflow": "hidden",
+      }
+    }
+  >
+    <View
+      collapsable={false}
+      jestAnimatedProps={
+        {
+          "value": {},
+        }
+      }
+      jestAnimatedStyle={
+        {
+          "value": {},
+        }
+      }
+      jestInlineStyle={
+        {
+          "backgroundColor": "#B4F23C",
+          "borderRadius": 3,
+          "height": "100%",
+          "transitionDuration": 250,
+          "transitionProperty": "width",
+          "transitionTimingFunction": CubicBezierEasing {
+            "x1": 0.2,
+            "x2": 0,
+            "y1": 0,
+            "y2": 1,
+          },
+          "width": "40%",
+        }
+      }
+      style={
+        [
+          {
+            "backgroundColor": "#B4F23C",
+            "borderRadius": 3,
+            "height": "100%",
+            "width": "40%",
+          },
+        ]
+      }
+    />
+  </View>
+  <View
+    accessibilityRole="progressbar"
+    accessibilityValue={
+      {
+        "max": 100,
+        "min": 0,
+        "now": 75,
+      }
+    }
+    accessible={true}
+    style={
+      {
+        "alignItems": "center",
+        "height": 96,
+        "justifyContent": "center",
+        "width": 96,
+      }
+    }
+  >
+    <RNSVGSvgView
+      bbHeight={96}
+      bbWidth={96}
+      focusable={false}
+      height={96}
+      style={
+        [
+          {
+            "backgroundColor": "transparent",
+            "borderWidth": 0,
+          },
+          {
+            "position": "absolute",
+            "transform": [
+              {
+                "rotate": "-90deg",
+              },
+            ],
+          },
+          {
+            "flex": 0,
+            "height": 96,
+            "width": 96,
+          },
+        ]
+      }
+      transform={
+        [
+          {
+            "rotate": "-90deg",
+          },
+        ]
+      }
+      width={96}
+    >
+      <RNSVGGroup
+        fill={
+          {
+            "payload": 4278190080,
+            "type": 0,
+          }
+        }
+      >
+        <RNSVGCircle
+          cx={48}
+          cy={48}
+          fill={null}
+          propList={
+            [
+              "fill",
+              "stroke",
+              "strokeWidth",
+            ]
+          }
+          r={45}
+          stroke={
+            {
+              "payload": 4280954423,
+              "type": 0,
+            }
+          }
+          strokeWidth={6}
+        />
+        <RNSVGCircle
+          cx={48}
+          cy={48}
+          fill={null}
+          propList={
+            [
+              "fill",
+              "stroke",
+              "strokeWidth",
+              "strokeDasharray",
+              "strokeDashoffset",
+              "strokeLinecap",
+            ]
+          }
+          r={45}
+          stroke={
+            {
+              "payload": 4290048572,
+              "type": 0,
+            }
+          }
+          strokeDasharray={
+            [
+              282.7433388230814,
+              282.7433388230814,
+            ]
+          }
+          strokeDashoffset={70.68583470577035}
+          strokeLinecap={1}
+          strokeWidth={6}
+        />
+      </RNSVGGroup>
+    </RNSVGSvgView>
+    <Text
+      numberOfLines={1}
+      style={
+        [
+          {
+            "fontSize": 36.4,
+            "fontWeight": "700",
+            "letterSpacing": -0.4,
+            "lineHeight": 41.6,
+          },
+          {
+            "color": "#F2F3F5",
+          },
+          [
+            {
+              "fontVariant": [
+                "tabular-nums",
+              ],
+            },
+            undefined,
+          ],
+        ]
+      }
+    >
+      3/4
+    </Text>
+  </View>
+</>
+`;
+
+exports[`Progress matches snapshot (2 x) 1`] = `
+<>
+  <View
+    accessibilityRole="progressbar"
+    accessibilityValue={
+      {
+        "max": 100,
+        "min": 0,
+        "now": 40,
+      }
+    }
+    accessible={true}
+    style={
+      {
+        "backgroundColor": "#2A2E37",
+        "borderRadius": 3,
+        "height": 6,
+        "overflow": "hidden",
+      }
+    }
+  >
+    <View
+      collapsable={false}
+      jestAnimatedProps={
+        {
+          "value": {},
+        }
+      }
+      jestAnimatedStyle={
+        {
+          "value": {},
+        }
+      }
+      jestInlineStyle={
+        {
+          "backgroundColor": "#B4F23C",
+          "borderRadius": 3,
+          "height": "100%",
+          "transitionDuration": 250,
+          "transitionProperty": "width",
+          "transitionTimingFunction": CubicBezierEasing {
+            "x1": 0.2,
+            "x2": 0,
+            "y1": 0,
+            "y2": 1,
+          },
+          "width": "40%",
+        }
+      }
+      style={
+        [
+          {
+            "backgroundColor": "#B4F23C",
+            "borderRadius": 3,
+            "height": "100%",
+            "width": "40%",
+          },
+        ]
+      }
+    />
+  </View>
+  <View
+    accessibilityRole="progressbar"
+    accessibilityValue={
+      {
+        "max": 100,
+        "min": 0,
+        "now": 75,
+      }
+    }
+    accessible={true}
+    style={
+      {
+        "alignItems": "center",
+        "height": 96,
+        "justifyContent": "center",
+        "width": 96,
+      }
+    }
+  >
+    <RNSVGSvgView
+      bbHeight={96}
+      bbWidth={96}
+      focusable={false}
+      height={96}
+      style={
+        [
+          {
+            "backgroundColor": "transparent",
+            "borderWidth": 0,
+          },
+          {
+            "position": "absolute",
+            "transform": [
+              {
+                "rotate": "-90deg",
+              },
+            ],
+          },
+          {
+            "flex": 0,
+            "height": 96,
+            "width": 96,
+          },
+        ]
+      }
+      transform={
+        [
+          {
+            "rotate": "-90deg",
+          },
+        ]
+      }
+      width={96}
+    >
+      <RNSVGGroup
+        fill={
+          {
+            "payload": 4278190080,
+            "type": 0,
+          }
+        }
+      >
+        <RNSVGCircle
+          cx={48}
+          cy={48}
+          fill={null}
+          propList={
+            [
+              "fill",
+              "stroke",
+              "strokeWidth",
+            ]
+          }
+          r={45}
+          stroke={
+            {
+              "payload": 4280954423,
+              "type": 0,
+            }
+          }
+          strokeWidth={6}
+        />
+        <RNSVGCircle
+          cx={48}
+          cy={48}
+          fill={null}
+          propList={
+            [
+              "fill",
+              "stroke",
+              "strokeWidth",
+              "strokeDasharray",
+              "strokeDashoffset",
+              "strokeLinecap",
+            ]
+          }
+          r={45}
+          stroke={
+            {
+              "payload": 4290048572,
+              "type": 0,
+            }
+          }
+          strokeDasharray={
+            [
+              282.7433388230814,
+              282.7433388230814,
+            ]
+          }
+          strokeDashoffset={70.68583470577035}
+          strokeLinecap={1}
+          strokeWidth={6}
+        />
+      </RNSVGGroup>
+    </RNSVGSvgView>
+    <Text
+      numberOfLines={1}
+      style={
+        [
+          {
+            "fontSize": 56,
+            "fontWeight": "700",
+            "letterSpacing": -0.4,
+            "lineHeight": 64,
+          },
+          {
+            "color": "#F2F3F5",
+          },
+          [
+            {
+              "fontVariant": [
+                "tabular-nums",
+              ],
+            },
+            undefined,
+          ],
+        ]
+      }
+    >
+      3/4
+    </Text>
+  </View>
+</>
+`;

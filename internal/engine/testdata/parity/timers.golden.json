@@ -1,0 +1,880 @@
+{
+  "Program": {
+    "Name": "Timers",
+    "Notes": "",
+    "Weeks": 2,
+    "Units": "kg",
+    "Loop": true,
+    "WeekDesc": {}
+  },
+  "Weeks": [
+    {
+      "Week": 1,
+      "Day": 1,
+      "Name": "Conditioning",
+      "Desc": "",
+      "Kind": "conditioning",
+      "Exercises": [
+        {
+          "Name": "Squat",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Squat"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "",
+          "Sets": [
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 100,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 120,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 100,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 120,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 100,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 120,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        },
+        {
+          "Name": "Plank",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Plank"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "",
+          "Sets": [
+            {
+              "Reps": 1,
+              "MinReps": 1,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 30,
+              "Work": 60,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 1,
+              "MinReps": 1,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 30,
+              "Work": 60,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 1,
+              "MinReps": 1,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 30,
+              "Work": 60,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        },
+        {
+          "Name": "Power Clean",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Power Clean"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "",
+          "Sets": [
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 60,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 60,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": true,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 60,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 60,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": true,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 60,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 60,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": true,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 60,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 60,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": true,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 60,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 60,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": true,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        },
+        {
+          "Name": "Squat, Bodyweight",
+          "Equipment": "Bodyweight",
+          "Label": "",
+          "Alternates": [
+            "Squat, Bodyweight"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "",
+          "Sets": [
+            {
+              "Reps": 1,
+              "MinReps": 1,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 10,
+              "Work": 20,
+              "Amrap": true,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": true,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 1,
+              "MinReps": 1,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 10,
+              "Work": 20,
+              "Amrap": true,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": true,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 1,
+              "MinReps": 1,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 10,
+              "Work": 20,
+              "Amrap": true,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": true,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 1,
+              "MinReps": 1,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 10,
+              "Work": 20,
+              "Amrap": true,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": true,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 1,
+              "MinReps": 1,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 10,
+              "Work": 20,
+              "Amrap": true,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": true,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 1,
+              "MinReps": 1,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 10,
+              "Work": 20,
+              "Amrap": true,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": true,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 1,
+              "MinReps": 1,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 10,
+              "Work": 20,
+              "Amrap": true,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": true,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 1,
+              "MinReps": 1,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 10,
+              "Work": 20,
+              "Amrap": true,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": true,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        },
+        {
+          "Name": "Dead Hang",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Dead Hang"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "",
+          "Sets": [
+            {
+              "Reps": 1,
+              "MinReps": 1,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 60,
+              "Work": 30,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": true,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Week": 2,
+      "Day": 1,
+      "Name": "Conditioning",
+      "Desc": "",
+      "Kind": "conditioning",
+      "Exercises": [
+        {
+          "Name": "Squat",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Squat"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "",
+          "Sets": [
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 100,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 120,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 100,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 120,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 100,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 120,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        },
+        {
+          "Name": "Plank",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Plank"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "",
+          "Sets": [
+            {
+              "Reps": 1,
+              "MinReps": 1,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 30,
+              "Work": 60,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 1,
+              "MinReps": 1,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 30,
+              "Work": 60,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 1,
+              "MinReps": 1,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 30,
+              "Work": 60,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        },
+        {
+          "Name": "Power Clean",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Power Clean"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "",
+          "Sets": [
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 60,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 60,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": true,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 60,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 60,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": true,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 60,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 60,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": true,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 60,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 60,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": true,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 60,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 60,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": true,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        },
+        {
+          "Name": "Squat, Bodyweight",
+          "Equipment": "Bodyweight",
+          "Label": "",
+          "Alternates": [
+            "Squat, Bodyweight"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "",
+          "Sets": [
+            {
+              "Reps": 1,
+              "MinReps": 1,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 10,
+              "Work": 20,
+              "Amrap": true,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": true,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 1,
+              "MinReps": 1,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 10,
+              "Work": 20,
+              "Amrap": true,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": true,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 1,
+              "MinReps": 1,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 10,
+              "Work": 20,
+              "Amrap": true,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": true,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 1,
+              "MinReps": 1,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 10,
+              "Work": 20,
+              "Amrap": true,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": true,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 1,
+              "MinReps": 1,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 10,
+              "Work": 20,
+              "Amrap": true,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": true,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 1,
+              "MinReps": 1,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 10,
+              "Work": 20,
+              "Amrap": true,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": true,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 1,
+              "MinReps": 1,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 10,
+              "Work": 20,
+              "Amrap": true,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": true,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 1,
+              "MinReps": 1,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 10,
+              "Work": 20,
+              "Amrap": true,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": true,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        },
+        {
+          "Name": "Dead Hang",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Dead Hang"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "",
+          "Sets": [
+            {
+              "Reps": 1,
+              "MinReps": 1,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 60,
+              "Work": 30,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": true,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

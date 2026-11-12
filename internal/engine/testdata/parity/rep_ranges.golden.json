@@ -1,0 +1,298 @@
+{
+  "Program": {
+    "Name": "Rep ranges",
+    "Notes": "",
+    "Weeks": 2,
+    "Units": "kg",
+    "Loop": true,
+    "WeekDesc": {}
+  },
+  "Weeks": [
+    {
+      "Week": 1,
+      "Day": 1,
+      "Name": "Upper",
+      "Desc": "",
+      "Kind": "training",
+      "Exercises": [
+        {
+          "Name": "Lat Pulldown",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Lat Pulldown"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "",
+          "Sets": [
+            {
+              "Reps": 12,
+              "MinReps": 8,
+              "Weight": {
+                "Value": 50,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 12,
+              "MinReps": 8,
+              "Weight": {
+                "Value": 50,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 12,
+              "MinReps": 8,
+              "Weight": {
+                "Value": 50,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        },
+        {
+          "Name": "Bicep Curl",
+          "Equipment": "dumbbell",
+          "Label": "",
+          "Alternates": [
+            "Bicep Curl"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "",
+          "Sets": [
+            {
+              "Reps": 15,
+              "MinReps": 10,
+              "Weight": {
+                "Value": 12.5,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 15,
+              "MinReps": 10,
+              "Weight": {
+                "Value": 12.5,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 20,
+              "MinReps": 20,
+              "Weight": {
+                "Value": 10,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Week": 2,
+      "Day": 1,
+      "Name": "Upper",
+      "Desc": "",
+      "Kind": "training",
+      "Exercises": [
+        {
+          "Name": "Lat Pulldown",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Lat Pulldown"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "",
+          "Sets": [
+            {
+              "Reps": 12,
+              "MinReps": 8,
+              "Weight": {
+                "Value": 50,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 12,
+              "MinReps": 8,
+              "Weight": {
+                "Value": 50,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 12,
+              "MinReps": 8,
+              "Weight": {
+                "Value": 50,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        },
+        {
+          "Name": "Bicep Curl",
+          "Equipment": "dumbbell",
+          "Label": "",
+          "Alternates": [
+            "Bicep Curl"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "",
+          "Sets": [
+            {
+              "Reps": 15,
+              "MinReps": 10,
+              "Weight": {
+                "Value": 12.5,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 15,
+              "MinReps": 10,
+              "Weight": {
+                "Value": 12.5,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 20,
+              "MinReps": 20,
+              "Weight": {
+                "Value": 10,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

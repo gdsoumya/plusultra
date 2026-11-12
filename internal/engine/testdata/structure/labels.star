@@ -1,0 +1,6 @@
+program("P", weeks=1)
+day(1, 1, "Upper")
+ex("Bench Press", label="heavy", tags=[1, 101], sets=[s(3, 3, kg(90))])
+ex("Bench Press", label="light", sets=[s(3, 10, kg(60))])
+ex("Row", eq="cable", superset="A", sets=[s(3, 12, kg(50))])
+ex("Face Pull", superset="A", sets=[s(3, 15, kg(20))])

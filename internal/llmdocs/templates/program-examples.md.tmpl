@@ -1,0 +1,19 @@
+# plusultra program examples
+
+Complete programs that evaluate and resolve as written. The [program language reference]({{.URL}}/llms/program-language.md) and the [meal language reference]({{.URL}}/llms/meal-language.md) explain every function they use.
+
+## Workout programs
+{{range .Workouts}}
+### {{.Title}}
+
+```python
+{{.Source}}```
+{{end}}
+## Meal programs
+{{range .Meals}}
+### {{.Title}}
+
+```python
+# meal
+{{.Source}}```
+{{end -}}

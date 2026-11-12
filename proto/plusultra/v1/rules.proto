@@ -1,0 +1,16 @@
+syntax = "proto2";
+
+package plusultra.v1;
+
+import "buf/validate/validate.proto";
+
+option go_package = "github.com/gdsoumya/plusultra/gen/go/plusultra/v1;plusultrav1";
+
+extend buf.validate.StringRules {
+  // date requires a local calendar date written YYYY-MM-DD.
+  optional bool date = 162001 [(buf.validate.predefined).cel = {
+    id: "string.date"
+    message: "must be a date, YYYY-MM-DD"
+    expression: "!rule || this.matches('^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$')"
+  }];
+}

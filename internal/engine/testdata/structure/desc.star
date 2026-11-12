@@ -1,0 +1,15 @@
+program("P", weeks=4)
+day(1, 1, "Lower")
+ex("Squat", desc="Brace hard", sets=[s(3, 5, kg(100))])
+day(2, 1, "Lower")
+ex("Squat", sets=[s(3, 5, kg(105))])
+day(3, 1, "Lower")
+ex("Squat", desc="", sets=[s(3, 5, kg(110))])
+day(4, 1, "Lower")
+ex("Squat", sets=[s(3, 5, kg(115))])
+
+# A ranged declaration's description applies once; a later desc="" stops it for good.
+day(1, 2, "Upper")
+ex("Bench Press", weeks="1-4", desc=["Pause first rep", "Touch and go"], sets=[s(3, 5, kg(80))])
+day(3, 2, "Upper")
+ex("Bench Press", desc="", sets=[s(3, 5, kg(85))])

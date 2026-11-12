@@ -1,0 +1,54 @@
+# plusultra as a Docker Compose or Portainer stack: the published image plus Postgres, with every
+# file under DATA_ROOT on the host. docker-compose.override.yaml is for development only (build from
+# source, Postgres on a host port); a deployment copies this file alone.
+services:
+  server:
+    image: ${PLUSULTRA_IMAGE:-gdsoumya/plusultra:latest}
+    restart: always
+    stop_grace_period: 30s
+    depends_on:
+      postgres:
+        condition: service_healthy
+    # Owner of the exercise images under DATA_ROOT. 0 (root) can always write there; set your own
+    # ids when DATA_ROOT belongs to you, so the files do too.
+    user: "${PUID:-0}:${PGID:-0}"
+    ports:
+      - "${LISTEN_PORT:-8080}:8080"
+    volumes:
+      - ${DATA_ROOT:-./data}/exercises:/data/exercises
+    environment:
+      # Postgres connection. The default is the postgres service below with POSTGRES_PASSWORD.
+      DATABASE_URL: ${DATABASE_URL:-postgres://plusultra:${POSTGRES_PASSWORD:-}@postgres:5432/plusultra?sslmode=disable}
+      # invite: every account after the first admin needs an invite code. open: anyone can register.
+      REGISTRATION: ${REGISTRATION:-invite}
+      # Address clients use, such as https://lift.example.com. Renders links in /llms.txt and the
+      # MCP instructions; an http:// value drops the Secure cookie flag for local use.
+      PUBLIC_URL: ${PUBLIC_URL:-}
+      # Extra browser origins allowed to call the API with cookies, comma-separated. The hosted web
+      # app needs none.
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-}
+      IMAGES_DIR: /data/exercises
+      # auto loads the catalog shipped in the image when its version is new; off never touches it.
+      SEED_CATALOG: ${SEED_CATALOG:-auto}
+      LISTEN: :8080
+    mem_limit: 1g
+
+  postgres:
+    image: postgres:17-alpine
+    restart: always
+    stop_grace_period: 1m
+    # Modest for a NAS; raise it when the box has memory to spare.
+    command: postgres -c shared_buffers=${POSTGRES_SHARED_BUFFERS:-256MB}
+    environment:
+      POSTGRES_USER: plusultra
+      # Required: Postgres refuses to initialise without one. Set it before the first start; it
+      # cannot be changed through compose later.
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-}
+      POSTGRES_DB: plusultra
+    volumes:
+      - ${DATA_ROOT:-./data}/.postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U plusultra -d plusultra"]
+      interval: 5s
+      timeout: 3s
+      retries: 10

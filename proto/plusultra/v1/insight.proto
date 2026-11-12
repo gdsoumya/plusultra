@@ -1,0 +1,189 @@
+syntax = "proto3";
+
+package plusultra.v1;
+
+import "buf/validate/validate.proto";
+import "plusultra/v1/common.proto";
+import "plusultra/v1/rules.proto";
+import "protomcp/v1/annotations.proto";
+
+option go_package = "github.com/gdsoumya/plusultra/gen/go/plusultra/v1;plusultrav1";
+
+// InsightService summarises training, nutrition and body weight over time.
+service InsightService {
+  option (protomcp.v1.service) = {tool_prefix: "insight_"};
+
+  // WeeklySummary summarises one week: adherence, sets per muscle group and region, estimated 1RMs, macros and body weight.
+  rpc WeeklySummary(WeeklySummaryRequest) returns (WeeklySummaryResponse) {
+    option (protomcp.v1.tool) = {
+      name: "weekly_summary"
+      title: "Weekly Summary"
+      description: "Summarises one week from its Monday (weekStart, YYYY-MM-DD): workout adherence, completed working sets per muscle group (and per region when exercises name one), best estimated 1RM per exercise, macros against target and body weight. Use it for weekly reviews and coaching feedback."
+      read_only: true
+      idempotent: true
+    };
+  }
+  // LiftHistory returns an exercise's estimated 1RM and best set for every date it was done.
+  rpc LiftHistory(LiftHistoryRequest) returns (LiftHistoryResponse) {
+    option (protomcp.v1.tool) = {
+      name: "lift_history"
+      title: "Lift History"
+      description: "Returns an exercise's estimated 1RM (Epley) and best set for every date it was done, oldest first, by slug from exercise_search, over a date range or all time. Use it to judge progress or a stall on a lift."
+      read_only: true
+      idempotent: true
+    };
+  }
+  // WeightTrend returns body weight check-ins with a 7-day moving average and the weekly rate of change.
+  rpc WeightTrend(WeightTrendRequest) returns (WeightTrendResponse) {
+    option (protomcp.v1.tool) = {
+      name: "weight_trend"
+      title: "Weight Trend"
+      description: "Returns body weight check-ins in a local date range with a 7-day moving average and the weekly rate of change (negative when losing). Use it to judge a cut or bulk against its target rate."
+      read_only: true
+      idempotent: true
+    };
+  }
+  // Adherence counts planned, done, partial and skipped days in a date range.
+  rpc Adherence(AdherenceRequest) returns (AdherenceResponse) {
+    option (protomcp.v1.tool) = {
+      name: "adherence"
+      title: "Adherence Counts"
+      description: "Counts planned, done, partial and skipped days in a local date range (YYYY-MM-DD). Use it to report consistency over a training block or month."
+      read_only: true
+      idempotent: true
+    };
+  }
+}
+
+// AdherenceCounts counts days by how they went.
+message AdherenceCounts {
+  // Days with a planned workout.
+  int32 planned = 1;
+  // Planned days done.
+  int32 done = 2;
+  // Planned days partly done.
+  int32 partial = 3;
+  // Planned days skipped.
+  int32 skipped = 4;
+}
+
+// MacroSummary compares eaten macros with the target.
+message MacroSummary {
+  // Average daily target.
+  Macros target = 1;
+  // Average daily intake on logged days.
+  Macros actual = 2;
+}
+
+// WeightSummary describes body weight over a period.
+message WeightSummary {
+  // First check-in weight in the period; unset without check-ins.
+  Weight start = 1;
+  // Last check-in weight in the period; unset without check-ins.
+  Weight end = 2;
+  // 7-day moving average at the end of the period; unset without check-ins.
+  Weight average = 3;
+}
+
+// LiftPoint is an exercise's performance on one date.
+message LiftPoint {
+  // Local date, YYYY-MM-DD.
+  string date = 1;
+  // Estimated one-rep max from the best set (Epley formula).
+  Weight e1rm = 2;
+  // Weight of the best set.
+  Weight best_weight = 3;
+  // Reps of the best set.
+  int32 best_reps = 4;
+}
+
+// LiftEstimate is an exercise's best estimated one-rep max.
+message LiftEstimate {
+  // Exercise catalog slug.
+  string slug = 1;
+  // Exercise name, for display.
+  string name = 2;
+  // Best estimated one-rep max (Epley formula).
+  Weight e1rm = 3;
+}
+
+// WeightPoint is a body weight check-in with its trend.
+message WeightPoint {
+  // Local date, YYYY-MM-DD.
+  string date = 1;
+  // Weight measured.
+  Weight weight = 2;
+  // 7-day moving average ending on this date.
+  Weight moving_average = 3;
+}
+
+// WeeklySummaryRequest is the input of WeeklySummary.
+message WeeklySummaryRequest {
+  // Monday of the week, YYYY-MM-DD.
+  string week_start = 1 [(buf.validate.field).string.(plusultra.v1.date) = true];
+}
+
+// WeeklySummaryResponse is the output of WeeklySummary.
+message WeeklySummaryResponse {
+  // Monday of the week, YYYY-MM-DD.
+  string week_start = 1;
+  // Workout adherence.
+  AdherenceCounts adherence = 2;
+  // Completed working sets per primary muscle group; a region counts for its group.
+  map<string, int32> sets_per_muscle = 3;
+  // Completed working sets per primary muscle region, only for exercises that name one.
+  map<string, int32> sets_per_region = 7;
+  // Best estimated one-rep max of each exercise done this week.
+  repeated LiftEstimate e1rm = 4;
+  // Macros against the target.
+  MacroSummary macros = 5;
+  // Body weight over the week.
+  WeightSummary weight = 6;
+}
+
+// LiftHistoryRequest is the input of LiftHistory.
+message LiftHistoryRequest {
+  // Exercise slug.
+  string slug = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 200
+  }];
+  // Dates to cover; unset for all time.
+  DateRange dates = 2;
+}
+
+// LiftHistoryResponse is the output of LiftHistory.
+message LiftHistoryResponse {
+  // One point per date the exercise was done, oldest first.
+  repeated LiftPoint points = 1;
+  // Exercise catalog slug.
+  string slug = 2;
+  // Exercise name, for display.
+  string name = 3;
+}
+
+// WeightTrendRequest is the input of WeightTrend.
+message WeightTrendRequest {
+  // Dates to cover.
+  DateRange dates = 1 [(buf.validate.field).required = true];
+}
+
+// WeightTrendResponse is the output of WeightTrend.
+message WeightTrendResponse {
+  // One point per check-in with a weight, oldest first.
+  repeated WeightPoint points = 1;
+  // Change of the moving average per week; negative when losing weight.
+  Weight weekly_rate = 2;
+}
+
+// AdherenceRequest is the input of Adherence.
+message AdherenceRequest {
+  // Dates to cover.
+  DateRange dates = 1 [(buf.validate.field).required = true];
+}
+
+// AdherenceResponse is the output of Adherence.
+message AdherenceResponse {
+  // Day counts.
+  AdherenceCounts counts = 1;
+}

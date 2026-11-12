@@ -1,0 +1,246 @@
+syntax = "proto3";
+
+package plusultra.v1;
+
+import "buf/validate/validate.proto";
+import "plusultra/v1/common.proto";
+import "protomcp/v1/annotations.proto";
+
+option go_package = "github.com/gdsoumya/plusultra/gen/go/plusultra/v1;plusultrav1";
+
+// FoodService is the food catalog (USDA, INDB, Open Food Facts) plus the user's custom foods.
+service FoodService {
+  option (protomcp.v1.service) = {tool_prefix: "food_"};
+
+  // SearchFoods finds foods by name or alias; raw foods rank above cooked ones.
+  rpc SearchFoods(SearchFoodsRequest) returns (SearchFoodsResponse) {
+    option (protomcp.v1.tool) = {
+      name: "search"
+      title: "Search Foods"
+      description: "Finds foods by name or alias, one hit per concept (food_list_concept_members lists other sources). Returns id, source, sourceId, macros per 100 g and grams per unit. Scripts reference a food by catalog name or alias, or ref=\"<source>:<sourceId>\" (custom foods: \"custom:<sourceId>\"); meal log items use its id as food.ref. Unknown names fail validation with suggestions; add missing foods with food_create_custom."
+      read_only: true
+      idempotent: true
+    };
+  }
+  // GetFood returns one food.
+  rpc GetFood(GetFoodRequest) returns (GetFoodResponse) {
+    option (protomcp.v1.tool) = {
+      name: "get"
+      title: "Get Food"
+      description: "Returns one food by id: name, source, sourceId, concept, barcode, macros per 100 g and grams per named unit. Scripts reference it by catalog name or alias, or ref=\"<source>:<sourceId>\" (custom foods: \"custom:<sourceId>\"); meal log items use its id as food.ref. Unknown names fail validation with suggestions; add missing foods with food_create_custom."
+      read_only: true
+      idempotent: true
+    };
+  }
+  // ListConceptMembers lists the catalog foods that are the same real-world food as a concept, preferred first.
+  rpc ListConceptMembers(ListConceptMembersRequest) returns (ListConceptMembersResponse) {
+    option (protomcp.v1.tool) = {
+      name: "list_concept_members"
+      title: "List Concept Members"
+      description: "Lists every catalog food in one concept (conceptId from food_search or food_get), for example the same raw rice from IFCT and USDA, preferred member first, plus preferredFoodId, the row a name or alias resolves to. Use it to pick a specific source: scripts reference it as ref=\"<source>:<sourceId>\", and meal log items use its id as food.ref."
+      read_only: true
+      idempotent: true
+    };
+  }
+  // LookupBarcode finds a packaged food by barcode, asking Open Food Facts when it is not in the catalog yet.
+  rpc LookupBarcode(LookupBarcodeRequest) returns (LookupBarcodeResponse) {
+    option (protomcp.v1.tool) = {
+      name: "lookup_barcode"
+      title: "Look Up Barcode"
+      description: "Finds a packaged food by its EAN or UPC barcode (8 to 14 digits), asking Open Food Facts when the catalog does not have it yet. Returns the food with its id and macros per 100 g."
+      read_only: true
+      idempotent: true
+    };
+  }
+  // CreateCustomFood adds a food visible only to the user.
+  rpc CreateCustomFood(CreateCustomFoodRequest) returns (CreateCustomFoodResponse) {
+    option (protomcp.v1.tool) = {
+      name: "create_custom"
+      title: "Create Custom Food"
+      description: "Adds a food only this user sees, for home recipes or foods food_search cannot find. Give a name, macros per 100 g and optional grams per named unit (for example slice: 30). Scripts then reference it by name or ref=\"custom:<sourceId>\"; meal log items use its id as food.ref. Returns the food with its id."
+    };
+  }
+  // UpdateCustomFood changes one of the user's custom foods.
+  rpc UpdateCustomFood(UpdateCustomFoodRequest) returns (UpdateCustomFoodResponse) {
+    option (protomcp.v1.tool) = {
+      name: "update_custom"
+      title: "Update Custom Food"
+      description: "Replaces one of the user's custom foods, found by id, with a new name, aliases, barcode, macros and units. Meal logs keep the macros frozen when they were logged. Returns the updated food."
+    };
+  }
+  // DeleteCustomFood deletes one of the user's custom foods.
+  rpc DeleteCustomFood(DeleteCustomFoodRequest) returns (DeleteCustomFoodResponse) {
+    option (protomcp.v1.tool) = {
+      name: "delete_custom"
+      title: "Delete Custom Food"
+      description: "Deletes one of the user's custom foods by id. Meal logs that used it keep their frozen copy. Cannot be undone; confirm with the user first."
+      idempotent: true
+      destructive: true
+    };
+  }
+}
+
+// Food is a catalog or custom food. Scripts reference a food by its catalog name or alias, or as ref="<source>:<source_id>" ("custom:<sourceId>" for a custom food).
+message Food {
+  // Food id; set by the server. Meal log items use it as food.ref; scripts reference a custom food as ref="custom:<sourceId>".
+  string id = 1;
+  // Where the food comes from, for example "usda_sr", "usda_foundation", "ifct", "indb", "reference", "off" or "custom"; set by the server.
+  string source = 2;
+  // Id in the source dataset; set by the server. A script ref is "<source>:<source_id>", for example "usda_sr:169756".
+  string source_id = 3;
+  // Food name, for example "Chicken breast, raw".
+  string name = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 200
+  }];
+  // Other names that find the food.
+  repeated string aliases = 5 [(buf.validate.field).repeated = {
+    max_items: 50
+    items: {
+      string: {max_len: 200}
+    }
+  }];
+  // EAN or UPC barcode; empty when none.
+  string barcode = 6 [(buf.validate.field).string.pattern = "^([0-9]{8,14})?$"];
+  // Macros per 100 g.
+  Macros per100g = 7 [(buf.validate.field).required = true];
+  // Grams per named unit, for example {"egg": 50}. USDA household measures run to about 80
+  // characters ("steak, excluding refuse (yield from 1 raw steak ...)").
+  map<string, double> units = 8 [(buf.validate.field).map = {
+    max_pairs: 50
+    keys: {
+      string: {
+        min_len: 1
+        max_len: 100
+      }
+    }
+    values: {
+      double: {
+        gt: 0
+        finite: true
+      }
+    }
+  }];
+  // True for the user's own food; set by the server.
+  bool custom = 9;
+  // Concept the food belongs to, for example "rice-white-raw": one real-world food shared across sources. Empty when none; set by the server.
+  string concept_id = 10;
+  // Concept name, for example "Rice, white, raw"; empty when none. Set by the server.
+  string concept_name = 11;
+}
+
+// SearchFoodsRequest is the input of SearchFoods.
+message SearchFoodsRequest {
+  // Words to match in names and aliases.
+  string query = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 200
+  }];
+  // Only foods from this source: "usda_sr", "usda_foundation", "ifct", "reference", "indb", "off" or "custom"; empty for any.
+  string source = 2 [
+    (buf.validate.field).string = {
+      in: [
+        "usda_sr",
+        "usda_foundation",
+        "ifct",
+        "reference",
+        "indb",
+        "off",
+        "custom"
+      ]
+    },
+    (buf.validate.field).ignore = IGNORE_IF_ZERO_VALUE
+  ];
+  // Maximum foods to return, at most 500; 0 means 20.
+  int32 limit = 3 [(buf.validate.field).int32 = {
+    gte: 0
+    lte: 500
+  }];
+}
+
+// SearchFoodsResponse is the output of SearchFoods.
+message SearchFoodsResponse {
+  // Matches, best first.
+  repeated Food foods = 1;
+}
+
+// GetFoodRequest is the input of GetFood.
+message GetFoodRequest {
+  // Food id.
+  string id = 1 [(buf.validate.field).string.uuid = true];
+}
+
+// GetFoodResponse is the output of GetFood.
+message GetFoodResponse {
+  // The food.
+  Food food = 1;
+}
+
+// ListConceptMembersRequest is the input of ListConceptMembers.
+message ListConceptMembersRequest {
+  // Concept id from Food.concept_id, for example "rice-white-raw".
+  string concept_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+}
+
+// ListConceptMembersResponse is the output of ListConceptMembers.
+message ListConceptMembersResponse {
+  // Member foods, preferred first.
+  repeated Food foods = 1;
+  // Id of the preferred member, the row a script name or alias of the concept resolves to.
+  string preferred_food_id = 2;
+}
+
+// LookupBarcodeRequest is the input of LookupBarcode.
+message LookupBarcodeRequest {
+  // EAN or UPC barcode, 8 to 14 digits.
+  string barcode = 1 [(buf.validate.field).string.pattern = "^[0-9]{8,14}$"];
+}
+
+// LookupBarcodeResponse is the output of LookupBarcode.
+message LookupBarcodeResponse {
+  // The food.
+  Food food = 1;
+}
+
+// CreateCustomFoodRequest is the input of CreateCustomFood.
+message CreateCustomFoodRequest {
+  // Food to add; id, source, source_id and custom are set by the server.
+  Food food = 1 [(buf.validate.field).required = true];
+}
+
+// CreateCustomFoodResponse is the output of CreateCustomFood.
+message CreateCustomFoodResponse {
+  // The new food.
+  Food food = 1;
+}
+
+// UpdateCustomFoodRequest is the input of UpdateCustomFood.
+message UpdateCustomFoodRequest {
+  // Food with its new values, found by id.
+  Food food = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).cel = {
+      id: "food.id"
+      message: "id is required"
+      expression: "this.id != ''"
+    }
+  ];
+}
+
+// UpdateCustomFoodResponse is the output of UpdateCustomFood.
+message UpdateCustomFoodResponse {
+  // The updated food.
+  Food food = 1;
+}
+
+// DeleteCustomFoodRequest is the input of DeleteCustomFood.
+message DeleteCustomFoodRequest {
+  // Food id.
+  string id = 1 [(buf.validate.field).string.uuid = true];
+}
+
+// DeleteCustomFoodResponse is the output of DeleteCustomFood.
+message DeleteCustomFoodResponse {}

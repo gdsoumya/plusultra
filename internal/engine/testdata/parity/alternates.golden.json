@@ -1,0 +1,304 @@
+{
+  "Program": {
+    "Name": "Alternates with current marker",
+    "Notes": "",
+    "Weeks": 2,
+    "Units": "kg",
+    "Loop": true,
+    "WeekDesc": {}
+  },
+  "Weeks": [
+    {
+      "Week": 1,
+      "Day": 1,
+      "Name": "Lower",
+      "Desc": "",
+      "Kind": "training",
+      "Exercises": [
+        {
+          "Name": "Pistol Squat",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Squat, Bodyweight",
+            "Pistol Squat",
+            "Front Squat"
+          ],
+          "Current": 2,
+          "Desc": "",
+          "Superset": "",
+          "Sets": [
+            {
+              "Reps": 8,
+              "MinReps": 8,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 8,
+              "MinReps": 8,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 8,
+              "MinReps": 8,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        },
+        {
+          "Name": "Pull Up",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Pull Up",
+            "Chin Up"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "",
+          "Sets": [
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Week": 2,
+      "Day": 1,
+      "Name": "Lower",
+      "Desc": "",
+      "Kind": "training",
+      "Exercises": [
+        {
+          "Name": "Pistol Squat",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Squat, Bodyweight",
+            "Pistol Squat",
+            "Front Squat"
+          ],
+          "Current": 2,
+          "Desc": "",
+          "Superset": "",
+          "Sets": [
+            {
+              "Reps": 8,
+              "MinReps": 8,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 8,
+              "MinReps": 8,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 8,
+              "MinReps": 8,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        },
+        {
+          "Name": "Pull Up",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Pull Up",
+            "Chin Up"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "",
+          "Sets": [
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

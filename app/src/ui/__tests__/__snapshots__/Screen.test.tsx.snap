@@ -1,0 +1,544 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`Screen matches snapshot (1 x) 1`] = `
+<View
+  onLayout={[Function]}
+  style={
+    [
+      {
+        "backgroundColor": "#0B0C0F",
+        "flex": 1,
+        "paddingTop": 8,
+      },
+      {
+        "paddingBottom": 0,
+      },
+    ]
+  }
+  testID="screen"
+>
+  <RCTScrollView
+    contentContainerStyle={
+      {
+        "alignSelf": "center",
+        "gap": 16,
+        "maxWidth": 752,
+        "paddingBottom": 24,
+        "paddingHorizontal": 16,
+        "width": "100%",
+      }
+    }
+    keyboardShouldPersistTaps="handled"
+  >
+    <View>
+      <View
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "flexShrink": 0,
+            "gap": 12,
+            "minHeight": 44,
+          }
+        }
+      >
+        <Text
+          accessibilityRole="header"
+          numberOfLines={1}
+          style={
+            [
+              {
+                "fontSize": 28,
+                "fontWeight": "700",
+                "letterSpacing": -0.4,
+                "lineHeight": 32,
+              },
+              {
+                "color": "#F2F3F5",
+              },
+              {
+                "flexGrow": 1,
+                "flexShrink": 1,
+              },
+            ]
+          }
+        >
+          Today
+        </Text>
+        <View
+          style={
+            {
+              "alignItems": "center",
+              "flexDirection": "row",
+              "flexShrink": 0,
+              "gap": 12,
+              "minHeight": 44,
+            }
+          }
+          testID="screen-actions"
+        >
+          <View
+            accessibilityLabel="Edit"
+            accessibilityRole="button"
+            accessibilityState={
+              {
+                "busy": false,
+                "checked": undefined,
+                "disabled": false,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onBlur={[Function]}
+            onClick={[Function]}
+            onFocus={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              [
+                {
+                  "alignItems": "center",
+                  "backgroundColor": "transparent",
+                  "borderColor": "#2A2E37",
+                  "borderRadius": 10,
+                  "borderWidth": 0,
+                  "flexDirection": "row",
+                  "gap": 8,
+                  "justifyContent": "center",
+                  "minHeight": 48,
+                  "opacity": 1,
+                  "paddingHorizontal": 20,
+                  "paddingVertical": 12,
+                  "transform": [
+                    {
+                      "scale": 1,
+                    },
+                  ],
+                },
+                undefined,
+              ]
+            }
+          >
+            <Text
+              style={
+                [
+                  {
+                    "fontSize": 14,
+                    "fontWeight": "600",
+                    "letterSpacing": 0.1,
+                    "lineHeight": 18,
+                  },
+                  {
+                    "color": "#B4F23C",
+                  },
+                  {
+                    "flexShrink": 1,
+                    "textAlign": "center",
+                  },
+                ]
+              }
+            >
+              Edit
+            </Text>
+          </View>
+        </View>
+      </View>
+      <Text
+        style={
+          [
+            {
+              "fontSize": 16,
+              "fontWeight": "400",
+              "letterSpacing": 0,
+              "lineHeight": 22,
+            },
+            {
+              "color": "#F2F3F5",
+            },
+            undefined,
+          ]
+        }
+      >
+        Content
+      </Text>
+    </View>
+  </RCTScrollView>
+</View>
+`;
+
+exports[`Screen matches snapshot (1.3 x) 1`] = `
+<View
+  onLayout={[Function]}
+  style={
+    [
+      {
+        "backgroundColor": "#0B0C0F",
+        "flex": 1,
+        "paddingTop": 8,
+      },
+      {
+        "paddingBottom": 0,
+      },
+    ]
+  }
+  testID="screen"
+>
+  <RCTScrollView
+    contentContainerStyle={
+      {
+        "alignSelf": "center",
+        "gap": 16,
+        "maxWidth": 752,
+        "paddingBottom": 24,
+        "paddingHorizontal": 16,
+        "width": "100%",
+      }
+    }
+    keyboardShouldPersistTaps="handled"
+  >
+    <View>
+      <View
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "flexShrink": 0,
+            "gap": 12,
+            "minHeight": 44,
+          }
+        }
+      >
+        <Text
+          accessibilityRole="header"
+          numberOfLines={1}
+          style={
+            [
+              {
+                "fontSize": 36.4,
+                "fontWeight": "700",
+                "letterSpacing": -0.4,
+                "lineHeight": 41.6,
+              },
+              {
+                "color": "#F2F3F5",
+              },
+              {
+                "flexGrow": 1,
+                "flexShrink": 1,
+              },
+            ]
+          }
+        >
+          Today
+        </Text>
+        <View
+          style={
+            {
+              "alignItems": "center",
+              "flexDirection": "row",
+              "flexShrink": 0,
+              "gap": 12,
+              "minHeight": 44,
+            }
+          }
+          testID="screen-actions"
+        >
+          <View
+            accessibilityLabel="Edit"
+            accessibilityRole="button"
+            accessibilityState={
+              {
+                "busy": false,
+                "checked": undefined,
+                "disabled": false,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onBlur={[Function]}
+            onClick={[Function]}
+            onFocus={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              [
+                {
+                  "alignItems": "center",
+                  "backgroundColor": "transparent",
+                  "borderColor": "#2A2E37",
+                  "borderRadius": 10,
+                  "borderWidth": 0,
+                  "flexDirection": "row",
+                  "gap": 8,
+                  "justifyContent": "center",
+                  "minHeight": 48,
+                  "opacity": 1,
+                  "paddingHorizontal": 20,
+                  "paddingVertical": 12,
+                  "transform": [
+                    {
+                      "scale": 1,
+                    },
+                  ],
+                },
+                undefined,
+              ]
+            }
+          >
+            <Text
+              style={
+                [
+                  {
+                    "fontSize": 18.2,
+                    "fontWeight": "600",
+                    "letterSpacing": 0.1,
+                    "lineHeight": 23.400000000000002,
+                  },
+                  {
+                    "color": "#B4F23C",
+                  },
+                  {
+                    "flexShrink": 1,
+                    "textAlign": "center",
+                  },
+                ]
+              }
+            >
+              Edit
+            </Text>
+          </View>
+        </View>
+      </View>
+      <Text
+        style={
+          [
+            {
+              "fontSize": 20.8,
+              "fontWeight": "400",
+              "letterSpacing": 0,
+              "lineHeight": 28.6,
+            },
+            {
+              "color": "#F2F3F5",
+            },
+            undefined,
+          ]
+        }
+      >
+        Content
+      </Text>
+    </View>
+  </RCTScrollView>
+</View>
+`;
+
+exports[`Screen matches snapshot (2 x) 1`] = `
+<View
+  onLayout={[Function]}
+  style={
+    [
+      {
+        "backgroundColor": "#0B0C0F",
+        "flex": 1,
+        "paddingTop": 8,
+      },
+      {
+        "paddingBottom": 0,
+      },
+    ]
+  }
+  testID="screen"
+>
+  <RCTScrollView
+    contentContainerStyle={
+      {
+        "alignSelf": "center",
+        "gap": 16,
+        "maxWidth": 752,
+        "paddingBottom": 24,
+        "paddingHorizontal": 16,
+        "width": "100%",
+      }
+    }
+    keyboardShouldPersistTaps="handled"
+  >
+    <View>
+      <View
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "flexShrink": 0,
+            "gap": 12,
+            "minHeight": 44,
+          }
+        }
+      >
+        <Text
+          accessibilityRole="header"
+          numberOfLines={1}
+          style={
+            [
+              {
+                "fontSize": 56,
+                "fontWeight": "700",
+                "letterSpacing": -0.4,
+                "lineHeight": 64,
+              },
+              {
+                "color": "#F2F3F5",
+              },
+              {
+                "flexGrow": 1,
+                "flexShrink": 1,
+              },
+            ]
+          }
+        >
+          Today
+        </Text>
+        <View
+          style={
+            {
+              "alignItems": "center",
+              "flexDirection": "row",
+              "flexShrink": 0,
+              "gap": 12,
+              "minHeight": 44,
+            }
+          }
+          testID="screen-actions"
+        >
+          <View
+            accessibilityLabel="Edit"
+            accessibilityRole="button"
+            accessibilityState={
+              {
+                "busy": false,
+                "checked": undefined,
+                "disabled": false,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onBlur={[Function]}
+            onClick={[Function]}
+            onFocus={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              [
+                {
+                  "alignItems": "center",
+                  "backgroundColor": "transparent",
+                  "borderColor": "#2A2E37",
+                  "borderRadius": 10,
+                  "borderWidth": 0,
+                  "flexDirection": "row",
+                  "gap": 8,
+                  "justifyContent": "center",
+                  "minHeight": 48,
+                  "opacity": 1,
+                  "paddingHorizontal": 20,
+                  "paddingVertical": 12,
+                  "transform": [
+                    {
+                      "scale": 1,
+                    },
+                  ],
+                },
+                undefined,
+              ]
+            }
+          >
+            <Text
+              style={
+                [
+                  {
+                    "fontSize": 28,
+                    "fontWeight": "600",
+                    "letterSpacing": 0.1,
+                    "lineHeight": 36,
+                  },
+                  {
+                    "color": "#B4F23C",
+                  },
+                  {
+                    "flexShrink": 1,
+                    "textAlign": "center",
+                  },
+                ]
+              }
+            >
+              Edit
+            </Text>
+          </View>
+        </View>
+      </View>
+      <Text
+        style={
+          [
+            {
+              "fontSize": 32,
+              "fontWeight": "400",
+              "letterSpacing": 0,
+              "lineHeight": 44,
+            },
+            {
+              "color": "#F2F3F5",
+            },
+            undefined,
+          ]
+        }
+      >
+        Content
+      </Text>
+    </View>
+  </RCTScrollView>
+</View>
+`;

@@ -1,0 +1,484 @@
+# plusultra program language
+
+A workout program is a Starlark script, a small dialect of Python. The server evaluates it in a sandbox to build the program's structure: weeks, days, exercises, set groups and progressions. It then resolves that structure for each user, with their 1RMs, bodyweight, equipment and progression state, into concrete sets. Scripts never run on clients.
+
+Meal programs use a sibling language: see the [meal language reference]({{.URL}}/llms/meal-language.md). Complete programs are in the [examples]({{.URL}}/llms/program-examples.md).
+
+Code blocks that start with `# fragment` are parts of a program. They assume `program(...)` and `day(...)` were called before them.
+
+## A complete program
+
+```python
+program("Starter", weeks=1, units="kg")
+
+day(1, 1, "Full body A")
+ex("Squat", sets=[s(3, 5, kg(60), rest=180)], progress=lp(kg(2.5)))
+ex("Bench Press", sets=[s(3, 5, kg(40), rest=180)], progress=lp(kg(2.5)))
+ex("Lat Pulldown", sets=[s(3, 8, kg(40), rest=90)], progress=dp(kg(2.5), 8, 12))
+
+day(1, 3, "Full body B")
+ex("Deadlift", sets=[s(1, 5, kg(80), rest=180)], progress=lp(kg(5)))
+ex("Overhead Press", sets=[s(3, 5, kg(30), rest=180)], progress=lp(kg(2.5)))
+ex("Plank", warmup=[], sets=[s(3, 1, bw(), work=45, rest=60)])
+```
+
+## The sandbox
+
+- Starlark is not Python. There is no `while`, no recursion, no `import` or `load()`, no classes, no `try` and no f-strings; use `"%d kg" % n` or `str(x)`.
+- `def`, `for`, `if`, comprehensions, lists, dicts and tuples work, also at the top level, and top-level names can be reassigned.
+- `/` divides to a float and `//` to an int. `True`, `False` and `None` are capitalized.
+- Each evaluation and each progression run is limited to 1,000,000 steps and one second.
+- `print(...)` output is captured and returned by simulation and by finishing a workout.
+- Limits: 104 weeks, 1000 sets per group, 1000 items per list, and weights up to 2000 kg or 4400 lb.
+
+## Layout
+
+A script calls `program()` once, then declares days. `day(week, n, name)` opens a day, and every `ex()` after it attaches to that day until the next `day()` or `week()`. Calling `ex()` before any `day()` is an error.
+
+Use Python functions, loops and dicts for repetition. A function that calls `ex()` adds to whichever day is open, and a loop over weeks can declare a whole block. Exercise names are catalog names, such as "Bench Press" or "Bench Press, Dumbbell"; unknown names fail validation with suggestions.
+
+## Program structure
+{{range group "Program structure"}}{{template "builtin" .}}{{end}}
+## Sets
+{{range group "Sets"}}{{template "builtin" .}}{{end}}
+## Weights
+{{range group "Weights"}}{{template "builtin" .}}{{end}}
+## Progressions
+
+Every exercise can carry one progression, `progress=`, which runs after its workout is finished, and one update hook, `update=`, which runs during the workout. Progression semantics, below, says when they run and how they are inherited.
+{{range group "Progressions"}}{{template "builtin" .}}{{end}}
+## ctx: progress and update scripts
+
+`custom(fn)` calls `fn(ctx)`. `ctx` is the exercise as planned for this workout and as done. Read in and Write in say where an attribute can be read and assigned.
+
+| Attribute | Type | Read in | Write in | Meaning |
+|---|---|---|---|---|
+{{range .Ctx}}| `ctx.{{.Name}}` | {{.Type}} | {{.Read}} | {{.Write}} | {{.Doc}} |
+{{end}}
+### Vectors
+
+Per-set attributes are vectors with one element per working set, warmups excluded.
+
+- They are indexed from 1: `ctx.weights[1]` is the first working set and `ctx.weights[ctx.number_of_sets]` the last.
+- `len`, `for`, `min`, `max` and `sum` work on them.
+- Arithmetic works per element and broadcasts a number or weight: `ctx.weights * 0.9`. Arithmetic never writes; assign the result back.
+- A comparison holds when it holds for every element. `ctx.completed_reps >= ctx.reps` is true when every set hit its reps, and `!=` means every element differs.
+- A vector compares only with a vector of the same length. Against a number, use `min(ctx.completed_reps) >= 5`.
+- Weights read in the program's units.
+
+### Writing: relative and absolute
+
+A progression's writes persist for the rest of the program, in every week and day the exercise appears, unless a view narrows them.
+
+- **Relative.** Assigning a vector back as itself changed by `+ - * /` with a number or weight changes every set by the same step and keeps each week's and day's own script values underneath: `ctx.weights += kg(2.5)`, `ctx.weights *= 0.9`, `ctx.rest += 30`. lp, dp and sum_reps write this way. `ctx.add_sets(n)` is the relative form for set counts.
+- **Absolute.** Anything else sets the value outright and flattens the differences. `ctx.weights = kg(100)` or `ctx.weights = ctx.completed_weights[1] + kg(5)` puts one weight on every set of every week and day. A list or vector of per-set values sets each set. `ctx.number_of_sets = 4` sets the count.
+- **Indexed writes are absolute,** including indexed augmented assignment: `ctx.weights[2] += kg(5)` sets set 2, everywhere, to this workout's set 2 plus 5 kg.
+- Only weights scale; int vectors take whole steps; `amrap`, `ask` and `log_rpe` are always absolute.
+
+```python
+# fragment
+def progress(ctx):
+    if ctx.completed_reps >= ctx.reps:   # every set hit its reps
+        ctx.weights += kg(2.5)           # relative: +2.5 kg in every week and day
+    elif min(ctx.completed_reps) < 3:
+        ctx.weights *= 0.9               # relative: 90% everywhere
+    ctx.reps[3] = 8                      # absolute: set 3 is 8 reps everywhere
+
+ex("Squat", sets=[s(3, 5, kg(100))], progress=custom(progress))
+```
+
+### Views: other weeks and days
+
+`ctx.at(week=0, day=0, variation=0)`, in progress only, is a view of the exercise's sets at that address. It is the addressed form of a planned vector.
+
+- Reading takes this workout's own week, day or variation where a field is 0. The exercise must be on the week and day the view reads.
+- Writing covers every week, day or variation where a field is 0.
+- A view has every planned vector, `number_of_sets` and `add_sets(n)`, and writes the same relative or absolute way: `ctx.at(week=2, day=1).weights[3] = kg(60)` sets week 2, day 1, set 3 of every variation.
+
+```python
+# fragment
+def wave(ctx):
+    if ctx.day_in_week == 1 and ctx.completed_reps >= ctx.reps:
+        ctx.at(week=2).weights += kg(5)               # week 2 only, every day
+        ctx.at(week=3, day=1).weights[1] = kg(110)    # week 3 day 1, set 1
+        ctx.at(day=1).add_sets(1)                     # day 1 of every week: one more set
+
+day(1, 1, "Heavy", weeks="1-3")
+ex("Squat", sets=[s(3, 5, kg(100))], progress=custom(wave))
+```
+
+### Set counts
+
+```python
+# fragment
+def volume(ctx):
+    if ctx.completed_reps >= ctx.reps:
+        if ctx.number_of_sets < 5:
+            ctx.add_sets(1)            # relative: each week keeps its own count plus one
+        else:
+            ctx.number_of_sets = 3     # absolute: 3 sets everywhere
+            ctx.weights += kg(5)
+
+ex("Bench Press", sets=[s(3, 8, kg(60))], progress=custom(volume))
+```
+
+### State
+
+- `ctx.state.<name>` holds the variables declared in `custom(fn, name=value)` or `ex(state={...})`. Only declared names can be set, and they persist across workouts. Values declared with `prompt(default)` are asked from the user after the exercise.
+- `ctx.shared(tag)` is one store per int tag. Any exercise's progression can read and set it, and it is open to new names. Read a name that may be unset with `getattr(ctx.shared(1), "rating", 0)`.
+- Update hooks can read state but not change it.
+
+```python
+# fragment
+def rate(ctx):
+    ctx.shared(1).last_rating = ctx.state.rating
+    if ctx.state.rating >= 4:
+        ctx.weights += kg(2.5)
+
+def follow(ctx):
+    if getattr(ctx.shared(1), "last_rating", 0) >= 4:
+        ctx.weights += kg(5)
+
+ex("Squat", sets=[s(3, 5, kg(100))], progress=custom(rate, rating=prompt(3)))
+ex("Leg Press", sets=[s(3, 10, kg(150))], tags=[1], progress=custom(follow))
+```
+
+### Update hooks
+
+`update=custom(fn)` runs on the server during the workout: once before the first set with `ctx.set_index` 0, then after each completed set, while the app is online. Offline, the planned sets stand and nothing is replayed.
+
+- A hook changes only this workout's sets after `ctx.set_index`: every planned vector, `number_of_sets`, `add_sets(n)` and `ctx.sets(...)`.
+- It cannot write `rm1`, the variation and description indexes, or state, and it cannot use `ctx.at`.
+- Completed sets keep their planned values, so hooks compare them with the `completed_*` vectors.
+
+```python
+# fragment
+def top_set(ctx):
+    if ctx.set_index == 1:   # after the top set, base the back-off sets on it
+        ctx.weights = ctx.completed_weights[1] * 0.9
+        ctx.sets(4, 5, 5, 5, False, ctx.completed_weights[1] * 0.8, 120, 0, False)
+
+ex("Deadlift", sets=[s(1, 3, kg(160)), s(2, 5, kg(140))], update=custom(top_set))
+```
+
+### Variations
+
+- `ex(variations=[[...], [...]])` declares set variations. `ctx.set_variation` switches between them, 1-based and wrapping past the last.
+- `alts` are exercise variations. `ctx.exercise_variation` switches the active one; sets, weights and progression are shared, and `pct()` and RPE loads use the active one's 1RM.
+- `desc=[...]` holds several descriptions, switched by `ctx.description_index`.
+
+```python
+# fragment
+def stages(ctx):
+    if ctx.completed_reps >= ctx.reps:
+        ctx.weights += kg(5)
+    else:
+        ctx.set_variation += 1
+        ctx.description_index = ctx.set_variation
+
+def ladder(ctx):
+    if ctx.completed_reps >= ctx.reps:
+        ctx.exercise_variation += 1
+
+ex("Squat", desc=["5x3", "6x2", "10x1"], progress=custom(stages),
+   variations=[[s(5, 3, kg(100))], [s(6, 2, kg(100))], [s(10, 1, kg(100))]])
+ex("Incline Push Up", alts=["Push Up", "Decline Push Up"], sets=[s(3, 10, bw())], progress=custom(ladder))
+```
+
+## Script functions
+
+These are predeclared in workout scripts. `calc_1rm`, `training_max` and `rpe_multiplier` work anywhere; the others only while a progression or update hook runs. Starlark's own `len`, `min`, `max`, `range`, `enumerate`, `sorted`, `getattr`, `str`, `int`, `float` and `print` are available too.
+{{range group "Script functions"}}{{template "builtin" .}}{{end}}
+## Math functions
+{{range group "Math functions"}}{{template "builtin" .}}{{end}}
+## Resolution rules
+
+**Anchored and floating.** The mode is chosen when the program is activated, not in the script.
+
+- Anchored, activated with a start date. Day numbers are weekdays: 1 is Monday and 7 is Sunday. Week 1 is the calendar week that holds the start date, and dates before it are not scheduled, so a Tuesday start skips week 1 day 1. A day number a week does not declare is a rest day. Day numbers above 7 fail activation. The program ends on the Sunday of its last week and does not loop.
+- Floating, activated without a date. Days form a sequence with a cursor, and a week may have any number of days. Finishing a workout moves the cursor to the next declared day; the user can also pick any day. After the last week the cursor wraps to week 1, unless `loop=False` finishes the program.
+
+**Weeks and overrides.**
+
+- A day exists in a week when a `day()` covers that week, through its own week or `weeks=`, or when one of its exercises does through `ex(weeks=...)`.
+- An exercise appears in its day's weeks, or in its own `weeks=`. Exercises do not carry forward by themselves: give a range or declare them again in each week.
+- For one day number, a declaration for a later week overrides an earlier one in the weeks it covers. Between declarations for the same week, the later in the script wins. This holds for the day header (name, kind) and for each exercise by name and label.
+- Exercises a range carries stay in later weeks unless declared again there. To stop one, end its range earlier.
+- Exercises keep the order of their first declaration.
+
+```python
+program("Overrides", weeks=8)
+day(1, 2, "Upper", weeks="1-8")                    # day 2 in every week
+ex("Bench Press", sets=[s(3, 5, kg(80))], desc="Pause on the chest.")
+ex("Face Pull", sets=[s(3, 15, kg(20))], weeks="1-7")
+day(4, 2, "Upper, deload")                         # week 4 only: a new name
+ex("Bench Press", sets=[s(2, 5, kg(60))])          # replaces week 4's bench; the description carries over
+```
+
+**Descriptions.** Day and exercise descriptions take effect in the first week their declaration is active. They carry forward to later declarations that leave `desc` out, and `desc=""` stops them. `week(n, desc=)` describes that week only.
+
+**Loads and rounding.**
+
+- `pct()` is a percent of the active alternate's 1RM.
+- An RPE set without a load uses 1RM x `rpe_multiplier(reps, rpe)`, or asks for the weight when there is no 1RM.
+- Weights convert to the user's units and round to the equipment. The rounding is the user's setting for the exercise name, else for its equipment, else a 2.5 kg or 5 lb stack; names match ignoring case.
+- The equipment is the text after the last comma of the active name, such as "Dumbbell" in "Bench Press, Dumbbell", else `eq=`.
+- Bodyweight loads are not rounded.
+
+**Identity, labels and alternates.** An exercise's identity is its first name plus its label. Identity keys overrides, progression state and inheritance. Two instances of one exercise on a day need different labels. Alternates share the identity, sets and progression; the active one's name picks the 1RM and equipment.
+
+## Progression semantics
+
+- A progression runs once per exercise when its workout is finalized, in the order workouts are finalized. Its writes apply to every later resolved day without a started or finalized workout. Finished and started workouts keep their snapshot. Editing a finished workout replays its progression and every later finished workout's of the program from the state before it, so the next sessions follow the edit. Skipped and rest days run nothing.
+- lp, dp and sum_reps call a workout a success when every set is completed with at least its target reps, the top of a range. A set added past the plan has no target.
+- Progressions are program-wide. The first declaration of an exercise that carries `progress=`, by first active week, then day, then script order, gives it to every later declaration without one, on any day and week. The same holds for `update=`.
+- `progress="none"` or `update="none"` turns it off for that one declaration, as for a deload week; later declarations inherit again. `state=` on a later declaration adds variables to the inherited progression.
+- Declaring a different progression for the same exercise twice is an error; label the instances instead.
+- Resolved days (program_get_days, program_simulate, calendar_get_day) carry a one-line `progression` summary per exercise, such as `Linear: +2.5 kg after 2 successes, -10% after 3 failures`, `Double progression 8-12 reps, then +2.5 kg`, `Sum of reps >= 30: +2.5 kg` or `Custom (fn_name)`; empty when the exercise has none.
+- One progression covers every day the exercise is on, so it runs after each of those workouts, lp, dp and sum_reps included: an unlabeled lift trained twice a week progresses twice a week. To progress once, label the instances, set `progress="none"` on the other days, or guard a custom function with `ctx.day_in_week` or `ctx.week`.
+- In percentage programs, raise `ctx.rm1` rather than the weights, so every percentage moves together.
+
+## The overlay model
+
+The server never rewrites a script. A progression's writes are kept as an overlay: overrides keyed by exercise (first name and label), week, day, set variation and set, where a key left at 0 covers all of them. At each set, resolution applies the most specific override that covers it to that set's script value. A relative override, from `+=`, lp, dp or sum_reps, stores a step and a scale, so per-week script values stay different; an absolute one replaces the value. Editing the script saves a new revision and keeps the overlay for exercises whose name and label still exist. Export appends the overlay to the script as a generated `state({...})` block; do not write it by hand.
+
+## Reference syntax equivalents
+
+Every construct of the common slash syntax (`Exercise / sets x reps / weight / timer`) has a Starlark equivalent.
+
+| Slash syntax | plusultra |
+|---|---|
+| `# Week 1`, `## Day 1` | `day(1, 1, "Day 1")`; `week(1, desc=...)` for a week note |
+| `Bench Press / 3x8 60kg` | `ex("Bench Press", sets=[s(3, 8, kg(60))])` |
+| `Bench Press, Dumbbell` | the same name; or `eq="Dumbbell"` when the name has no suffix |
+| `4x5 (Main), 1x5+ (AMRAP)` | `sets=[s(4, 5, w, label="Main"), s(1, 5, w, amrap=True, label="AMRAP")]` |
+| `3x8-12` | `s(3, (8, 12), w)` or `s(3, reps_range(8, 12), w)` |
+| `75%` | `pct(75)` |
+| `@8`, `@8+` | `rpe=8`; `rpe=8, log_rpe=True` |
+| `100lb+`, `@8 ?+` | `ask=True` |
+| `/ 120s` | `rest=120` |
+| `60s\|30s`, `30s+\|60s`, `auto` | `work=60, rest=30`; `work=30, count_up=True, rest=60`; `auto=True` |
+| `warmup: 1x5 45lb, 1x1 80%` | `warmup=[w(1, 5, lb(45)), w(1, 1, pct(80))]` |
+| `warmup: none` | `warmup=[]` |
+| `// text` before an exercise | `desc="text"` |
+| empty `//` | `desc=""` |
+| several descriptions | `desc=["a", "b"]` and `ctx.description_index` |
+| `/// comment` | `# comment` |
+| `Squat[1-4]` | `ex("Squat", weeks="1-4")`, or `day(..., weeks="1-4")` for the whole day |
+| `superset: A` | `superset="A"` |
+| `power: Squat` | `ex("Squat", label="power")` |
+| `id: tags(1, 101)` | `tags=[1, 101]` |
+| `...Squat`, `used: none` templates | Python functions, or `template(...)` and `ex(name, **t)` |
+| `5x3 / ! 6x2 / 10x1` | `variations=[[s(5, 3, w)], [s(6, 2, w)], [s(10, 1, w)]], set_variation=2` |
+| `Squat \| ! Pistol Squat` | `ex("Squat", alts=["Pistol Squat"], current=2)` |
+| `progress: lp(5lb, 2, 0, 10lb, 3)` | `lp(lb(5), after=2, fail_dec=lb(10), fail_after=3)` |
+| `lp(5%)` | `lp(pct(5))` |
+| `dp(5lb, 8, 12)` | `dp(lb(5), 8, 12)` |
+| `sum(30, 5lb)` | `sum_reps(lb(5), 30)` |
+| `progress: none` | `progress="none"` |
+| `custom(attempt: 0) {~ ... ~}` | `custom(fn, attempt=0)` with `def fn(ctx): ...` |
+| `custom(rating+: 0)` | `custom(fn, rating=prompt(0))` |
+| `update: custom() {~ ... ~}` | `update=custom(fn)` |
+| `weights`, `reps`, `minReps`, `RPE`, `timers` | `ctx.weights`, `ctx.reps`, `ctx.min_reps`, `ctx.rpe`, `ctx.rest` |
+| `setTime`, `amraps`, `askweights`, `logrpes` | `ctx.work`, `ctx.amrap`, `ctx.ask`, `ctx.log_rpe` |
+| `completedWeights`, `completedReps`, `completedRepsLeft`, `completedRPE`, `completedSetTime` | `ctx.completed_weights`, `ctx.completed_reps`, `ctx.completed_reps_left`, `ctx.completed_rpe`, `ctx.completed_work` |
+| `originalWeights` | `ctx.original_weights` |
+| `numberOfSets`, `ns`, `programNumberOfSets`, `completedNumberOfSets` | `ctx.number_of_sets`, `ctx.program_number_of_sets`, `ctx.completed_number_of_sets` |
+| `setVariationIndex`, `exerciseVariationIndex`, `descriptionIndex` | `ctx.set_variation`, `ctx.exercise_variation`, `ctx.description_index` |
+| `rm1`, `bodyweight`, `week`, `dayInWeek`, `setIndex` | `ctx.rm1`, `ctx.bodyweight`, `ctx.week`, `ctx.day_in_week`, `ctx.set_index` |
+| `day` (day count across the program) | none: `ctx.day` is the day in the week |
+| `exercise` (`"t1: Squat"`) | `ctx.program_exercise`; `ctx.exercise` is the active name |
+| `weights[2:1:1:3] = 60kg` | `ctx.at(week=2, day=1, variation=1).weights[3] = kg(60)` |
+| `numberOfSets[2:3:1] += 1` | `ctx.at(week=2, day=3, variation=1).add_sets(1)` |
+| `numberOfSets += 1` | `ctx.add_sets(1)` |
+| `state.x`, `state[1].x` | `ctx.state.x`, `ctx.shared(1).x` (one store per tag, not each tagged exercise's state) |
+| `var.x = 1` | a local variable: `x = 1` |
+| `for (var.i in completedReps)` | `for i in range(1, len(ctx.completed_reps) + 1):` |
+| `a > b ? x : y`, `&&`, `\|\|`, `!` | `x if a > b else y`, `and`, `or`, `not` |
+| `calculate1RM`, `calculateTrainingMax`, `rpeMultiplier` | `calc_1rm`, `training_max`, `rpe_multiplier` |
+| `roundWeight`, `increment`, `decrement` | `round_weight`, `increment`, `decrement` |
+| `isExercise`, `isProgramExercise`, `zeroOrGte` | `is_exercise`, `is_program_exercise`, `zero_or_gte` |
+| `floor`, `ceil`, `round`, `sum`, `min`, `max`, `print` | the same names |
+| `sets(from, to, ...)` in update | `ctx.sets(frm, to, ...)` |
+
+Differences in behavior:
+
+- dp moves every set together: one more rep for all sets until the first set reaches hi, rather than each set on its own.
+- Tags are labels for shared state only; `ctx.shared(tag)` is one store per tag that any exercise reaches.
+- `is_exercise` compares the full active name, so "Squat" does not match "Squat, Dumbbell".
+
+## Verifying a program with program_simulate
+
+`program_simulate` (SimulateProgram) runs a script, or a saved program by `program_id` from its real state (progression overlay, cursor or today's date, the user's equipment, 1RMs and bodyweight; an optional `script` replaces the program's for the run), for `weeks` weeks. It saves nothing. Start with `compact: true` and read the `warnings`; ask for `trace`, `expect`, `compare_script` or `meals` only when you need them, and leave `include_days` off: the full days are large.
+
+- Range: `from: {week, day}`, or `from_date` with `anchor_start_date` (or an anchored program), which also dates every session. Weeks are program weeks; a looping program repeats them.
+- `overrides`: `rounding` by exercise or equipment name, `rm1` by exercise name, `bodyweight`. Weights without a unit are in the user's units.
+- `scenario`: what was logged per `{week, day, exercise, label?}`: `sets` as logged, or `weight`, `weight_delta`, `miss_last_set_by`, `skip`, and `prompts` for prompt() state. Everything not listed is done as planned. `assumptions.reps` by slug still sets the reps of every set of an exercise.
+- `filter`: `exercises`, `weeks`, `days`, `working_only`.
+- Outputs: `compact` (one line per session, `W2D3 Wed 2026-11-25 Lower B | Deadlift 115x5 x3, 100x5 x2 | Hack Squat 45x8 x3`), `trace` (per progression run: function, `state_before`, `state_after`, overlay `writes` with address, absolute or relative kind and value, prints), `warnings` (`rounding_moved`, `rounding_source`, `stalled_progression`, `pct_without_rm1`, `double_progression_in_week`), `assertions` for `expect`, `diff` against `compare_script` or `compare_scenario` (only the cells that differ), and `meals` for `meal_program_id` or `meal_script` (the meal day of every date of the run, `missing` where the meal program has none).
+
+A scenario with a trace, to see what a failed session does to the next one:
+
+```json
+{"script": "...", "weeks": 2, "compact": true, "trace": true,
+ "scenario": [{"week": 1, "day": 1, "exercise": "Squat", "miss_last_set_by": 2}],
+ "filter": {"exercises": ["Squat"]},
+ "expect": [{"week": 2, "day": 1, "exercise": "Squat", "weight": {"value": 100}}]}
+```
+
+The trace entry for week 1 shows `"function": "lp"`, `"state_after": {"failures": "1", "successes": "0"}` and no writes; the week 2 line reads `W2D1 Lower | Squat 100x5 x3` and the assertion passes.
+
+A rewrite checked against the saved program, from today with its real state:
+
+```json
+{"program_id": "<id>", "weeks": 4, "compact": true,
+ "compare_script": "<the edited script>",
+ "overrides": {"rounding": {"Squat": {"kind": "plates", "bar": 20, "plates": [1.25, 2.5, 5, 10, 20]}}}}
+```
+
+`diff` lists each `{week, day, exercise, set, field, a, b}` where the edited script differs from the saved one, such as `{"week": 2, "day": 1, "exercise": "Bench Press", "set": 1, "field": "weight", "a": "80 kg", "b": "85 kg"}`; an empty `diff` means the edit changes nothing in those weeks.
+
+## Common mistakes
+
+**Forgetting a weight.** `s(3, 5)` fails with "s: weight required". Give `kg()`, `lb()`, `pct()`, `bw()` or `rpe=`, and `kg(0)` for an unloaded movement.
+
+```python
+# fragment
+ex("Squat", sets=[s(3, 5, kg(60))])
+ex("Plank", warmup=[], sets=[s(3, 1, bw(), work=45)])
+ex("Bench Press", sets=[s(3, 8, rpe=8)])
+ex("Dead Hang", warmup=[], sets=[s(3, 1, kg(0), work=30, count_up=True)])
+```
+
+**Calling `ex()` before `day()`.** `ex()` needs an open day, and `week()` closes the open day. Both fail with "ex: call day() before ex()".
+
+```python
+program("Two days", weeks=1)
+week(1, desc="Intro week")
+day(1, 1, "Push")
+ex("Bench Press", sets=[s(3, 8, kg(60))])
+```
+
+**Day numbers above 7 in an anchored program.** Anchored day numbers are weekdays, so activation rejects `day(1, 8, ...)`. A rotation of more than seven days, or one not tied to weekdays, is a floating program: number its days 1 to n and activate it without a start date.
+
+**Forgetting `weeks=` for repeating exercises.** An exercise without a range exists only in its day's week. Give the day or the exercise a range.
+
+```python
+program("Accessories", weeks=8)
+day(1, 2, "Upper", weeks="1-8")
+ex("Bench Press", sets=[s(3, 5, kg(80))])
+ex("Face Pull", sets=[s(3, 15, kg(20))], weeks="1-7")
+```
+
+**Using `weights[a:b:c:d]`.** Starlark has no four-part index. Use a view.
+
+```python
+program("Targeting", weeks=2)
+
+def target(ctx):
+    ctx.at(week=2, day=1, variation=1).weights[3] = kg(60)
+
+day(1, 1, "Heavy", weeks="1-2")
+ex("Squat", sets=[s(3, 5, kg(100))], progress=custom(target))
+```
+
+**Expecting bare arithmetic to write.** The statement `ctx.weights + kg(5)` computes a vector and drops it. Assign it: `ctx.weights += kg(5)`.
+
+**Indexed augmented assignment is absolute.** `ctx.weights[1] += kg(5)` sets set 1 in every week and day to this workout's set 1 plus 5 kg, flattening per-week values. Use `ctx.weights += kg(5)` to move every set, or a view for one week.
+
+```python
+# fragment
+def bump(ctx):
+    ctx.at(week=2).weights += kg(5)
+
+day(1, 1, "Heavy", weeks="1-2")
+ex("Squat", sets=[s(3, 5, kg(100))], progress=custom(bump))
+```
+
+**Changing the set count with `+=`.** `ctx.number_of_sets += 1` is an absolute write: it sets this workout's count plus one in every week and day. A week 1 workout with 3 sets therefore makes every week 4 sets, even a week planned with 5. Use `ctx.add_sets(1)`, which adds one set to each week's own count, or a view for one week.
+
+```python
+program("Volume", weeks=2)
+
+def more(ctx):
+    if ctx.completed_reps >= ctx.reps:
+        ctx.add_sets(1)   # week 1: 3 to 4 sets; week 2: 5 to 6 sets
+
+day(1, 1, "Squat day")
+ex("Squat", sets=[s(3, 5, kg(100))], progress=custom(more))
+day(2, 1, "Squat day")
+ex("Squat", sets=[s(5, 5, kg(100))])
+```
+
+**Declaring a different progression twice.** One exercise has one progression across the program, and a second, different one is an error. Declare it once, or label the instances.
+
+```python
+program("Heavy and light", weeks=1)
+day(1, 1, "Heavy")
+ex("Squat", label="heavy", sets=[s(3, 3, kg(120))], progress=lp(kg(5)))
+day(1, 3, "Light")
+ex("Squat", label="light", sets=[s(3, 8, kg(90))], progress=dp(kg(2.5), 8, 10))
+```
+
+**Comparing a vector with a number.** `ctx.completed_reps >= 5` fails with "vector >= int not implemented". Worse, `ctx.completed_reps == 5` is silently False even when every set did 5 reps, and `!= 5` is True. Use `min(ctx.completed_reps) >= 5`, a comprehension, or compare with a vector such as `ctx.reps`.
+
+```python
+# fragment
+def five_each(ctx):
+    if all([r >= 5 for r in ctx.completed_reps]):   # the same as min(ctx.completed_reps) >= 5
+        ctx.weights += kg(2.5)
+
+ex("Squat", sets=[s(3, 5, kg(100))], progress=custom(five_each))
+```
+
+**Forgetting `"none"` on a deload.** A later declaration inherits the progression. Turn it off there.
+
+```python
+program("Deload", weeks=2)
+day(1, 1, "Squat day")
+ex("Squat", sets=[s(3, 5, kg(100))], progress=lp(kg(2.5)))
+day(2, 1, "Deload")
+ex("Squat", sets=[s(2, 5, kg(80))], progress="none")
+```
+
+**Mixing up the equipment suffix and `eq=`.** Rounding uses the equipment after the last comma of the active name, and `eq=` only when the name has none, so each suffixed alternate keeps its own. A light isolation lift with neither rounds to 2.5 kg or 5 lb, so "Lateral Raise" at 12 kg plans 12.5 kg.
+
+```python
+# fragment
+ex("Lateral Raise", eq="Dumbbell", warmup=[], sets=[s(3, 12, kg(12.5))])
+ex("Bench Press, Dumbbell", sets=[s(3, 10, kg(25))])
+```
+
+**Forgetting that `fail_after` defaults to 1.** `lp(kg(2.5), fail_reset=0.9)` deloads after one failed workout. For three strikes, say so.
+
+```python
+# fragment
+ex("Squat", sets=[s(3, 5, kg(100))], progress=lp(kg(2.5), fail_after=3, fail_reset=0.9))
+```
+
+**Writing a rep range for dp.** dp manages the range itself; write the sets at lo reps: `s(3, 8, w)` with `dp(kg(2.5), 8, 12)`, not `s(3, (8, 12), w)`.
+
+**Progressing a lift trained several times a week.** Every progression, lp, dp and sum_reps included, runs after every workout of its exercise. An unlabeled lift with `lp(kg(2.5))` trained twice a week therefore gains 5 kg a week. Label the instances to give each its own weights and progression, or set `progress="none"` on the days that should not progress; those days still move with the other day's writes.
+
+```python
+program("Squat twice a week", weeks=1)
+day(1, 1, "Heavy")
+ex("Squat", sets=[s(3, 5, kg(100))], progress=lp(kg(2.5)))
+day(1, 4, "Light")
+ex("Squat", sets=[s(3, 5, kg(80))], progress="none")   # runs no progression, still gains Monday's increments
+```
+
+A custom function can also guard itself:
+
+```python
+# fragment
+def weekly(ctx):
+    if ctx.day_in_week == 3 and ctx.completed_reps >= ctx.reps:
+        ctx.weights += kg(5)
+
+ex("Squat", sets=[s(3, 5, kg(100))], progress=custom(weekly))
+day(1, 3, "Day 3")
+ex("Squat", sets=[s(3, 5, kg(90))])
+```
+
+**Writing Python that Starlark lacks.** `while`, recursion, f-strings, classes, `try` and `import` fail. Use `for` over `range()` and `"%s" % x`.

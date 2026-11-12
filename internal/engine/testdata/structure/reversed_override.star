@@ -1,0 +1,5 @@
+program("P", weeks=4)
+day(2, 1, "Heavy")
+ex("Squat", sets=[s(3, 5, kg(120))])
+day(1, 1, "Base", weeks="1-4")
+ex("Squat", sets=[s(3, 5, kg(100))])

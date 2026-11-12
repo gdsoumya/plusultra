@@ -1,0 +1,6 @@
+# Reference syntax: Bench Press / 3x8 @8 ?+     (weight from the RPE chart and 1RM, ask to confirm it)
+#              Squat / 3x5 100kg+          (planned weight, ask to confirm it)
+program("Ask", weeks=2)
+day(1, 1, "Full body", weeks="1-2")
+ex("Bench Press", warmup=[], sets=[s(3, 8, rpe=8, ask=True)])
+ex("Squat", warmup=[], sets=[s(3, 5, kg(100), ask=True)])

@@ -1,0 +1,6 @@
+# Reference syntax: power: Squat / 3x3 120kg / progress: lp(5kg)
+#              volume: Squat / 3x10 80kg / progress: dp(2.5kg, 10, 15)
+program("Exercise labels", weeks=2)
+day(1, 1, "Lower", weeks="1-2")
+ex("Squat", label="power", warmup=[], sets=[s(3, 3, kg(120))], progress=lp(kg(5)))
+ex("Squat", label="volume", warmup=[], sets=[s(3, 10, kg(80))], progress=dp(kg(2.5), 10, 15))

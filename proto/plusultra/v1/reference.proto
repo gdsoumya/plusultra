@@ -1,0 +1,89 @@
+syntax = "proto3";
+
+package plusultra.v1;
+
+import "protomcp/v1/annotations.proto";
+
+option go_package = "github.com/gdsoumya/plusultra/gen/go/plusultra/v1;plusultrav1";
+
+// ReferenceService serves the documents an LLM needs to write programs and read logs. No sign-in needed.
+service ReferenceService {
+  option (protomcp.v1.service) = {tool_prefix: "reference_"};
+
+  // GetProgramLanguageReference returns the workout program language reference: every function, its arguments, and common mistakes. Read it before writing a workout script.
+  rpc GetProgramLanguageReference(GetProgramLanguageReferenceRequest) returns (GetProgramLanguageReferenceResponse) {
+    option (protomcp.v1.tool) = {
+      name: "get_program_language"
+      title: "Program Language Reference"
+      description: "Returns the workout program language reference in Markdown: every Starlark function, its arguments, progressions and common mistakes. Read it before writing or editing any workout script, together with reference_get_program_examples."
+      read_only: true
+      idempotent: true
+    };
+  }
+  // GetMealLanguageReference returns the meal program language reference. Read it before writing a meal script.
+  rpc GetMealLanguageReference(GetMealLanguageReferenceRequest) returns (GetMealLanguageReferenceResponse) {
+    option (protomcp.v1.tool) = {
+      name: "get_meal_language"
+      title: "Meal Language Reference"
+      description: "Returns the meal program language reference in Markdown. Read it before writing or editing any meal script, together with reference_get_program_examples."
+      read_only: true
+      idempotent: true
+    };
+  }
+  // GetProgramExamples returns complete example workout and meal programs.
+  rpc GetProgramExamples(GetProgramExamplesRequest) returns (GetProgramExamplesResponse) {
+    option (protomcp.v1.tool) = {
+      name: "get_program_examples"
+      title: "Program Examples"
+      description: "Returns complete example workout and meal programs in Markdown, including a long multi-phase strength plan. Read it before writing a script and adapt the closest example instead of starting from scratch."
+      read_only: true
+      idempotent: true
+    };
+  }
+  // GetLogFormatReference describes the text format of exported and imported day logs.
+  rpc GetLogFormatReference(GetLogFormatReferenceRequest) returns (GetLogFormatReferenceResponse) {
+    option (protomcp.v1.tool) = {
+      name: "get_log_format"
+      title: "Log Format Reference"
+      description: "Describes the text format of exported and imported day logs, in Markdown. Read it before export_import with day-log text, or when reading export_days text output."
+      read_only: true
+      idempotent: true
+    };
+  }
+}
+
+// GetProgramLanguageReferenceRequest is the input of GetProgramLanguageReference.
+message GetProgramLanguageReferenceRequest {}
+
+// GetProgramLanguageReferenceResponse is the output of GetProgramLanguageReference.
+message GetProgramLanguageReferenceResponse {
+  // The reference, in Markdown.
+  string markdown = 1;
+}
+
+// GetMealLanguageReferenceRequest is the input of GetMealLanguageReference.
+message GetMealLanguageReferenceRequest {}
+
+// GetMealLanguageReferenceResponse is the output of GetMealLanguageReference.
+message GetMealLanguageReferenceResponse {
+  // The reference, in Markdown.
+  string markdown = 1;
+}
+
+// GetProgramExamplesRequest is the input of GetProgramExamples.
+message GetProgramExamplesRequest {}
+
+// GetProgramExamplesResponse is the output of GetProgramExamples.
+message GetProgramExamplesResponse {
+  // The examples, in Markdown.
+  string markdown = 1;
+}
+
+// GetLogFormatReferenceRequest is the input of GetLogFormatReference.
+message GetLogFormatReferenceRequest {}
+
+// GetLogFormatReferenceResponse is the output of GetLogFormatReference.
+message GetLogFormatReferenceResponse {
+  // The reference, in Markdown.
+  string markdown = 1;
+}

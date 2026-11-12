@@ -1,0 +1,5 @@
+program("P", weeks=1)
+day(1, 1, "Lower")
+ex("Squat", warmup=[], sets=[s(3, 5, kg(100))])
+ex("Deadlift", sets=[s(1, 5, kg(140))])
+ex("Bench Press", warmup=[w(1, 8, pct(50)), w(1, 5, kg(60))], sets=[s(3, 5, kg(80))])

@@ -1,0 +1,406 @@
+{
+  "Program": {
+    "Name": "Set groups and labels",
+    "Notes": "",
+    "Weeks": 2,
+    "Units": "kg",
+    "Loop": true,
+    "WeekDesc": {}
+  },
+  "Weeks": [
+    {
+      "Week": 1,
+      "Day": 1,
+      "Name": "Lower",
+      "Desc": "",
+      "Kind": "training",
+      "Exercises": [
+        {
+          "Name": "Squat",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Squat"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "",
+          "Sets": [
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 100,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 180,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": "Work"
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 100,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 180,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": "Work"
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 100,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 180,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": "Work"
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 100,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 180,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": "Work"
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 85,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 120,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": "Backoff"
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 85,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 120,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": "Backoff"
+            }
+          ]
+        },
+        {
+          "Name": "Bench Press",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Bench Press"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "",
+          "Sets": [
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 3,
+              "MinReps": 3,
+              "Weight": {
+                "Value": 85,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 1,
+              "MinReps": 1,
+              "Weight": {
+                "Value": 90,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Week": 2,
+      "Day": 1,
+      "Name": "Lower",
+      "Desc": "",
+      "Kind": "training",
+      "Exercises": [
+        {
+          "Name": "Squat",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Squat"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "",
+          "Sets": [
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 100,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 180,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": "Work"
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 100,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 180,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": "Work"
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 100,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 180,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": "Work"
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 100,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 180,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": "Work"
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 85,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 120,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": "Backoff"
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 85,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 120,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": "Backoff"
+            }
+          ]
+        },
+        {
+          "Name": "Bench Press",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Bench Press"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "",
+          "Sets": [
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 3,
+              "MinReps": 3,
+              "Weight": {
+                "Value": 85,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 1,
+              "MinReps": 1,
+              "Weight": {
+                "Value": 90,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,133 @@
+syntax = "proto3";
+
+package plusultra.v1;
+
+import "buf/validate/validate.proto";
+import "plusultra/v1/common.proto";
+import "plusultra/v1/program.proto";
+import "protomcp/v1/annotations.proto";
+
+option go_package = "github.com/gdsoumya/plusultra/gen/go/plusultra/v1;plusultrav1";
+
+// ExportService exports and imports programs and day logs as plain text.
+service ExportService {
+  option (protomcp.v1.service) = {tool_prefix: "export_"};
+
+  // ExportProgram returns a program's script byte for byte, followed by generated state({...}) and catalog_snapshot({...}) blocks so it imports with its progression state.
+  rpc ExportProgram(ExportProgramRequest) returns (ExportProgramResponse) {
+    option (protomcp.v1.tool) = {
+      name: "program"
+      title: "Export Program"
+      description: "Returns a program's script byte for byte by id, with generated state and catalog snapshot blocks appended so export_import restores its progression state. Use it to back up or share a program; use program_get just to read the script."
+      read_only: true
+      idempotent: true
+    };
+  }
+  // ExportDays returns day logs (workouts, meals, check-ins) in a date range as text, JSON or CSV.
+  rpc ExportDays(ExportDaysRequest) returns (ExportDaysResponse) {
+    option (protomcp.v1.tool) = {
+      name: "days"
+      title: "Export Days"
+      description: "Returns day logs (workouts, meals, check-ins) in a local date range as text, JSON or CSV. Text uses the format from reference_get_log_format. Use it to review a block of training history in one call."
+      read_only: true
+      idempotent: true
+    };
+  }
+  // ExportAll returns a zip of every program, day log, check-in, custom exercise and custom food.
+  rpc ExportAll(ExportAllRequest) returns (ExportAllResponse);
+  // Import loads a program script (saved as a draft, state restored) or day-log text in the export format. Day logs are written one date at a time; an error after the first date names the dates already written. A date's existing workout record is rewritten, a finalized one is kept with a warning, and a done workout of an active program is finalized as if just finished: its progression runs and a floating program's cursor moves to the day after it.
+  rpc Import(ImportRequest) returns (ImportResponse) {
+    option (protomcp.v1.tool) = {
+      name: "import"
+      title: "Import Data"
+      description: "Loads a program script, saved as a new draft with its exported state restored, or day-log text in the reference_get_log_format format; set kind to match. Returns the draft program or the imported dates, plus warnings for anything skipped."
+    };
+  }
+}
+
+// ExportFormat is the format of exported day logs.
+enum ExportFormat {
+  // Defaults to text.
+  EXPORT_FORMAT_UNSPECIFIED = 0;
+  // Human-readable text, one block per date; see the log format reference.
+  EXPORT_FORMAT_TEXT = 1;
+  // JSON.
+  EXPORT_FORMAT_JSON = 2;
+  // CSV.
+  EXPORT_FORMAT_CSV = 3;
+}
+
+// ImportKind is what an import holds.
+enum ImportKind {
+  // Not given.
+  IMPORT_KIND_UNSPECIFIED = 0;
+  // A workout or meal program script.
+  IMPORT_KIND_PROGRAM = 1;
+  // Day logs in the text export format.
+  IMPORT_KIND_DAY_LOG = 2;
+}
+
+// ExportProgramRequest is the input of ExportProgram.
+message ExportProgramRequest {
+  // Program id.
+  string id = 1 [(buf.validate.field).string.uuid = true];
+}
+
+// ExportProgramResponse is the output of ExportProgram.
+message ExportProgramResponse {
+  // Script with the generated blocks appended.
+  string script = 1;
+  // Suggested file name, for example "16-week-strength.star".
+  string filename = 2;
+}
+
+// ExportDaysRequest is the input of ExportDays.
+message ExportDaysRequest {
+  // Dates to export.
+  DateRange dates = 1 [(buf.validate.field).required = true];
+  // Output format.
+  ExportFormat format = 2 [(buf.validate.field).enum.defined_only = true];
+}
+
+// ExportDaysResponse is the output of ExportDays.
+message ExportDaysResponse {
+  // Exported data.
+  string content = 1;
+  // Media type of content, for example "text/plain".
+  string content_type = 2;
+}
+
+// ExportAllRequest is the input of ExportAll.
+message ExportAllRequest {}
+
+// ExportAllResponse is the output of ExportAll.
+message ExportAllResponse {
+  // Zip archive bytes.
+  bytes zip = 1;
+  // Suggested file name, for example "plusultra-2026-11-11.zip".
+  string filename = 2;
+}
+
+// ImportRequest is the input of Import.
+message ImportRequest {
+  // What content holds.
+  ImportKind kind = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: [0]
+  }];
+  // Program script or day-log text, at most 8 MiB; a program script is still capped at 256 KiB.
+  string content = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_bytes: 8388608
+  }];
+}
+
+// ImportResponse is the output of Import.
+message ImportResponse {
+  // The imported draft program; unset for day logs.
+  Program program = 1;
+  // Dates imported, YYYY-MM-DD; empty for a program.
+  repeated string dates = 2;
+  // Things skipped, such as state for exercises the script no longer has.
+  repeated string warnings = 3;
+}

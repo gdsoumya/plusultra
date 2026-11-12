@@ -1,0 +1,73 @@
+# plusultra meal language
+
+A meal program is a Starlark script, evaluated on the server like a workout program; the [program language reference]({{.URL}}/llms/program-language.md) has the sandbox rules. It declares days of meals made of foods with frozen macros, and a target per day. A complete meal program is in the [examples]({{.URL}}/llms/program-examples.md).
+
+Code blocks that start with `# meal` are whole meal programs. Blocks that start with `# meal fragment` are parts of one; they assume `meal_program(...)` and `day(...)` were called before them.
+
+## A complete meal program
+
+```python
+# meal
+meal_program("Simple cut", weeks=1)
+
+chicken = food("Chicken breast, raw", per100g={"kcal": 120, "protein": 22.5, "fat": 2.6})
+rice = food("Basmati rice, raw", per100g={"kcal": 356, "protein": 8.1, "carbs": 77.7, "fat": 0.6})
+egg = food("Egg, whole", per100g={"kcal": 143, "protein": 12.6, "fat": 9.5},
+           per_unit={"kcal": 72, "protein": 6.3, "fat": 4.8}, unit="egg")
+
+day(1, kind="training", name="Training day", target=target(kcal=2400, protein=180))
+meal("Breakfast", egg(3), time="08:00")
+meal("Lunch", chicken(200), rice(100))
+meal("Dinner", chicken(200), rice(80))
+
+day(1, kind="rest", name="Rest day", target=target(kcal=2000, protein=170))
+meal("Breakfast", egg(3), time="08:00")
+meal("Dinner", chicken(250), rice(60))
+```
+
+## Layout
+
+A script calls `meal_program()` once, declares foods, then declares days. `day()` opens a day, and every `meal()` after it attaches to that day until the next `day()`. Calling `meal()` before any `day()` is an error. Functions and loops work as in workout scripts. The workout functions (`ex`, `kg`, `lp` and the rest) do not exist here.
+
+Meal programs have no progressions or hooks. To adapt targets, for example to a weight trend, an assistant saves a new revision of the script.
+{{range group "Meal programs"}}{{template "builtin" .}}{{end}}
+## Which meal day a date gets
+
+- A meal program has numbered days, `day(w, n, ...)`, and kind days, `day(w, kind=...)`.
+- Each date has a position in the workout calendar: a week, a day number, and a kind. The day number is the weekday in an anchored program and the cursor's day in a floating one. The kind is the workout day's kind, or rest when no workout program is active or nothing is planned.
+- A numbered day for that day number, active in that week, wins.
+- Otherwise the kind day of that kind active in that week is used. A week without one uses the nearest earlier week's kind day of that kind.
+- When nothing matches, the date has no meal plan, so declare a kind day for every kind the workout program uses: training, conditioning, rest or note.
+- Among days active in the same week, the one declared for the later week wins, then the later in the script.
+- A meal program is activated like a workout program, anchored or floating. One meal program and one workout program can be active together.
+
+## Macros, targets and totals
+
+- An item's macros are qty / 100 x per100g for grams, or qty x per_unit in the food's unit.
+- A day's totals are the sum of its items. A day without `target=` has its totals as its target.
+- Macro keys are kcal, protein, carbs, fat and fiber in grams, and water_ml. Values are non-negative and at most 100000.
+
+## Foods, refs and snapshots
+
+- A food's macros are frozen into the program when it is saved; later catalog changes do not change a saved program.
+- `ref` names one catalog food as `<source>:<source_id>`, exactly as `food_search` returns it. Sources are `usda_sr` and `usda_foundation` (USDA FoodData Central), `ifct` and `indb` (Indian food tables), `off` (Open Food Facts), `reference` (curated staples the other tables lack) and `custom` (the user's own foods): `ref="usda_sr:169705"` is USDA SR Legacy oats, and a custom food is `ref="custom:<uuid>"`. Any other prefix, such as `usda:`, resolves nothing.
+- A food with `ref` and no macros takes them from the catalog when the program is saved; a food with `ref` and its own macros keeps its own.
+- A food with only a name, `food("Oats")`, is matched against the catalog by name or alias when the program is saved: the user's custom foods first, then food concepts (one preferred catalog food per real-world food), then catalog names. Its macros are frozen like a ref food's. An unknown name fails validation with the closest names as suggestions; add a custom food or remove the item.
+- Explicit macros always win: the catalog never replaces `per100g` or `per_unit` given in the script.
+- The server never rewrites the script. Export appends a `catalog_snapshot({...})` block with the macros of every food taken from the catalog, keyed by its ref or name, so the exported file evaluates without the catalog.
+
+```python
+# meal fragment
+banana = food("Banana")                                       # matched by name when saved
+oats = food("Rolled oats", ref="usda_sr:169705")             # matched by ref when saved
+milk = food("Milk", per100g={"kcal": 61, "protein": 3.2, "fat": 3.3, "carbs": 4.8})  # its own macros, kept as written
+meal("Breakfast", oats(60), milk(250), banana(120))
+```
+
+## Common mistakes
+
+- **`per_unit` without `unit`.** They go together, and `unit` is not "g"; use `per100g` for grams.
+- **Weighing a counted food without `per100g`.** A food with only `per_unit` takes quantities in its unit: `egg(3)`, not `item(egg, 150, unit="g")`.
+- **Expecting kinds to fall back to each other.** A conditioning workout day uses the conditioning kind day, not the training one.
+- **Passing positional arguments to `target()`.** It takes keywords only: `target(kcal=2400)`.
+- **Using workout functions.** `kg()`, `ex()` and the like are not defined in meal programs.

@@ -1,0 +1,25 @@
+# Development only, picked up automatically next to docker-compose.yaml: build the image from
+# source, keep state in named volumes (down -v cleans them) and publish Postgres for make db-up
+# and the tests. A deployment never sees this file.
+services:
+  server:
+    build:
+      context: .
+      args:
+        VERSION: ${VERSION:-dev}
+    environment:
+      DATABASE_URL: postgres://plusultra:${POSTGRES_PASSWORD:-plusultra}@postgres:5432/plusultra?sslmode=disable
+    volumes:
+      - data:/data/exercises
+
+  postgres:
+    ports:
+      - "127.0.0.1:${PG_PORT:-5433}:5432"
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-plusultra}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  data:
+  pgdata:

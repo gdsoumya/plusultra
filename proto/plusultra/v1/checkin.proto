@@ -1,0 +1,168 @@
+syntax = "proto3";
+
+package plusultra.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+import "plusultra/v1/common.proto";
+import "plusultra/v1/rules.proto";
+import "protomcp/v1/annotations.proto";
+
+option go_package = "github.com/gdsoumya/plusultra/gen/go/plusultra/v1;plusultrav1";
+
+// CheckinService records body check-ins: weight, body fat, measurements and a progress photo, one per date. Photo bytes travel only through CreateCheckin, UpdateCheckin and ListCheckins with include_photos; everything else carries photo_id.
+service CheckinService {
+  option (protomcp.v1.service) = {tool_prefix: "checkin_"};
+
+  // ListCheckins lists check-ins in a date range, oldest first.
+  rpc ListCheckins(ListCheckinsRequest) returns (ListCheckinsResponse) {
+    option (protomcp.v1.tool) = {
+      name: "list"
+      title: "List Check-ins"
+      description: "Lists body check-ins (weight, body fat, measurements) in a local date range (YYYY-MM-DD), oldest first. Leave includePhotos false unless the user asks to see photos; they are large. Pages: pass nextCursor back as cursor while hasMore is true."
+      read_only: true
+      idempotent: true
+    };
+  }
+  // CreateCheckin records the check-in for a date. When the date already has one, its values are replaced and it keeps its id, and its photo unless a new one is sent.
+  rpc CreateCheckin(CreateCheckinRequest) returns (CreateCheckinResponse) {
+    option (protomcp.v1.tool) = {
+      name: "create"
+      title: "Record Check-in"
+      description: "Records the body check-in for a local date; choose a UUID for id. A weight without a unit uses the user's preferred unit; measurements use their measurement unit (cm or in). When the date already has a check-in, its values are replaced and it keeps its id and photo. Returns the check-in."
+    };
+  }
+  // UpdateCheckin replaces a check-in's values.
+  rpc UpdateCheckin(UpdateCheckinRequest) returns (UpdateCheckinResponse) {
+    option (protomcp.v1.tool) = {
+      name: "update"
+      title: "Update Check-in"
+      description: "Replaces a check-in's weight, body fat and measurements by id; send every value to keep. An empty photo keeps the stored one; set clearPhoto to delete it. Returns the updated check-in."
+    };
+  }
+  // DeleteCheckin deletes a check-in.
+  rpc DeleteCheckin(DeleteCheckinRequest) returns (DeleteCheckinResponse) {
+    option (protomcp.v1.tool) = {
+      name: "delete"
+      title: "Delete Check-in"
+      description: "Deletes a check-in by id, photo included. Cannot be undone; confirm with the user first."
+      idempotent: true
+      destructive: true
+    };
+  }
+}
+
+// Checkin is a body check-in on one date.
+message Checkin {
+  // Check-in id, a UUID chosen by the client when it creates the check-in.
+  string id = 1 [(buf.validate.field).string.uuid = true];
+  // Local date, YYYY-MM-DD.
+  string date = 2 [(buf.validate.field).string.(plusultra.v1.date) = true];
+  // Body weight; unset when not measured.
+  Weight weight = 3;
+  // Body fat in percent; unset when not measured.
+  optional double body_fat = 4 [(buf.validate.field).double = {
+    gte: 0
+    lte: 100
+  }];
+  // Circumferences by site, for example {"waist": 82}, in the user's measurement_unit (cm or in).
+  map<string, double> measurements = 5 [(buf.validate.field).map = {
+    max_pairs: 50
+    keys: {
+      string: {
+        min_len: 1
+        max_len: 64
+      }
+    }
+    values: {
+      double: {
+        gt: 0
+        finite: true
+      }
+    }
+  }];
+  // Progress photo bytes, PNG or JPEG, at most 2 MB. On update, empty keeps the stored photo. Never carried by sync or GetDay; returned only by ListCheckins with include_photos.
+  bytes photo = 6 [(buf.validate.field).bytes.max_len = 2097152];
+  // Photo media type: "image/png" or "image/jpeg"; empty without a photo.
+  string photo_content_type = 7 [(buf.validate.field).cel = {
+    id: "checkin.photo_content_type"
+    message: "must be image/png or image/jpeg"
+    expression: "this == '' || this in ['image/png', 'image/jpeg']"
+  }];
+  // Server version, incremented on every change. In a sync push, the version the device last saw, 0 for a new row.
+  int32 version = 8;
+  // Device that last changed the check-in.
+  string device_id = 9 [(buf.validate.field).string.max_len = 128];
+  // When the check-in last changed.
+  google.protobuf.Timestamp updated_at = 10;
+  // When the check-in was deleted; set only on tombstones returned by sync.
+  google.protobuf.Timestamp deleted_at = 11;
+  // Id of the stored photo; empty when there is none. Set by the server.
+  string photo_id = 12;
+}
+
+// ListCheckinsRequest is the input of ListCheckins.
+message ListCheckinsRequest {
+  // Dates to list.
+  DateRange dates = 1 [(buf.validate.field).required = true];
+  // Maximum check-ins to return, at most 500; 0 means 100.
+  int32 limit = 2 [(buf.validate.field).int32 = {
+    gte: 0
+    lte: 500
+  }];
+  // True to include photo bytes; they are left out by default.
+  bool include_photos = 3;
+  // next_cursor from the previous page; empty for the first page.
+  string cursor = 4 [(buf.validate.field).string.max_len = 512];
+}
+
+// ListCheckinsResponse is the output of ListCheckins.
+message ListCheckinsResponse {
+  // Check-ins, oldest first.
+  repeated Checkin checkins = 1;
+  // Cursor for the next page; empty when has_more is false.
+  string next_cursor = 2;
+  // True when more results follow; call again with cursor set to next_cursor.
+  bool has_more = 3;
+}
+
+// CreateCheckinRequest is the input of CreateCheckin.
+message CreateCheckinRequest {
+  // Check-in to record.
+  Checkin checkin = 1 [(buf.validate.field).required = true];
+}
+
+// CreateCheckinResponse is the output of CreateCheckin.
+message CreateCheckinResponse {
+  // The recorded check-in.
+  Checkin checkin = 1;
+}
+
+// UpdateCheckinRequest is the input of UpdateCheckin.
+message UpdateCheckinRequest {
+  option (buf.validate.message).cel = {
+    id: "update_checkin.photo"
+    message: "send a photo or clear_photo, not both"
+    expression: "!(this.clear_photo && size(this.checkin.photo) > 0)"
+  };
+
+  // Check-in with its new values, found by id. An empty photo keeps the stored one.
+  Checkin checkin = 1 [(buf.validate.field).required = true];
+  // True to delete the stored photo.
+  bool clear_photo = 2;
+}
+
+// UpdateCheckinResponse is the output of UpdateCheckin.
+message UpdateCheckinResponse {
+  // The updated check-in.
+  Checkin checkin = 1;
+}
+
+// DeleteCheckinRequest is the input of DeleteCheckin.
+message DeleteCheckinRequest {
+  // Check-in id.
+  string id = 1 [(buf.validate.field).string.uuid = true];
+}
+
+// DeleteCheckinResponse is the output of DeleteCheckin.
+message DeleteCheckinResponse {}

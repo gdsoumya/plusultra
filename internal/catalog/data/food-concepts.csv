@@ -1,0 +1,304 @@
+concept_id,name,aliases,category,preferred_source,preferred_source_id,member_keys
+rice-white-raw,"Rice, white, raw",rice; chawal; basmati; basmati rice; white rice; uncooked rice,grains,ifct,A015,ifct:A015;usda_sr:169756;usda_sr:168877;usda_sr:169760;usda_sr:168879;usda_sr:168931
+rice-white-cooked,"Rice, white, cooked",cooked rice; boiled rice; steamed rice; plain rice,grains,indb,ASC113,indb:ASC113;usda_sr:169757;usda_sr:168878;usda_sr:168930
+rice-brown-raw,"Rice, brown, raw",brown rice; uncooked brown rice,grains,ifct,A013,ifct:A013;usda_sr:169703;usda_sr:169706
+rice-brown-cooked,"Rice, brown, cooked",cooked brown rice,grains,usda_sr,169704,usda_sr:169704;usda_sr:168875
+rice-parboiled-raw,"Rice, parboiled, raw",parboiled rice; idli rice; dosa rice; sella rice,grains,ifct,A014,ifct:A014;usda_sr:169758;usda_sr:169707
+rice-parboiled-cooked,"Rice, parboiled, cooked",cooked parboiled rice,grains,usda_sr,169759,usda_sr:169759;usda_sr:169708
+rice-glutinous-raw,"Rice, glutinous, raw",sticky rice; sweet rice; glutinous rice,grains,usda_sr,168883,usda_sr:168883
+rice-flakes,Rice flakes (poha),poha; chiwda; chivda; aval; flattened rice; beaten rice,grains,ifct,A011,ifct:A011
+rice-puffed,"Rice, puffed",murmura; mamra; puffed rice; kurmura,grains,ifct,A012,ifct:A012;usda_sr:173161
+wheat-flour-atta,"Wheat flour, atta",atta; whole wheat flour; chapati flour; wholemeal flour; gehu ka atta,grains,ifct,A019,ifct:A019;usda_sr:168893;usda_sr:168944
+wheat-flour-refined,"Wheat flour, refined",maida; all purpose flour; plain flour; refined flour; white flour,grains,ifct,A018,ifct:A018;usda_sr:168936;usda_sr:168894;usda_sr:169761
+wheat-whole,"Wheat, whole grain",gehu; wheat; wheat berries; whole wheat,grains,ifct,A020,ifct:A020;usda_sr:168890;usda_sr:168889
+wheat-semolina,"Wheat, semolina",suji; sooji; rava; rawa; semolina,grains,ifct,A022,ifct:A022;usda_sr:169715;usda_sr:168933
+wheat-bulgur,"Wheat, cracked (dalia)",dalia; daliya; broken wheat; cracked wheat; bulgur,grains,ifct,A021,ifct:A021;usda_sr:170688
+wheat-vermicelli,Vermicelli,seviyan; sevai; semiya; wheat vermicelli,grains,ifct,A023,ifct:A023;ifct:A024
+oats-rolled,"Oats, rolled",oats; oatmeal; porridge oats; rolled oats; quick oats,grains,reference,oats,reference:oats;usda_sr:173904;usda_sr:169705;usda_sr:172989
+oats-cooked,"Oats, cooked",oatmeal cooked; cooked oats; porridge,grains,usda_sr,173905,usda_sr:173905
+bajra,Pearl millet (bajra),bajra; pearl millet; kambu; sajje,grains,ifct,A003,ifct:A003
+jowar,Sorghum (jowar),jowar; sorghum; cholam; jonna,grains,ifct,A005,ifct:A005;usda_sr:169716
+ragi,Finger millet (ragi),ragi; nachni; finger millet; mandua,grains,ifct,A010,ifct:A010
+maize-dry,"Maize, dry",makka; corn; maize; dried corn,grains,ifct,A006,ifct:A006
+barley,Barley,jau; barley; pearl barley,grains,ifct,A004,ifct:A004;usda_sr:170284;usda_sr:170283
+quinoa-raw,"Quinoa, raw",quinoa; uncooked quinoa,grains,ifct,A009,ifct:A009;usda_sr:168874
+quinoa-cooked,"Quinoa, cooked",cooked quinoa,grains,usda_sr,168917,usda_sr:168917
+millet-little,Little millet (samai),samai; little millet; kutki,grains,ifct,A016,ifct:A016
+millet-foxtail,"Millet, raw",millet; foxtail millet; kangni; thinai,grains,usda_sr,169702,usda_sr:169702
+amaranth-seed,Amaranth seed,ramdana; rajgira; amaranth; chaulai seeds,grains,ifct,A002,ifct:A002;ifct:A001;usda_sr:170682
+besan,Chickpea flour (besan),besan; gram flour; chickpea flour; chana flour,grains,reference,besan,reference:besan;usda_sr:174288
+pasta-dry,"Pasta, dry",pasta; spaghetti; macaroni; penne; uncooked pasta,grains,usda_sr,169736,usda_sr:169736;usda_sr:168927
+pasta-cooked,"Pasta, cooked",cooked pasta; boiled pasta; cooked spaghetti; cooked macaroni,grains,usda_sr,169737,usda_sr:169737;usda_sr:168928
+noodles-egg,"Noodles, egg, dry",egg noodles; noodles; chow mein noodles,grains,usda_sr,169731,usda_sr:169731
+bread-white,"Bread, white",white bread; bread; bread slice; sandwich bread; pav,bakery,usda_sr,174924,usda_sr:174924;usda_sr:167532
+bread-brown,"Bread, whole wheat",brown bread; whole wheat bread; wholemeal bread; atta bread,bakery,usda_sr,172688,usda_sr:172688;usda_sr:172686
+cornflakes,Corn flakes,cornflakes; corn flakes cereal; breakfast cereal,grains,usda_sr,174648,usda_sr:174648
+roti,Roti (chapati),roti; chapati; phulka; fulka; chapatti,prepared,indb,ASC096,indb:ASC096
+naan,Naan,naan; tandoori naan; butter naan,prepared,indb,ASC142,indb:ASC142
+idli,Idli,idli; idly; steamed rice cake,prepared,indb,ASC144,indb:ASC144
+dosa,"Dosa, plain",dosa; plain dosa; sada dosa; dosai,prepared,indb,BFP148,indb:BFP148
+dosa-masala,Masala dosa,masala dosa; masala dose,prepared,indb,ASC146,indb:ASC146;indb:BFP150
+upma,Upma,upma; rava upma; uppittu; rice upma,prepared,indb,BFP041,indb:BFP041
+poha-prepared,"Poha, prepared",poha; cooked poha; kanda poha; aval upma,prepared,indb,BFP044,indb:BFP044
+khichdi,Khichdi,khichdi; khichri; dal khichdi; rice dal porridge,prepared,indb,BFP554,indb:BFP554
+sambar,Sambar,sambar; sambhar; lentil vegetable stew,prepared,indb,ASC167,indb:ASC167
+dal-makhani,Dal makhani,dal makhani; black dal; maa ki dal,prepared,indb,OSR139,indb:OSR139
+dal-moong-cooked,"Dal moong, cooked",moong dal cooked; cooked moong dal; yellow dal,prepared,indb,BFP166,indb:BFP166
+dhokla,Dhokla,dhokla; khaman; khaman dhokla,prepared,indb,ASC474,indb:ASC474
+curd-rice,Curd rice,curd rice; dahi chawal; thayir sadam; perugu annam,prepared,indb,ASC126,indb:ASC126
+chicken-curry,Chicken curry,chicken curry; murgh curry; chicken masala,prepared,indb,ASC240,indb:ASC240
+egg-curry,Egg curry,egg curry; anda curry; egg masala,prepared,indb,BFP240,indb:BFP240
+paneer-curry,Paneer curry,paneer curry; paneer masala; paneer sabzi,prepared,indb,ASC195,indb:ASC195
+egg-boiled,"Egg, boiled",boiled egg; hard boiled egg; ubla anda; hard-boiled egg,eggs,ifct,M004,ifct:M004;indb:ASC056;usda_sr:173424
+toor-dal,Red gram dal (toor),toor dal; arhar dal; tuvar dal; pigeon pea; tur dal; split pigeon pea,pulses,ifct,B021,ifct:B021;usda_sr:172436
+toor-whole,"Red gram, whole",toor whole; arhar whole; whole pigeon pea,pulses,ifct,B022,ifct:B022
+moong-dal,Green gram dal (moong dal),moong dal; mung dal; split green gram; yellow moong dal,pulses,ifct,B010,ifct:B010
+moong-whole,"Green gram, whole (moong)",moong; mung; green gram; whole moong; sabut moong; green mung,pulses,ifct,B011,ifct:B011;usda_sr:174256
+masoor-dal,Lentil dal (masoor),masoor dal; red lentil; split red lentil; malka masoor,pulses,ifct,B013,ifct:B013
+masoor-whole,"Lentil, whole (masoor)",masoor; whole lentil; brown lentil; lentils; green lentil,pulses,ifct,B014,ifct:B014;ifct:B015;usda_sr:172420
+lentils-cooked,"Lentils, cooked",cooked lentils; boiled lentils,pulses,usda_sr,172421,usda_sr:172421
+urad-dal,Black gram dal (urad dal),urad dal; split black gram; white urad; black lentil split,pulses,ifct,B003,ifct:B003
+urad-whole,"Black gram, whole (urad)",urad; sabut urad; black gram; black lentil; kali dal,pulses,ifct,B004,ifct:B004
+chana-dal,Bengal gram dal (chana dal),chana dal; split chickpea; split bengal gram; chana daal,pulses,ifct,B001,ifct:B001
+chana-whole,"Bengal gram, whole (kala chana)",kala chana; black chickpea; desi chana; brown chickpea; bengal gram,pulses,ifct,B002,ifct:B002
+chickpeas-raw,"Chickpeas, raw",chickpeas; kabuli chana; chole; garbanzo; white chickpea; chhole,pulses,reference,kabuli-chana,reference:kabuli-chana;usda_sr:173756
+chickpeas-cooked,"Chickpeas, cooked",cooked chickpeas; boiled chickpeas; boiled chana; boiled chole,pulses,usda_sr,173757,usda_sr:173757
+kidney-beans-raw,"Kidney beans, raw",rajma; rajmah; kidney beans; red kidney beans; red beans,pulses,ifct,B019,ifct:B019;ifct:B020;ifct:B018;usda_sr:175193;usda_sr:173744
+kidney-beans-cooked,"Kidney beans, cooked",cooked rajma; boiled rajma; cooked kidney beans,pulses,usda_sr,173740,usda_sr:173740;usda_sr:175194
+cowpea,Cowpea (lobia),lobia; black eyed peas; chawli; cowpeas; black-eyed beans,pulses,ifct,B005,ifct:B005;ifct:B006;usda_sr:173758
+peas-dry,"Peas, dry",dried peas; matar dry; white peas; safed matar; split peas,pulses,ifct,B017,ifct:B017
+horse-gram,Horse gram,kulthi; kulthi dal; horse gram; kollu; ulavalu,pulses,ifct,B012,ifct:B012
+moth-bean,Moth bean,matki; moth; moth beans; mataki,pulses,ifct,B016,ifct:B016
+soybean,Soya bean,soyabean; soybean; soya; soy beans,pulses,ifct,B024,ifct:B024;ifct:B025;usda_sr:174270
+soya-chunks,Soya chunks,soya chunks; nutrela; meal maker; soya badi; textured soy protein,pulses,reference,soya-chunks,reference:soya-chunks
+black-beans,"Black beans, raw",black beans; turtle beans; frijoles negros,pulses,usda_sr,173734,usda_sr:173734
+tofu,Tofu,tofu; soya paneer; bean curd,pulses,reference,tofu,reference:tofu;usda_sr:172476
+peanut-butter,Peanut butter,peanut butter; pb; groundnut butter; crunchy peanut butter,nuts,usda_sr,174266,usda_sr:174266
+milk-whole,"Milk, whole",milk; whole milk; full cream milk; full fat milk; doodh; cow milk,dairy,ifct,L002,ifct:L002;usda_sr:171265
+milk-buffalo,"Milk, buffalo",buffalo milk; bhains ka doodh; doodh,dairy,ifct,L001,ifct:L001;usda_sr:171280
+milk-skim,"Milk, skimmed",skim milk; skimmed milk; fat free milk; nonfat milk; toned milk; double toned milk,dairy,reference,milk-skimmed,reference:milk-skimmed;usda_sr:171269
+milk-lowfat,"Milk, low fat",low fat milk; 2% milk; reduced fat milk; semi skimmed milk; 1% milk,dairy,usda_sr,171267,usda_sr:171267;usda_sr:170872
+milk-powder,"Milk powder, whole",milk powder; whole milk powder; dry milk; full cream milk powder,dairy,usda_sr,173454,usda_sr:173454;usda_sr:170876
+milk-powder-skim,"Milk powder, nonfat",skim milk powder; nonfat dry milk; nonfat milk powder,dairy,usda_sr,170877,usda_sr:170877;usda_sr:171272
+curd,Curd (plain yogurt),curd; dahi; yogurt; yoghurt; plain yogurt; plain curd; set curd; thayir; perugu,dairy,reference,curd,reference:curd;usda_sr:171284
+yogurt-lowfat,"Yogurt, low fat",low fat yogurt; low fat curd; skim yogurt; toned curd,dairy,usda_sr,170886,usda_sr:170886;usda_sr:170887
+yogurt-greek,"Yogurt, Greek",greek yogurt; greek yoghurt; hung curd; strained yogurt,dairy,usda_sr,170894,usda_sr:170894;usda_sr:170903
+paneer,Paneer,paneer; cottage cheese; indian cottage cheese; panir,dairy,ifct,L003,ifct:L003
+cottage-cheese,"Cheese, cottage",cottage cheese western; curd cheese; cottage cheese creamed,dairy,usda_sr,172179,usda_sr:172179;usda_sr:172182
+cheese-cheddar,"Cheese, cheddar",cheddar; cheese; cheddar cheese; amul cheese; hard cheese,dairy,usda_sr,173414,usda_sr:173414
+cheese-mozzarella,"Cheese, mozzarella",mozzarella; pizza cheese; mozzarella cheese,dairy,usda_sr,170845,usda_sr:170845;usda_sr:170847
+cheese-processed,"Cheese, processed",processed cheese; cheese slice; cheese slices; amul cheese slice; cheese spread,dairy,reference,cheese-processed,reference:cheese-processed
+cheese-parmesan,"Cheese, parmesan",parmesan; parmigiano; grated cheese,dairy,usda_sr,170848,usda_sr:170848
+cheese-feta,"Cheese, feta",feta; feta cheese,dairy,usda_sr,173420,usda_sr:173420
+cheese-cream,"Cheese, cream",cream cheese; philadelphia,dairy,usda_sr,173418,usda_sr:173418
+khoa,Khoa,khoa; khoya; mawa; mava; milk solids,dairy,ifct,L004,ifct:L004
+butter,"Butter, salted",butter; makhan; salted butter; amul butter,dairy,reference,butter-salted,reference:butter-salted;usda_sr:173410
+butter-unsalted,"Butter, unsalted",unsalted butter; sweet butter; butter without salt,dairy,usda_sr,173430,usda_sr:173430
+ghee,Ghee,ghee; desi ghee; clarified butter; butter oil; ghrita,fats,ifct,T013,ifct:T013;usda_sr:173412
+cream-heavy,"Cream, heavy",heavy cream; whipping cream; fresh cream; malai; cream,dairy,usda_sr,170859,usda_sr:170859;usda_sr:170858
+whey-sweet,"Whey, dried",whey; whey powder; dried whey; whey protein,dairy,usda_sr,171283,usda_sr:171283;usda_sr:171281
+buttermilk,Buttermilk,buttermilk; chaas; chaach; mattha; lassi; majjige,dairy,usda_sr,170874,usda_sr:170874
+ice-cream,"Ice cream, vanilla",ice cream; vanilla ice cream; kulfi,dairy,usda_sr,167575,usda_sr:167575
+egg-whole,"Egg, whole, raw",egg; eggs; whole egg; ande; anda; hen egg; chicken egg,eggs,ifct,M001,ifct:M001;usda_sr:171287
+egg-white,Egg white,egg white; egg whites; albumen; anda safed,eggs,ifct,M002,ifct:M002;usda_sr:172183
+egg-yolk,Egg yolk,egg yolk; egg yolks; yolk; anda peela,eggs,ifct,M003,ifct:M003;usda_sr:172184
+egg-fried,"Egg, fried",fried egg; sunny side up; egg fry,eggs,usda_sr,173423,usda_sr:173423
+egg-omelet,"Egg, omelet",omelette; omelet; plain omelette; egg omelette,eggs,ifct,M007,ifct:M007;usda_sr:172185
+egg-scrambled,"Egg, scrambled",scrambled egg; scrambled eggs; egg bhurji; anda bhurji,eggs,usda_sr,172187,usda_sr:172187
+egg-duck,"Egg, duck",duck egg; duck eggs; batakh ka anda,eggs,ifct,M012,ifct:M012;usda_sr:172189
+egg-quail,"Egg, quail",quail egg; quail eggs; bater ande,eggs,ifct,M014,ifct:M014;usda_sr:172191
+chicken-breast-raw,"Chicken breast, raw",chicken breast; chicken breast raw; boneless chicken; murgh,meat,ifct,N003,ifct:N003;usda_sr:171474
+chicken-breast-cooked,"Chicken breast, cooked",cooked chicken breast; grilled chicken breast; roasted chicken breast; chicken breast cooked,meat,usda_sr,171477,usda_sr:171477;usda_sr:171478
+chicken-thigh-raw,"Chicken thigh, raw",chicken thigh; chicken thigh raw; chicken leg piece,meat,ifct,N002,ifct:N002;usda_sr:172385
+chicken-thigh-cooked,"Chicken thigh, cooked",cooked chicken thigh; roasted chicken thigh; grilled chicken thigh,meat,usda_sr,172388,usda_sr:172388;usda_sr:172389
+chicken-leg,"Chicken leg, skinless",chicken leg; chicken drumstick; drumstick chicken,meat,ifct,N001,ifct:N001;usda_sr:172373
+chicken-wing,Chicken wing,chicken wing; chicken wings; wings,meat,ifct,N004,ifct:N004;usda_sr:173632
+chicken-whole,"Chicken, whole, raw",whole chicken; chicken; chicken meat; broiler chicken; chicken with skin,meat,usda_sr,171052,usda_sr:171052;usda_sr:171447
+chicken-liver,Chicken liver,chicken liver; liver; kaleji,meat,ifct,N005,ifct:N005;usda_sr:171060
+chicken-gizzard,Chicken gizzard,gizzard; chicken gizzard; pota,meat,ifct,N006,ifct:N006;usda_sr:171456
+turkey-breast,Turkey breast,turkey; turkey breast; turkey meat,meat,ifct,N018,ifct:N018;usda_sr:171093
+mutton,Mutton (goat),mutton; goat meat; goat; bakra; lamb; gosht; mutton raw,meat,ifct,O001,ifct:O001;ifct:O002;ifct:O003;ifct:O014;ifct:O015;ifct:O016
+goat-liver,Goat liver,mutton liver; goat liver; kaleji mutton,meat,ifct,O008,ifct:O008;ifct:O021
+beef,Beef,beef; gomamsa; buffalo meat; carabeef; red meat,meat,ifct,O025,ifct:O025;ifct:O026;ifct:O027
+beef-ground,"Beef, ground",ground beef; minced beef; beef mince; beef keema; hamburger,meat,usda_sr,171796,usda_sr:171796;usda_sr:174030;usda_sr:171790
+pork,Pork,pork; pig meat; pork meat; suar ka gosht,meat,ifct,O048,ifct:O048;ifct:O049;ifct:O050;usda_sr:167818;usda_sr:167843
+pork-liver,Pork liver,pork liver,meat,ifct,O053,ifct:O053
+bacon,"Bacon, cooked",bacon; pork bacon; fried bacon,meat,usda_sr,167914,usda_sr:167914;usda_sr:168277
+duck-meat,Duck,duck; duck meat; batakh,meat,ifct,N011,ifct:N011;usda_sr:172408
+rabbit,Rabbit,rabbit; rabbit meat; khargosh,meat,ifct,O061,ifct:O061;ifct:O062;ifct:O063
+quail-meat,Quail,quail; quail meat; bater,meat,ifct,N015,ifct:N015;usda_sr:172418
+fish-rohu,Rohu,rohu; rohu fish; rui; roho labeo,fish,ifct,S006,ifct:S006
+fish-catla,Catla,catla; katla; catla fish; bhakur,fish,ifct,S002,ifct:S002
+fish-hilsa,Hilsa,hilsa; ilish; ilisha; palla,fish,ifct,P017,ifct:P017
+fish-pomfret,Pomfret,pomfret; paplet; pomphret; white pomfret; black pomfret; avoli,fish,ifct,P057,ifct:P057;ifct:P055;ifct:P056
+fish-seer,Seer fish (vanjaram),seer fish; surmai; vanjaram; king fish; kingfish; neymeen,fish,ifct,P087,ifct:P087
+fish-mackerel,Mackerel,mackerel; bangda; bangdo; ayala; kannadi,fish,ifct,P034,ifct:P034;usda_sr:175119
+fish-sardine,Sardine,sardine; mathi; tarli; oil sardine; chaala; pilchard,fish,ifct,P071,ifct:P071;usda_sr:175139
+fish-tuna,Tuna,tuna; tuna fish; choora; kera; yellowfin tuna; fresh tuna,fish,ifct,P084,ifct:P084;ifct:P085;usda_sr:173706;usda_sr:175159
+fish-tuna-canned,"Tuna, canned in water",canned tuna; tuna in water; tin tuna,fish,usda_sr,173709,usda_sr:173709;usda_sr:171986
+fish-salmon,Salmon,salmon; salmon fish; atlantic salmon; raw salmon,fish,ifct,P068,ifct:P068;usda_sr:173686;usda_sr:175167
+fish-tilapia,Tilapia,tilapia; tilapia fish,fish,ifct,P083,ifct:P083;usda_sr:175176
+fish-anchovy,Anchovy,anchovy; nethili; nethili fish; kozhuva,fish,ifct,P003,ifct:P003;usda_sr:174182
+fish-bombay-duck,Bombay duck,bombay duck; bombil; bummalo; lote,fish,ifct,P007,ifct:P007
+fish-mullet,Mullet,mullet; mullet fish; kanamb; madavai,fish,ifct,P039,ifct:P039;usda_sr:175123
+fish-pangas,Pangas,pangas; pangasius; basa; basa fish; panga fish,fish,ifct,S005,ifct:S005
+fish-silver-carp,Silver carp,silver carp; carp; common carp; carp fish,fish,ifct,P078,ifct:P078;usda_sr:171952
+fish-sole,Sole,sole; sole fish; lemon sole; bhetki,fish,ifct,P079,ifct:P079;usda_sr:174196
+fish-cod,Cod,cod; cod fish; atlantic cod,fish,usda_sr,171955,usda_sr:171955
+fish-trout,Trout,trout; rainbow trout; trout fish,fish,usda_sr,173717,usda_sr:173717
+fish-sea-bass,Sea bass,sea bass; seabass; bhetki fish; barramundi,fish,usda_sr,175142,usda_sr:175142
+fish-haddock,Haddock,haddock; haddock fish,fish,usda_sr,171964,usda_sr:171964
+prawns,Prawns,prawn; prawns; jhinga; shrimp; shrimps; jumbo prawns; chemmeen; konju,fish,ifct,S008,ifct:S008;ifct:S009;usda_sr:175179
+crab,Crab,crab; kekda; nandu; mud crab; sea crab,fish,ifct,Q001,ifct:Q001;ifct:Q002;ifct:S007;usda_sr:174204
+squid,Squid,squid; calamari; kanava; koonthal; sotong,fish,ifct,R004,ifct:R004;ifct:R005;ifct:R006;ifct:R007;usda_sr:174223
+oyster,Oyster,oyster; oysters; mussel; clam; kakkai,fish,ifct,Q006,ifct:Q006;usda_sr:171978
+lobster,Lobster,lobster; lobsters; sea lobster,fish,ifct,Q003,ifct:Q003;ifct:Q004;usda_sr:174208
+potato,Potato,potato; potatoes; aloo; alu; batata; aaloo; white potato,vegetables,ifct,F006,ifct:F006;ifct:F007;ifct:F008;usda_sr:170026
+sweet-potato,Sweet potato,sweet potato; shakarkandi; shakarkand; sweet potatoes; ratalu,vegetables,ifct,F013,ifct:F013;ifct:F014;usda_sr:168482
+tapioca,Tapioca (cassava),tapioca; cassava; kappa; maravalli kizhangu; yuca; mogo,vegetables,ifct,F015,ifct:F015;usda_sr:169985
+sabudana,Tapioca pearls (sabudana),sabudana; sago; tapioca pearls; javvarisi; sago pearls,grains,reference,sabudana,reference:sabudana;usda_sr:169717
+colocasia,Colocasia (arbi),arbi; colocasia; taro; kachalu; taro root; arvi,vegetables,ifct,F004,ifct:F004;usda_sr:169308
+yam,Yam,yam; suran; jimikand; elephant foot yam; senai kizhangu; ratalu yam,vegetables,ifct,F018,ifct:F018;ifct:F017;usda_sr:170071
+onion,Onion,onion; onions; pyaz; kanda; pyaaz; red onion; big onion,vegetables,ifct,G017,ifct:G017;ifct:G018;usda_sr:170000
+spring-onion,Spring onion,spring onion; green onion; scallion; hara pyaz; onion stalk,vegetables,ifct,D058,ifct:D058;usda_sr:170005
+tomato,Tomato,tomato; tomatoes; tamatar; ripe tomato; red tomato; tomato raw,vegetables,ifct,D075,ifct:D075;ifct:D076;usda_sr:170457
+spinach,Spinach,spinach; palak; palak leaves; fresh spinach; keerai,vegetables,ifct,C033,ifct:C033;usda_sr:168462
+okra,Okra (bhindi),okra; bhindi; ladies finger; lady finger; ladyfinger; vendakkai,vegetables,ifct,D056,ifct:D056;usda_sr:169260
+cauliflower,Cauliflower,cauliflower; phool gobi; gobi; phulkopi; gobhi,vegetables,ifct,D036,ifct:D036;usda_sr:169986
+cabbage,Cabbage,cabbage; patta gobi; band gobi; green cabbage; patta gobhi,vegetables,ifct,C015,ifct:C015;ifct:C016;usda_sr:169975
+carrot,Carrot,carrot; carrots; gajar; orange carrot; red carrot,vegetables,ifct,F002,ifct:F002;ifct:F003;usda_sr:170393
+peas-green,"Peas, fresh (green)",green peas; matar; fresh peas; garden peas; hara matar; peas,vegetables,ifct,D061,ifct:D061;usda_sr:170419
+french-beans,French beans,french beans; green beans; beans; fansi; string beans; snap beans,vegetables,ifct,D050,ifct:D050;ifct:D049;usda_sr:169961
+cluster-beans,Cluster beans,cluster beans; gavar; guar; gawar phali; kothavarangai,vegetables,ifct,D039,ifct:D039
+broad-beans,Broad beans,broad beans; sem; sem phali; avarakkai; fava beans; faba beans,vegetables,ifct,D032,ifct:D032;usda_sr:175205
+brinjal,Brinjal (eggplant),brinjal; baingan; eggplant; aubergine; brinjal; vankaya; kathirikai; bengan,vegetables,ifct,D031,ifct:D031;usda_sr:169228
+bottle-gourd,Bottle gourd,bottle gourd; lauki; doodhi; ghiya; sorakkai; calabash; lauki dudhi,vegetables,ifct,D007,ifct:D007;ifct:D008;ifct:D009;usda_sr:169232
+bitter-gourd,Bitter gourd,bitter gourd; karela; bitter melon; pavakkai; karela vegetable,vegetables,ifct,D004,ifct:D004;ifct:D005;ifct:D006;usda_sr:168393
+ridge-gourd,Ridge gourd,ridge gourd; turai; tori; peerkangai; luffa; ridged luffa,vegetables,ifct,D068,ifct:D068;ifct:D069;usda_sr:168414
+snake-gourd,Snake gourd,snake gourd; chichinda; padwal; pudalangai; chichinga,vegetables,ifct,D070,ifct:D070;ifct:D071;ifct:D072
+ash-gourd,Ash gourd,ash gourd; petha; safed kaddu; winter melon; white pumpkin; poosanikai,vegetables,ifct,D001,ifct:D001
+pointed-gourd,Pointed gourd (parwal),parwal; parwar; pointed gourd; patol; kovakkai parwar,vegetables,ifct,D060,ifct:D060
+tinda,Tinda,tinda; indian round gourd; apple gourd; round gourd; tinde,vegetables,ifct,D073,ifct:D073
+ivy-gourd,Ivy gourd (tindora),tindora; kundru; ivy gourd; kovai; dondakaya; tondli,vegetables,ifct,D054,ifct:D054;ifct:D055
+pumpkin,Pumpkin,pumpkin; kaddu; sitaphal; red pumpkin; parangikai; pumpkin raw,vegetables,ifct,D066,ifct:D066;ifct:D065;usda_sr:168448
+cucumber,Cucumber,cucumber; kheera; kakdi; kakri; cucumber raw; vellarikai,vegetables,ifct,D043,ifct:D043;ifct:D044;usda_sr:168409
+capsicum,Capsicum (green),capsicum; green capsicum; shimla mirch; bell pepper; green pepper; green bell pepper,vegetables,ifct,D033,ifct:D033;usda_sr:170427
+capsicum-red,"Capsicum, red",red capsicum; red bell pepper; red pepper; yellow capsicum,vegetables,ifct,D034,ifct:D034;ifct:D035;usda_sr:170108
+broccoli,Broccoli,broccoli; hari gobi; broccoli florets; green cauliflower,vegetables,usda_sr,170379,usda_sr:170379
+zucchini,Zucchini,zucchini; courgette; green zucchini; summer squash,vegetables,ifct,D077,ifct:D077;ifct:D078;usda_sr:169291
+radish,Radish,radish; mooli; muli; white radish; daikon; mullangi; red radish,vegetables,ifct,F012,ifct:F012;ifct:F010;ifct:F011;ifct:F009;usda_sr:169276
+beetroot,Beetroot,beetroot; beet; chukandar; beets; red beet; beetroot raw,vegetables,ifct,F001,ifct:F001;usda_sr:169145
+drumstick,Drumstick (moringa),drumstick; sahjan; moringa; saijan; murungakkai; drumsticks; shevga,vegetables,ifct,D046,ifct:D046;usda_sr:170483
+lotus-root,Lotus root,lotus root; kamal kakdi; kamal kakri; nadru; lotus stem,vegetables,ifct,F005,ifct:F005;usda_sr:169250
+mushroom,"Mushroom, button",mushroom; mushrooms; button mushroom; khumb; white mushroom; champignon,vegetables,ifct,J001,ifct:J001;usda_sr:169251
+corn-sweet,Sweet corn,sweet corn; corn; bhutta; corn on the cob; makai; corn kernels,vegetables,ifct,A008,ifct:A008;usda_sr:169998
+baby-corn,Baby corn,baby corn; babycorn; baby sweet corn,vegetables,ifct,D042,ifct:D042;usda_sr:168538
+celery,Celery,celery; celery stalk; ajmod; celery sticks,vegetables,ifct,D037,ifct:D037;usda_sr:169988
+lettuce,Lettuce,lettuce; salad leaves; romaine; iceberg; salad patta,vegetables,ifct,C025,ifct:C025;usda_sr:169247;usda_sr:169248
+kale,Kale,kale; curly kale; kale leaves; haak,vegetables,usda_sr,168421,usda_sr:168421
+fenugreek-leaves,Fenugreek leaves,methi; fenugreek leaves; methi leaves; kasuri methi fresh; vendhayakeerai,vegetables,ifct,C020,ifct:C020
+coriander-leaves,Coriander leaves,coriander leaves; dhania; cilantro; hara dhania; kothimbir; kothamalli,vegetables,ifct,G009,ifct:G009;usda_sr:169997
+mint-leaves,Mint leaves,mint; pudina; mint leaves; pudhina; spearmint; pudina leaves,vegetables,ifct,G016,ifct:G016;usda_sr:173475
+curry-leaves,Curry leaves,curry leaves; kadi patta; kari patta; curry patta; karuveppilai,vegetables,ifct,G010,ifct:G010
+mustard-greens,Mustard greens,mustard leaves; sarson ka saag; sarson; mustard greens; saag,vegetables,ifct,C026,ifct:C026;usda_sr:169256
+amaranth-leaves,Amaranth leaves,amaranth leaves; chaulai; thotakura; cheera; lal saag; harive soppu,vegetables,ifct,C002,ifct:C002;ifct:C003;ifct:C004;usda_sr:168385
+green-chilli,Green chilli,green chilli; hari mirch; chilli; green chillies; chillies; mirchi; pachai milagai,vegetables,ifct,G008,ifct:G008;usda_sr:170497
+red-chilli,Red chilli,red chilli; lal mirch; dried red chilli; sookhi mirch; whole red chilli,spices,ifct,G022,ifct:G022;usda_sr:170106
+garlic,Garlic,garlic; lehsun; lasun; poondu; garlic cloves; vellulli,vegetables,ifct,G011,ifct:G011;ifct:G012;ifct:G013;usda_sr:169230
+ginger,Ginger,ginger; adrak; fresh ginger; ginger root; inji; allam,vegetables,ifct,G014,ifct:G014;usda_sr:169231
+avocado,Avocado,avocado; avocados; butter fruit; avocado fruit,fruits,ifct,E007,ifct:E007;usda_sr:171705
+jackfruit-raw,"Jackfruit, raw",raw jackfruit; kathal vegetable; kathal; jackfruit curry; chakka raw,vegetables,ifct,D051,ifct:D051;usda_sr:168190
+raw-banana,"Plantain, green",raw banana; plantain; kaccha kela; green banana; vazhakkai; nendran,vegetables,ifct,D063,ifct:D063;usda_sr:168215
+raw-mango,"Mango, raw",raw mango; kacchi keri; kaccha aam; green mango; kairi; maanga,vegetables,ifct,D057,ifct:D057
+raw-papaya,"Papaya, raw",raw papaya; kaccha papita; green papaya,vegetables,ifct,D059,ifct:D059
+banana,Banana,banana; bananas; kela; ripe banana; robusta banana; pazham; vazhaipazham,fruits,ifct,E012,ifct:E012;ifct:E009;ifct:E010;ifct:E011;usda_sr:173944
+apple,Apple,apple; apples; seb; red apple; green apple; kashmiri apple,fruits,ifct,E001,ifct:E001;ifct:E002;ifct:E003;ifct:E004;usda_sr:171688
+mango,"Mango, ripe",mango; mangoes; aam; ripe mango; alphonso; kesar mango; hapus,fruits,ifct,E036,ifct:E036;ifct:E037;ifct:E038;ifct:E039;ifct:E040;ifct:E041;ifct:E042;usda_sr:169910
+papaya,"Papaya, ripe",papaya; papita; ripe papaya; pawpaw; papali; pappali,fruits,ifct,E049,ifct:E049;usda_sr:169926
+orange,Orange,orange; oranges; santra; narangi; malta; orange fruit; kamala,fruits,ifct,E047,ifct:E047;usda_sr:169097
+sweet-lime,Sweet lime (mosambi),mosambi; sweet lime; mosambi fruit; sathukudi; musambi,fruits,ifct,E034,ifct:E034
+lemon,Lemon,lemon; lemon juice; nimbu; lime; nimbu juice; elumichai,fruits,ifct,E033,ifct:E033;usda_sr:167747;usda_sr:167746
+grapes,Grapes,grapes; grape; angoor; green grapes; black grapes; red grapes; draksha,fruits,ifct,E026,ifct:E026;ifct:E023;ifct:E022;ifct:E024;ifct:E025;ifct:E027;usda_sr:174683
+watermelon,Watermelon,watermelon; tarbooz; water melon; tharbooz; kalingad,fruits,ifct,E065,ifct:E065;ifct:E066;usda_sr:167765
+muskmelon,Muskmelon,muskmelon; kharbuja; cantaloupe; musk melon; sweet melon; kharbooja,fruits,ifct,E045,ifct:E045;ifct:E046;usda_sr:169092
+pineapple,Pineapple,pineapple; ananas; anarasa; kaitha chakka,fruits,ifct,E053,ifct:E053;usda_sr:169124
+guava,Guava,guava; amrud; peru; jamphal; koyya; seebe kai,fruits,ifct,E028,ifct:E028;ifct:E029;usda_sr:173044
+pomegranate,Pomegranate,pomegranate; anar; pomegranate seeds; dalimb; madhulai,fruits,ifct,E055,ifct:E055;usda_sr:169134
+pear,Pear,pear; pears; nashpati; nashpathi; naspati,fruits,ifct,E051,ifct:E051;usda_sr:169118
+peach,Peach,peach; peaches; aadu; shaftalu,fruits,ifct,E050,ifct:E050;usda_sr:169928
+plum,Plum,plum; plums; aloo bukhara; alubukhara,fruits,ifct,E054,ifct:E054;usda_sr:169949
+strawberry,Strawberry,strawberry; strawberries; stawberry,fruits,ifct,E063,ifct:E063;usda_sr:167762
+sapota,Sapota (chikoo),sapota; chikoo; chiku; sapodilla; naseberry; chikku,fruits,ifct,E060,ifct:E060;usda_sr:167759
+litchi,Litchi,litchi; lychee; lichi,fruits,ifct,E035,ifct:E035;usda_sr:169086
+jackfruit,"Jackfruit, ripe",jackfruit; ripe jackfruit; kathal fruit; chakka; phanas,fruits,ifct,E030,ifct:E030;usda_sr:174687
+custard-apple,Custard apple,custard apple; sitaphal; sharifa; seetaphal; sugar apple,fruits,ifct,E016,ifct:E016;usda_sr:168175
+fig,Fig,fig; figs; anjeer; fresh fig; athi pazham,fruits,ifct,E020,ifct:E020;usda_sr:173021
+gooseberry,Gooseberry (amla),amla; indian gooseberry; gooseberry; nellikai; amalaki,fruits,ifct,E021,ifct:E021;usda_sr:173030
+jamun,Jamun,jamun; jambu; black plum; java plum; naval pazham; jambul,fruits,ifct,E031,ifct:E031
+coconut-fresh,"Coconut, fresh",coconut; fresh coconut; nariyal; coconut kernel; thengai; khobra,fruits,ifct,H007,ifct:H007;usda_sr:170169
+coconut-dry,"Coconut, dry",dry coconut; copra; sukha nariyal; desiccated coconut; kopra,fruits,ifct,H006,ifct:H006;usda_sr:170170
+dates-dry,"Dates, dried",dates; khajoor; khajur; dried dates; kharjuram; medjool,dryfruits,ifct,E017,ifct:E017;ifct:E018;usda_sr:171726;usda_sr:168191
+raisins,Raisins,raisins; kishmish; sultanas; dried grapes; munakka; draksha dry,dryfruits,ifct,E057,ifct:E057;ifct:E058;usda_sr:168165;usda_sr:168164
+apricot-dried,"Apricot, dried",dried apricot; khubani; apricots dried; apricot,dryfruits,ifct,E005,ifct:E005;usda_sr:173941
+tamarind,Tamarind,tamarind; imli; tamarind pulp; puli; chinch,fruits,ifct,E064,ifct:E064;usda_sr:167763
+blueberry,Blueberry,blueberry; blueberries; blue berries,fruits,usda_sr,171711,usda_sr:171711
+kiwi,Kiwi,kiwi; kiwifruit; kiwi fruit; kiwis,fruits,usda_sr,168153,usda_sr:168153
+cherries,Cherries,cherry; cherries; red cherries; sweet cherries,fruits,ifct,E014,ifct:E014;usda_sr:171719
+peanut,Peanut (groundnut),peanut; peanuts; groundnut; moongphali; mungfali; verkadalai; shengdana; groundnuts,nuts,ifct,H012,ifct:H012;usda_sr:172430
+almond,Almond,almond; almonds; badam; badaam; almond nuts; badham,nuts,ifct,H001,ifct:H001;usda_sr:170567
+cashew,Cashew nut,cashew; cashews; kaju; cashew nut; cashewnut; mundiri,nuts,ifct,H005,ifct:H005;usda_sr:170162
+walnut,Walnut,walnut; walnuts; akhrot; akhrut; walnut kernel; akrod,nuts,ifct,H021,ifct:H021;usda_sr:170187
+pistachio,Pistachio,pistachio; pistachios; pista; pistachio nuts; pesta,nuts,ifct,H018,ifct:H018;usda_sr:170184
+hazelnut,Hazelnut,hazelnut; hazelnuts; filbert; pahari badam,nuts,usda_sr,170581,usda_sr:170581
+pecan,Pecan,pecan; pecans; pecan nuts,nuts,usda_sr,170182,usda_sr:170182
+brazil-nut,Brazil nut,brazil nut; brazil nuts,nuts,usda_sr,170569,usda_sr:170569
+sesame,Sesame seeds,sesame; til; sesame seeds; gingelly seeds; white sesame; ellu; tilgul seeds,seeds,ifct,H011,ifct:H011;ifct:H010;ifct:H009;usda_sr:170150
+flaxseed,Flax seeds,flax seeds; alsi; linseed; linseeds; flaxseed; avise; agasi,seeds,ifct,H014,ifct:H014;usda_sr:169414
+sunflower-seeds,Sunflower seeds,sunflower seeds; surajmukhi seeds; sunflower kernels; surajmukhi beej,seeds,ifct,H020,ifct:H020;usda_sr:170562
+chia-seeds,Chia seeds,chia seeds; chia; sabja; basil seeds; chia seed,seeds,usda_sr,170554,usda_sr:170554
+pumpkin-seeds,Pumpkin seeds,pumpkin seeds; pepitas; kaddu seeds; kaddu ke beej; magaz,seeds,usda_sr,170556,usda_sr:170556
+mustard-seeds,Mustard seeds,mustard seeds; sarson seeds; rai; mustard seed; kadugu; black mustard,spices,ifct,H013,ifct:H013;usda_sr:170929
+oil-groundnut,Groundnut oil,peanut oil; groundnut oil; moongphali oil; shengtel; kadalai ennai,fats,ifct,T005,ifct:T005;usda_sr:171410
+oil-mustard,Mustard oil,mustard oil; sarson oil; sarson ka tel; kachi ghani; kadugenna,fats,ifct,T006,ifct:T006;usda_sr:172337
+oil-coconut,Coconut oil,coconut oil; nariyal tel; nariyal oil; velichenna; kopra oil,fats,ifct,T001,ifct:T001;usda_sr:171412
+oil-sunflower,Sunflower oil,sunflower oil; surajmukhi oil; surajmukhi tel; refined sunflower oil,fats,ifct,T012,ifct:T012;usda_sr:171017
+oil-sesame,Sesame oil,gingelly oil; til oil; sesame oil; nallennai; til ka tel; ellenna,fats,ifct,T004,ifct:T004;usda_sr:171016
+oil-rice-bran,Rice bran oil,rice bran oil; ricebran oil; rice bran,fats,ifct,T008,ifct:T008;usda_sr:171013
+oil-soybean,Soybean oil,soybean oil; soyabean oil; soya oil; refined soybean oil,fats,ifct,T011,ifct:T011;usda_sr:171411
+oil-corn,Corn oil,corn oil; maize oil; makka oil,fats,ifct,T002,ifct:T002;usda_sr:171029
+oil-palm,Palm oil,palm oil; palmolein; palm olein; red palm oil,fats,ifct,T007,ifct:T007;usda_sr:171015
+oil-safflower,Safflower oil,safflower oil; kardi oil; kusum oil; kusumbi oil,fats,ifct,T009,ifct:T009;ifct:T010;usda_sr:171027
+oil-olive,Olive oil,olive oil; extra virgin olive oil; evoo; virgin olive oil,fats,reference,olive-oil,reference:olive-oil;usda_sr:171413
+oil-canola,Canola oil,canola oil; rapeseed oil; rapeseed; canola,fats,usda_sr,172336,usda_sr:172336
+vanaspati,Vanaspati,vanaspati; dalda; vegetable ghee; hydrogenated fat; vanaspati ghee,fats,ifct,T014,ifct:T014;usda_sr:171011
+margarine,Margarine,margarine; marg; table margarine; tub margarine; vegetable spread,fats,usda_sr,172346,usda_sr:172346;usda_sr:172347
+mayonnaise,Mayonnaise,mayonnaise; mayo; eggless mayonnaise; mayo sauce,fats,usda_sr,171009,usda_sr:171009
+sugar,"Sugar, white",sugar; cheeni; shakkar; granulated sugar; white sugar; chini; sakkarai; sakkare,sweeteners,reference,sugar,reference:sugar;usda_sr:169655
+sugar-brown,"Sugar, brown",brown sugar; demerara; raw sugar; khandsari; muscovado; light brown sugar,sweeteners,usda_sr,168833,usda_sr:168833
+sugar-powdered,"Sugar, powdered",powdered sugar; icing sugar; confectioners sugar; boora; pisi hui cheeni,sweeteners,usda_sr,169656,usda_sr:169656
+jaggery,Jaggery,jaggery; gur; gud; cane jaggery; vellam; bellam; gul,sweeteners,ifct,I001,ifct:I001
+honey,Honey,honey; shahad; madhu; natural honey; thaen; theni,sweeteners,reference,honey,reference:honey;usda_sr:169640
+maple-syrup,Maple syrup,maple syrup; pancake syrup; syrup,sweeteners,usda_sr,169661,usda_sr:169661
+sugarcane-juice,Sugarcane juice,sugarcane juice; ganne ka ras; ganna juice; karumbu juice,beverages,ifct,I002,ifct:I002
+chocolate-dark,"Chocolate, dark",dark chocolate; chocolate; bittersweet chocolate; cocoa chocolate,sweets,usda_sr,170274,usda_sr:170274;usda_sr:167976
+cocoa-powder,Cocoa powder,cocoa powder; cocoa; unsweetened cocoa; cacao powder,sweets,usda_sr,169593,usda_sr:169593
+coffee-brewed,"Coffee, brewed",coffee; black coffee; filter coffee; brewed coffee; americano; kaapi,beverages,usda_sr,171890,usda_sr:171890
+coffee-instant,"Coffee, instant",instant coffee; nescafe; coffee powder; coffee instant,beverages,usda_sr,171893,usda_sr:171893
+tea-brewed,"Tea, brewed",tea; black tea; chai; brewed tea; plain tea; green tea; chaye,beverages,usda_sr,173227,usda_sr:173227;usda_sr:171917
+orange-juice,Orange juice,orange juice; fresh orange juice; santra juice; oj,beverages,usda_sr,169098,usda_sr:169098
+coconut-water,Coconut water,coconut water; nariyal pani; tender coconut water; elaneer; tender coconut,beverages,usda_sr,170174,usda_sr:170174
+cola,Cola,cola; coke; pepsi; soft drink; soda; carbonated drink; cold drink,beverages,usda_sr,174852,usda_sr:174852
+beer,Beer,beer; lager; regular beer; pint of beer,beverages,usda_sr,168746,usda_sr:168746
+wine-red,"Wine, red",red wine; wine; table wine; wine red,beverages,usda_sr,173190,usda_sr:173190
+tomato-ketchup,Tomato ketchup,ketchup; tomato ketchup; tomato sauce; red sauce; catsup,sauces,usda_sr,168556,usda_sr:168556
+soy-sauce,Soy sauce,soy sauce; soya sauce; shoyu,sauces,usda_sr,174277,usda_sr:174277
+salt,Salt,salt; table salt; namak; common salt; iodized salt; uppu,spices,usda_sr,173468,usda_sr:173468
+turmeric,Turmeric powder,turmeric; haldi; turmeric powder; manjal; arisina,spices,ifct,G033,ifct:G033;usda_sr:172231
+cumin,Cumin seeds,cumin; jeera; cumin seeds; zeera; jeeragam; jeerige,spices,ifct,G025,ifct:G025;usda_sr:170923
+coriander-seeds,Coriander seeds,coriander seeds; dhania seeds; coriander powder; dhaniya; malli,spices,ifct,G024,ifct:G024;usda_sr:170922
+black-pepper,Black pepper,black pepper; kali mirch; pepper; milagu; miriyalu; pepper powder,spices,ifct,G031,ifct:G031;usda_sr:170931
+fenugreek-seeds,Fenugreek seeds,fenugreek seeds; methi dana; methi seeds; methi; vendhayam,spices,ifct,G026,ifct:G026;usda_sr:171324
+cardamom,Cardamom,cardamom; elaichi; green cardamom; elachi; yelakki,spices,ifct,G020,ifct:G020;usda_sr:170919
+cloves,Cloves,cloves; laung; clove; lavang; kirambu,spices,ifct,G023,ifct:G023;usda_sr:171321
+poppy-seeds,Poppy seeds,poppy seeds; khus khus; posto; gasagasalu; poppy,spices,ifct,G032,ifct:G032;usda_sr:171330
+asafoetida,Asafoetida,asafoetida; hing; heeng; perungayam; inguva,spices,ifct,G019,ifct:G019

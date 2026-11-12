@@ -1,0 +1,328 @@
+syntax = "proto3";
+
+package plusultra.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+import "plusultra/v1/common.proto";
+import "protomcp/v1/annotations.proto";
+
+option go_package = "github.com/gdsoumya/plusultra/gen/go/plusultra/v1;plusultrav1";
+
+// ExerciseService is the exercise catalog plus the user's per-exercise data and equipment.
+service ExerciseService {
+  option (protomcp.v1.service) = {tool_prefix: "exercise_"};
+
+  // SearchExercises finds catalog and custom exercises by name, alias, equipment or muscle.
+  rpc SearchExercises(SearchExercisesRequest) returns (SearchExercisesResponse) {
+    option (protomcp.v1.tool) = {
+      name: "search"
+      title: "Search Exercises"
+      description: "Finds catalog and custom exercises by name or alias words, equipment or muscle, best first (20 by default). Returns slug, exact script name (movement plus equipment, for example Bench Press, Dumbbell), equipment and muscles. Workout scripts must use exact names; unknown names fail program_validate with suggestions. Add an exercise that cannot be resolved with exercise_create_custom."
+      read_only: true
+      idempotent: true
+    };
+  }
+  // GetExercise returns one exercise.
+  rpc GetExercise(GetExerciseRequest) returns (GetExerciseResponse) {
+    option (protomcp.v1.tool) = {
+      name: "get"
+      title: "Get Exercise"
+      description: "Returns one exercise by slug (from exercise_search): exact script name, equipment, aliases, primary and secondary muscles, category, step-by-step instructions and image URLs. Workout scripts must use this exact name; unknown names fail validation with suggestions. If the catalog lacks an exercise, add one with exercise_create_custom."
+      read_only: true
+      idempotent: true
+    };
+  }
+  // CreateCustomExercise adds an exercise visible only to the user, so scripts can use its name.
+  rpc CreateCustomExercise(CreateCustomExerciseRequest) returns (CreateCustomExerciseResponse) {
+    option (protomcp.v1.tool) = {
+      name: "create_custom"
+      title: "Create Custom Exercise"
+      description: "Adds an exercise only this user sees, so scripts can use its name. Search with exercise_search first to avoid duplicates. Give a name (movement plus equipment variant), equipment and primary muscles: a group such as chest, or a region such as front delts; unknown names fail with the valid list. Instructions are optional steps. Returns the exercise with its slug."
+    };
+  }
+  // UpdateCustomExercise changes one of the user's custom exercises.
+  rpc UpdateCustomExercise(UpdateCustomExerciseRequest) returns (UpdateCustomExerciseResponse) {
+    option (protomcp.v1.tool) = {
+      name: "update_custom"
+      title: "Update Custom Exercise"
+      description: "Replaces one of the user's custom exercises, found by slug, with a new name, equipment, aliases, muscles (a group or a region such as front delts), category and instructions. Catalog exercises cannot be changed. Returns the updated exercise."
+    };
+  }
+  // DeleteCustomExercise deletes one of the user's custom exercises.
+  rpc DeleteCustomExercise(DeleteCustomExerciseRequest) returns (DeleteCustomExerciseResponse) {
+    option (protomcp.v1.tool) = {
+      name: "delete_custom"
+      title: "Delete Custom Exercise"
+      description: "Deletes one of the user's custom exercises by slug. Check that no program script uses its name first. Cannot be undone; confirm with the user first."
+      idempotent: true
+      destructive: true
+    };
+  }
+  // GetExerciseData returns the user's 1RM, rounding, notes and unilateral flag for an exercise.
+  rpc GetExerciseData(GetExerciseDataRequest) returns (GetExerciseDataResponse) {
+    option (protomcp.v1.tool) = {
+      name: "get_data"
+      title: "Get Exercise Data"
+      description: "Returns the user's data for one exercise by slug: one-rep max (used by percentage weights), rounding override, notes and whether it is done one side at a time (unilateral: left and right reps are logged separately). Fields are empty when nothing is stored."
+      read_only: true
+      idempotent: true
+    };
+  }
+  // SetExerciseData replaces all of the user's data for an exercise: an unset rm1, rounding or unilateral clears it. Active programs re-resolve.
+  rpc SetExerciseData(SetExerciseDataRequest) returns (SetExerciseDataResponse) {
+    option (protomcp.v1.tool) = {
+      name: "set_data"
+      title: "Set Exercise Data"
+      description: "Replaces all of the user's data for one exercise by slug: one-rep max (a weight without a unit uses the preferred unit), rounding, notes and unilateral (done one side at a time, reps logged per side). An unset rm1, rounding or unilateral clears it, so start from exercise_get_data and send every value to keep. Active programs re-resolve."
+      idempotent: true
+    };
+  }
+  // ListExerciseData lists the user's data for every exercise that has some.
+  rpc ListExerciseData(ListExerciseDataRequest) returns (ListExerciseDataResponse) {
+    option (protomcp.v1.tool) = {
+      name: "list_data"
+      title: "List Exercise Data"
+      description: "Lists the user's stored data (one-rep max, rounding, notes, unilateral) for every exercise that has some, by slug. Use it to review 1RMs before writing a percentage-based program."
+      read_only: true
+      idempotent: true
+    };
+  }
+  // GetEquipment lists the user's equipment and how each rounds weights.
+  rpc GetEquipment(GetEquipmentRequest) returns (GetEquipmentResponse) {
+    option (protomcp.v1.tool) = {
+      name: "get_equipment"
+      title: "Get Equipment"
+      description: "Lists the user's equipment (for example barbell or dumbbell) and how each rounds weights: plates on a bar, fixed weights, a stack increment, or none for bodyweight."
+      read_only: true
+      idempotent: true
+    };
+  }
+  // SetEquipment replaces the user's whole equipment list. Active programs re-resolve.
+  rpc SetEquipment(SetEquipmentRequest) returns (SetEquipmentResponse) {
+    option (protomcp.v1.tool) = {
+      name: "set_equipment"
+      title: "Set Equipment"
+      description: "Replaces the user's whole equipment list; equipment left out is removed, so start from exercise_get_equipment. Each item has a name matching exercise equipment and its rounding. Active programs re-resolve their weights. Returns the stored list."
+      idempotent: true
+    };
+  }
+}
+
+// Exercise is a catalog or custom exercise.
+message Exercise {
+  // Exercise id; set by the server.
+  string id = 1;
+  // Stable identifier, for example "bench-press-barbell"; set by the server.
+  string slug = 2;
+  // Canonical name used in scripts, a movement plus an equipment variant, for example "Bench Press, Dumbbell".
+  string name = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 200
+  }];
+  // Equipment, for example "barbell", "dumbbell" or "bodyweight".
+  string equipment = 4 [(buf.validate.field).string.max_len = 100];
+  // Other names that find the exercise.
+  repeated string aliases = 5 [(buf.validate.field).repeated = {
+    max_items: 50
+    items: {
+      string: {max_len: 200}
+    }
+  }];
+  // Main muscles worked: a group (chest, shoulders, rotator cuff, biceps, triceps, forearms, abdominals,
+  // obliques, serratus, lats, middle back, lower back, traps, neck, glutes, hip flexors, quadriceps,
+  // hamstrings, adductors, abductors, calves) or one of its regions, for example "upper chest" or
+  // "front delts". Custom exercises accept either, case-insensitively, and store the canonical name.
+  repeated string primary_muscles = 6 [(buf.validate.field).repeated = {
+    max_items: 20
+    items: {
+      string: {max_len: 64}
+    }
+  }];
+  // Muscles worked less; same names as primary_muscles.
+  repeated string secondary_muscles = 7 [(buf.validate.field).repeated = {
+    max_items: 20
+    items: {
+      string: {max_len: 64}
+    }
+  }];
+  // Category, for example "strength" or "cardio".
+  string category = 8 [(buf.validate.field).string.max_len = 64];
+  // Image URLs; set by the server.
+  repeated string images = 9;
+  // True for the user's own exercise; set by the server.
+  bool custom = 10;
+  // Steps in order; empty for custom exercises without them.
+  repeated string instructions = 11 [(buf.validate.field).repeated = {
+    max_items: 20
+    items: {
+      string: {max_len: 2000}
+    }
+  }];
+}
+
+// ExerciseData is the user's data for one exercise.
+message ExerciseData {
+  // Exercise slug.
+  string slug = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 200
+  }];
+  // One-rep max, used by percentage weights; unset when unknown.
+  Weight rm1 = 2;
+  // Rounding for this exercise; unset to use its equipment's rounding.
+  Rounding rounding = 3;
+  // Free-text notes.
+  string notes = 4 [(buf.validate.field).string.max_len = 10000];
+  // When the data last changed; set by the server.
+  google.protobuf.Timestamp updated_at = 5;
+  // True when the exercise is done one side at a time; the app then logs left and right reps separately (SetEntry.reps is the right side, reps_left the left).
+  bool unilateral = 6;
+}
+
+// Equipment is a piece of the user's equipment.
+message Equipment {
+  // Equipment name, matching exercise equipment, for example "barbell" or "dumbbell".
+  string name = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 100
+  }];
+  // How weights round on it.
+  Rounding rounding = 2 [(buf.validate.field).required = true];
+}
+
+// SearchExercisesRequest is the input of SearchExercises.
+message SearchExercisesRequest {
+  // Words to match in names and aliases; empty matches every exercise.
+  string query = 1 [(buf.validate.field).string.max_len = 200];
+  // Only exercises with this equipment; empty for any.
+  string equipment = 2 [(buf.validate.field).string.max_len = 100];
+  // Only exercises working this muscle; empty for any.
+  string muscle = 3 [(buf.validate.field).string.max_len = 64];
+  // Maximum exercises to return, at most 500; 0 means 20.
+  int32 limit = 4 [(buf.validate.field).int32 = {
+    gte: 0
+    lte: 500
+  }];
+}
+
+// SearchExercisesResponse is the output of SearchExercises.
+message SearchExercisesResponse {
+  // Matches, best first.
+  repeated Exercise exercises = 1;
+}
+
+// GetExerciseRequest is the input of GetExercise.
+message GetExerciseRequest {
+  // Exercise slug.
+  string slug = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 200
+  }];
+}
+
+// GetExerciseResponse is the output of GetExercise.
+message GetExerciseResponse {
+  // The exercise.
+  Exercise exercise = 1;
+}
+
+// CreateCustomExerciseRequest is the input of CreateCustomExercise.
+message CreateCustomExerciseRequest {
+  // Exercise to add; id, slug, images and custom are set by the server.
+  Exercise exercise = 1 [(buf.validate.field).required = true];
+}
+
+// CreateCustomExerciseResponse is the output of CreateCustomExercise.
+message CreateCustomExerciseResponse {
+  // The new exercise.
+  Exercise exercise = 1;
+}
+
+// UpdateCustomExerciseRequest is the input of UpdateCustomExercise.
+message UpdateCustomExerciseRequest {
+  // Exercise with its new values, found by slug.
+  Exercise exercise = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).cel = {
+      id: "exercise.slug"
+      message: "slug is required"
+      expression: "this.slug != ''"
+    }
+  ];
+}
+
+// UpdateCustomExerciseResponse is the output of UpdateCustomExercise.
+message UpdateCustomExerciseResponse {
+  // The updated exercise.
+  Exercise exercise = 1;
+}
+
+// DeleteCustomExerciseRequest is the input of DeleteCustomExercise.
+message DeleteCustomExerciseRequest {
+  // Exercise slug.
+  string slug = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 200
+  }];
+}
+
+// DeleteCustomExerciseResponse is the output of DeleteCustomExercise.
+message DeleteCustomExerciseResponse {}
+
+// GetExerciseDataRequest is the input of GetExerciseData.
+message GetExerciseDataRequest {
+  // Exercise slug.
+  string slug = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 200
+  }];
+}
+
+// GetExerciseDataResponse is the output of GetExerciseData.
+message GetExerciseDataResponse {
+  // The user's data; empty fields when nothing is stored.
+  ExerciseData data = 1;
+}
+
+// SetExerciseDataRequest is the input of SetExerciseData.
+message SetExerciseDataRequest {
+  // Data to store.
+  ExerciseData data = 1 [(buf.validate.field).required = true];
+}
+
+// SetExerciseDataResponse is the output of SetExerciseData.
+message SetExerciseDataResponse {
+  // The stored data.
+  ExerciseData data = 1;
+}
+
+// ListExerciseDataRequest is the input of ListExerciseData.
+message ListExerciseDataRequest {}
+
+// ListExerciseDataResponse is the output of ListExerciseData.
+message ListExerciseDataResponse {
+  // The user's data, by exercise slug.
+  repeated ExerciseData items = 1;
+}
+
+// GetEquipmentRequest is the input of GetEquipment.
+message GetEquipmentRequest {}
+
+// GetEquipmentResponse is the output of GetEquipment.
+message GetEquipmentResponse {
+  // The user's equipment.
+  repeated Equipment equipment = 1;
+}
+
+// SetEquipmentRequest is the input of SetEquipment.
+message SetEquipmentRequest {
+  // The full new equipment list; equipment left out is removed.
+  repeated Equipment equipment = 1 [(buf.validate.field).repeated.max_items = 100];
+}
+
+// SetEquipmentResponse is the output of SetEquipment.
+message SetEquipmentResponse {
+  // The stored equipment.
+  repeated Equipment equipment = 1;
+}

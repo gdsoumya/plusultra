@@ -1,0 +1,566 @@
+{
+  "Program": {
+    "Name": "Supersets",
+    "Notes": "",
+    "Weeks": 2,
+    "Units": "kg",
+    "Loop": true,
+    "WeekDesc": {}
+  },
+  "Weeks": [
+    {
+      "Week": 1,
+      "Day": 1,
+      "Name": "Upper",
+      "Desc": "",
+      "Kind": "training",
+      "Exercises": [
+        {
+          "Name": "Bench Press",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Bench Press"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "A",
+          "Sets": [
+            {
+              "Reps": 8,
+              "MinReps": 8,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 8,
+              "MinReps": 8,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 8,
+              "MinReps": 8,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        },
+        {
+          "Name": "Bent Over Row",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Bent Over Row"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "A",
+          "Sets": [
+            {
+              "Reps": 8,
+              "MinReps": 8,
+              "Weight": {
+                "Value": 60,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 8,
+              "MinReps": 8,
+              "Weight": {
+                "Value": 60,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 8,
+              "MinReps": 8,
+              "Weight": {
+                "Value": 60,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        },
+        {
+          "Name": "Bicep Curl",
+          "Equipment": "dumbbell",
+          "Label": "",
+          "Alternates": [
+            "Bicep Curl"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "B",
+          "Sets": [
+            {
+              "Reps": 12,
+              "MinReps": 12,
+              "Weight": {
+                "Value": 12.5,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 12,
+              "MinReps": 12,
+              "Weight": {
+                "Value": 12.5,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 12,
+              "MinReps": 12,
+              "Weight": {
+                "Value": 12.5,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        },
+        {
+          "Name": "Triceps Pushdown",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Triceps Pushdown"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "B",
+          "Sets": [
+            {
+              "Reps": 12,
+              "MinReps": 12,
+              "Weight": {
+                "Value": 25,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 12,
+              "MinReps": 12,
+              "Weight": {
+                "Value": 25,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 12,
+              "MinReps": 12,
+              "Weight": {
+                "Value": 25,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Week": 2,
+      "Day": 1,
+      "Name": "Upper",
+      "Desc": "",
+      "Kind": "training",
+      "Exercises": [
+        {
+          "Name": "Bench Press",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Bench Press"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "A",
+          "Sets": [
+            {
+              "Reps": 8,
+              "MinReps": 8,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 8,
+              "MinReps": 8,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 8,
+              "MinReps": 8,
+              "Weight": {
+                "Value": 80,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        },
+        {
+          "Name": "Bent Over Row",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Bent Over Row"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "A",
+          "Sets": [
+            {
+              "Reps": 8,
+              "MinReps": 8,
+              "Weight": {
+                "Value": 60,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 8,
+              "MinReps": 8,
+              "Weight": {
+                "Value": 60,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 8,
+              "MinReps": 8,
+              "Weight": {
+                "Value": 60,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        },
+        {
+          "Name": "Bicep Curl",
+          "Equipment": "dumbbell",
+          "Label": "",
+          "Alternates": [
+            "Bicep Curl"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "B",
+          "Sets": [
+            {
+              "Reps": 12,
+              "MinReps": 12,
+              "Weight": {
+                "Value": 12.5,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 12,
+              "MinReps": 12,
+              "Weight": {
+                "Value": 12.5,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 12,
+              "MinReps": 12,
+              "Weight": {
+                "Value": 12.5,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        },
+        {
+          "Name": "Triceps Pushdown",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Triceps Pushdown"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "B",
+          "Sets": [
+            {
+              "Reps": 12,
+              "MinReps": 12,
+              "Weight": {
+                "Value": 25,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 12,
+              "MinReps": 12,
+              "Weight": {
+                "Value": 25,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 12,
+              "MinReps": 12,
+              "Weight": {
+                "Value": 25,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

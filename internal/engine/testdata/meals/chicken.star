@@ -1,0 +1,5 @@
+meal_program("Cut", weeks=4, loop=False, notes="High protein")
+chicken = food("Chicken breast", per100g={"kcal": 120, "protein": 23, "fat": 2.5})
+day(1, 1, "Training", desc="Lift day")
+meal("Lunch", item(chicken, 200, note="grilled"), time="12:30")
+meal("Dinner", chicken(100))

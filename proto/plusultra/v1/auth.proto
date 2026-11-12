@@ -1,0 +1,219 @@
+syntax = "proto3";
+
+package plusultra.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+import "plusultra/v1/common.proto";
+import "protomcp/v1/annotations.proto";
+
+option go_package = "github.com/gdsoumya/plusultra/gen/go/plusultra/v1;plusultrav1";
+
+// AuthService manages accounts, sessions and invite codes.
+service AuthService {
+  option (protomcp.v1.service) = {tool_prefix: "auth_"};
+
+  // Register creates an account and signs it in. The first account becomes the admin; later ones need an invite code unless registration is open.
+  rpc Register(RegisterRequest) returns (RegisterResponse);
+  // Login signs in with a username and password and returns a session token.
+  rpc Login(LoginRequest) returns (LoginResponse);
+  // Logout ends the current session.
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
+  // ChangePassword replaces the signed-in user's password.
+  rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse);
+  // GetMe returns the signed-in user.
+  rpc GetMe(GetMeRequest) returns (GetMeResponse) {
+    option (protomcp.v1.tool) = {
+      name: "get_me"
+      title: "Get Current User"
+      description: "Returns the signed-in user: preferred weight unit (kg or lb), body measurement unit (cm or in) and IANA time zone. Call it before logging data: weights sent without a unit use the preferred unit, and the time zone decides which local YYYY-MM-DD date is today."
+      read_only: true
+      idempotent: true
+    };
+  }
+  // UpdateMe changes the signed-in user's settings. Only the fields that are set change.
+  rpc UpdateMe(UpdateMeRequest) returns (UpdateMeResponse) {
+    option (protomcp.v1.tool) = {
+      name: "update_me"
+      title: "Update Current User"
+      description: "Changes the signed-in user's settings: display name, preferred weight unit (kg or lb), body measurement unit (cm or in) or IANA time zone. Only the fields you set change; start from auth_get_me. Returns the updated user."
+    };
+  }
+  // CreateInvite creates a single-use invite code. Admin only.
+  rpc CreateInvite(CreateInviteRequest) returns (CreateInviteResponse);
+  // ListInvites lists invite codes. Admin only.
+  rpc ListInvites(ListInvitesRequest) returns (ListInvitesResponse);
+}
+
+// User is an account.
+message User {
+  // User id.
+  string id = 1;
+  // Login name.
+  string username = 2;
+  // Name shown in the app.
+  string display_name = 3;
+  // Preferred weight unit.
+  Unit units = 4;
+  // IANA time zone that decides the user's local dates, for example "Asia/Kolkata".
+  string timezone = 5;
+  // True for the admin, who manages invites.
+  bool is_admin = 6;
+  // When the account was created.
+  google.protobuf.Timestamp created_at = 7;
+  // Unit of check-in body measurements.
+  LengthUnit measurement_unit = 8;
+}
+
+// Invite is a single-use registration code.
+message Invite {
+  // Code to give to the person registering.
+  string code = 1;
+  // When the code stops working.
+  google.protobuf.Timestamp expires_at = 2;
+  // When the code was used; unset while unused.
+  google.protobuf.Timestamp used_at = 3;
+  // Username that used the code; empty while unused.
+  string used_by = 4;
+  // When the code was created.
+  google.protobuf.Timestamp created_at = 5;
+}
+
+// RegisterRequest is the input of Register.
+message RegisterRequest {
+  // Login name: 3 to 32 lowercase letters, digits or underscores.
+  string username = 1 [(buf.validate.field).string.pattern = "^[a-z0-9_]{3,32}$"];
+  // Password, at least 10 characters.
+  string password = 2 [(buf.validate.field).string = {
+    min_len: 10
+    max_len: 1024
+  }];
+  // Name shown in the app; defaults to the username.
+  string display_name = 3 [(buf.validate.field).string.max_len = 64];
+  // Invite code; required unless this is the first account or registration is open.
+  string invite_code = 4 [(buf.validate.field).string.max_len = 64];
+  // Preferred weight unit; unspecified means kg.
+  Unit units = 5 [(buf.validate.field).enum.defined_only = true];
+  // IANA time zone that decides local dates, for example "Asia/Kolkata"; empty means UTC.
+  string timezone = 6 [(buf.validate.field).string.max_len = 64];
+}
+
+// RegisterResponse is the output of Register.
+message RegisterResponse {
+  // The new user.
+  User user = 1;
+  // Session token to send as "Authorization: Bearer <token>".
+  string token = 2;
+  // When the session expires unless used; each use extends it.
+  google.protobuf.Timestamp expires_at = 3;
+}
+
+// LoginRequest is the input of Login.
+message LoginRequest {
+  // Login name.
+  string username = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 32
+  }];
+  // Password.
+  string password = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 1024
+  }];
+}
+
+// LoginResponse is the output of Login.
+message LoginResponse {
+  // The signed-in user.
+  User user = 1;
+  // Session token to send as "Authorization: Bearer <token>".
+  string token = 2;
+  // When the session expires unless used; each use extends it.
+  google.protobuf.Timestamp expires_at = 3;
+}
+
+// LogoutRequest is the input of Logout.
+message LogoutRequest {}
+
+// LogoutResponse is the output of Logout.
+message LogoutResponse {}
+
+// ChangePasswordRequest is the input of ChangePassword.
+message ChangePasswordRequest {
+  // Current password.
+  string current_password = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 1024
+  }];
+  // New password, at least 10 characters.
+  string new_password = 2 [(buf.validate.field).string = {
+    min_len: 10
+    max_len: 1024
+  }];
+}
+
+// ChangePasswordResponse is the output of ChangePassword.
+message ChangePasswordResponse {}
+
+// GetMeRequest is the input of GetMe.
+message GetMeRequest {}
+
+// GetMeResponse is the output of GetMe.
+message GetMeResponse {
+  // The signed-in user.
+  User user = 1;
+}
+
+// UpdateMeRequest is the input of UpdateMe. Unset fields keep their current value.
+message UpdateMeRequest {
+  // Preferred weight unit.
+  optional Unit units = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: [0]
+  }];
+  // IANA time zone that decides the user's local dates, for example "Asia/Kolkata".
+  optional string timezone = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  // Name shown in the app.
+  optional string display_name = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  // Unit of check-in body measurements.
+  optional LengthUnit measurement_unit = 4 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: [0]
+  }];
+}
+
+// UpdateMeResponse is the output of UpdateMe.
+message UpdateMeResponse {
+  // The updated user.
+  User user = 1;
+}
+
+// CreateInviteRequest is the input of CreateInvite.
+message CreateInviteRequest {
+  // When the code stops working, within the next 90 days; defaults to 7 days from now.
+  google.protobuf.Timestamp expires_at = 1 [(buf.validate.field).timestamp = {
+    gt_now: true
+    within: {seconds: 7776000}
+  }];
+}
+
+// CreateInviteResponse is the output of CreateInvite.
+message CreateInviteResponse {
+  // The new invite.
+  Invite invite = 1;
+}
+
+// ListInvitesRequest is the input of ListInvites.
+message ListInvitesRequest {}
+
+// ListInvitesResponse is the output of ListInvites.
+message ListInvitesResponse {
+  // Invites, newest first.
+  repeated Invite invites = 1;
+}

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <rect id="bg" width="1024" height="1024" fill="#0B0C0F"/>
+  <g id="dumbbell" fill="#B4F23C">
+    <rect x="220" y="476" width="584" height="72" rx="16"/>
+    <rect x="296" y="332" width="96" height="360" rx="24"/>
+    <rect x="632" y="332" width="96" height="360" rx="24"/>
+    <rect x="192" y="382" width="72" height="260" rx="24"/>
+    <rect x="760" y="382" width="72" height="260" rx="24"/>
+  </g>
+</svg>

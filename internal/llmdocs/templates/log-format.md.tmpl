@@ -1,0 +1,56 @@
+# plusultra day log format
+
+Day logs export as text with one block per date, oldest first, blocks separated by a blank line. The same text imports back, so an assistant can read a log, edit it and import it. Importing rewrites a date's logs and its workout record; a finalized record is kept with a warning, and a `done` workout of an active program is finalized as if just finished, so its progression runs and a floating program's cursor moves to the day after it. JSON and CSV exports carry the same data with every field, including logged RPE, timers, body fat and measurements, which the text leaves out.
+
+## Example
+
+The first block is a finished day. The second shows a rep range, a bodyweight load, an RPE set, an ask set, a missed set and a planned item not eaten.
+
+```text
+2026-11-11 / status: done / weight: 82.4kg / notes: "slept badly"
+workout: "16-Week Strength" week 1 day 2 "Tue Upper A bench" / 58min
+  Bench Press / 4x5 75kg (Work) ✓✓✓✓ / 2x5 62.5kg (Backoff) ✓✓ / warmup done
+  heavy: Lat Pulldown / 4x6 70kg -> 6,6,6,5
+meals: target 2600kcal 180p 300c 70f / actual 2510kcal 176p 288c 66f
+  Lunch / Chicken breast raw 200g / Basmati rice raw 80g
+  Snack (ad hoc) / Banana 120g
+
+2026-11-12 / status: partial / weight: 82kg
+workout: "Upper volume" week 2 day 1 "Pull and press" / 52min
+  Pull Up / 3x8 92kg -> 8,7,-
+  Bench Press / 3x8-12 60kg -> 11,10,9 / warmup done
+  Overhead Press / 3x5 47.5kg @8 ✓✓✓
+  Bent Over Row, Dumbbell / 3x10 ? -> 10@30kg,10@30kg,9@30kg
+meals: target 2400kcal 180p 250c 70f / actual 1890kcal 150p 200c 55f
+  Breakfast / Oats 80g / Egg, whole 3 egg / Banana 0g
+```
+
+## Grammar
+
+Fields on a line are separated by ` / `. Indented lines are two spaces deep and belong to the line above them. Lines for parts of a day that were not logged are left out, so a rest or skipped day with no meals is a header line alone.
+
+**Header line**, one per block: the date, `YYYY-MM-DD`, then:
+
+- `status:` one of planned, done, partial, skipped or rest.
+- `weight:` the check-in bodyweight with its unit, such as `82.4kg`; left out when there is no check-in weight.
+- `notes:` the day's notes in double quotes, with `\"` and `\\` escaped; left out when empty.
+
+**Workout line**, when a workout was logged: `workout: "<program name>" week <w> day <d> "<day name>"`, then ` / <minutes>min` when the duration is known. The program name is the one given to `program(...)`.
+
+**Exercise lines**, indented under the workout line, one per exercise in workout order:
+
+- The name of the alternate done, as the program writes it, such as `Bench Press, Dumbbell`, prefixed with `<label>: ` when the exercise has a label.
+- One field per set group. A group is a run of working sets with the same planned reps, weight, RPE and label, written `<sets>x<reps> <weight>`, then ` @<rpe>` when the sets plan an RPE, then ` (<set label>)` when they have a label.
+- `<reps>` is the target, or `<lo>-<hi>` for a rep range, followed by `+` for as many reps as possible.
+- `<weight>` is the planned weight after rounding, in the user's units. Percent and RPE loads show the weight they resolved to. A bodyweight load shows the bodyweight plus its delta, so `bw(10)` at 82 kg is `92kg`. An ask set without a planned weight shows `?`.
+- After a group, `✓` once per set when every set was completed at the planned weight with at least the planned reps, the top of a range. Otherwise ` -> ` and one result per set, separated by commas without spaces: the reps done, `<reps>@<weight>` when the weight differed from the plan (always for a `?` set), or `-` for a set not done. A `+` group writes its results unless every set did exactly the planned reps, so the reps of an as-many-as-possible set are kept. In a result `@` is followed by a weight with its unit; in a group it is followed by a bare RPE.
+- A last field `warmup done` when the warmups were done.
+- The program is a template: an exercise or set the user added, changed or removed is written as it was done, and an exercise line not in the program's day imports as an ad hoc exercise of the workout.
+
+**Meals line**, when meals were logged: `meals: target <kcal>kcal <protein>p <carbs>c <fat>f / actual <kcal>kcal <protein>p <carbs>c <fat>f`, with grams of protein, carbs and fat.
+
+**Meal lines**, indented under the meals line, one per meal: the meal name, ` (ad hoc)` when the meal was not in the plan, then one field per item.
+
+- An item is the food name followed by the quantity: `200g` for grams or `3 egg` for a counted unit. The quantity is read from the end, so names may hold spaces and commas.
+- The food name is the one the log stores: the meal program's `food()` name for a planned item, else the catalog name. Import matches a name to a planned item of that meal first, then resolves it in the catalog like a meal script's food name.
+- A quantity of 0, such as `Banana 0g`, means planned but not eaten, and the item's macros count as 0. On import, removing an item's line removes the item.

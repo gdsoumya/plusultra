@@ -1,0 +1,10 @@
+# Reference syntax: Squat / 3x5 100kg / warmup: 1x5 20kg, 1x3 60kg      (explicit)
+#              Bench Press / 3x5 80kg / warmup: 1x8 50%, 1x3 80%   (percent of the first working set)
+#              Lateral Raise / 3x15 10kg / warmup: none
+#              Deadlift / 1x5 140kg                                (default warmup)
+program("Warmups", weeks=2)
+day(1, 1, "Full body", weeks="1-2")
+ex("Squat", warmup=[w(1, 5, kg(20)), w(1, 3, kg(60))], sets=[s(3, 5, kg(100))])
+ex("Bench Press", warmup=[w(1, 8, pct(50)), w(1, 3, pct(80))], sets=[s(3, 5, kg(80))])
+ex("Lateral Raise", eq="dumbbell", warmup=[], sets=[s(3, 15, kg(10))])
+ex("Deadlift", sets=[s(1, 5, kg(140))])

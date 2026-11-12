@@ -1,0 +1,235 @@
+syntax = "proto3";
+
+package plusultra.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+import "plusultra/v1/common.proto";
+import "plusultra/v1/rules.proto";
+import "protomcp/v1/annotations.proto";
+
+option go_package = "github.com/gdsoumya/plusultra/gen/go/plusultra/v1;plusultrav1";
+
+// MealService records what the user ate, one meal log per date.
+service MealService {
+  option (protomcp.v1.service) = {tool_prefix: "meal_"};
+
+  // ListMealLogs lists meal logs in a date range, oldest first.
+  rpc ListMealLogs(ListMealLogsRequest) returns (ListMealLogsResponse) {
+    option (protomcp.v1.tool) = {
+      name: "list_logs"
+      title: "List Meal Logs"
+      description: "Lists meal logs in a local date range (YYYY-MM-DD), oldest first, each with its meals, items, macros, daily target and totals. Pages: pass nextCursor back as cursor while hasMore is true."
+      read_only: true
+      idempotent: true
+    };
+  }
+  // GetMealLog returns one meal log.
+  rpc GetMealLog(GetMealLogRequest) returns (GetMealLogResponse) {
+    option (protomcp.v1.tool) = {
+      name: "get_log"
+      title: "Get Meal Log"
+      description: "Returns one meal log by id with its meals, items with quantities and macros, the daily target and totals. Find ids with meal_list_logs or calendar_get_day."
+      read_only: true
+      idempotent: true
+    };
+  }
+  // CreateMealLog creates the meal log for a date. Item macros and totals are computed by the server. Fails with AlreadyExists when the date has a log; update that one instead.
+  rpc CreateMealLog(CreateMealLogRequest) returns (CreateMealLogResponse) {
+    option (protomcp.v1.tool) = {
+      name: "create_log"
+      title: "Create Meal Log"
+      description: "Creates the meal log for a local date; choose a UUID for id. Give each item a qty in grams or the food's unit (2 egg). food.ref is the food's id from food_search or food_get; scripts are the only place the <source>:<sourceId> form is required. The server computes macros and totals. If the date already has a log, use meal_update_log."
+    };
+  }
+  // UpdateMealLog replaces a meal log's target and meals. Item macros are rescaled to their quantities and totals recomputed.
+  rpc UpdateMealLog(UpdateMealLogRequest) returns (UpdateMealLogResponse) {
+    option (protomcp.v1.tool) = {
+      name: "update_log"
+      title: "Update Meal Log"
+      description: "Replaces a meal log's target and meals by id: send the full log from meal_get_log with items added, removed or changed. food.ref is the food's id from food_search or food_get; scripts are the only place the <source>:<sourceId> form is required. Item macros are rescaled to their quantities and totals recomputed. Returns the updated log."
+    };
+  }
+  // DeleteMealLog deletes a meal log.
+  rpc DeleteMealLog(DeleteMealLogRequest) returns (DeleteMealLogResponse) {
+    option (protomcp.v1.tool) = {
+      name: "delete_log"
+      title: "Delete Meal Log"
+      description: "Deletes a meal log by id with all its meals. Cannot be undone; confirm with the user first."
+      idempotent: true
+      destructive: true
+    };
+  }
+}
+
+// FrozenFood is a food with its macros frozen when it was planned or logged, so later catalog changes do not alter history.
+message FrozenFood {
+  // Food name, for example "Chicken breast, raw".
+  string name = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 200
+  }];
+  // Opaque text: the food's id from food_search or food_get (SearchFoods or GetFood) when a user or model builds an item, or the script's ref when filled from a plan; empty for a food typed in by hand. Only scripts require "<source>:<source_id>". When ref is set and per100g is unset, the server fills the macros from the catalog on save and freezes them.
+  string ref = 2 [(buf.validate.field).string.max_len = 64];
+  // Macros per 100 g.
+  Macros per100g = 3;
+  // Macros per unit for foods counted in units, such as eggs; unset otherwise.
+  Macros per_unit = 4;
+  // Unit name for per_unit, for example "egg"; empty when the food is weighed in grams.
+  string unit = 5 [(buf.validate.field).string.max_len = 100];
+}
+
+// MealItem is a quantity of a food.
+message MealItem {
+  // The food.
+  FrozenFood food = 1 [(buf.validate.field).required = true];
+  // Quantity in unit; 0 means planned but not eaten, and macros scale to 0.
+  double qty = 2 [(buf.validate.field).double = {
+    gte: 0
+    lte: 100000
+  }];
+  // "g" or the food's unit, for example "egg".
+  string unit = 3 [(buf.validate.field).string.max_len = 100];
+  // Free-text note.
+  string note = 4 [(buf.validate.field).string.max_len = 500];
+  // Macros for this quantity; computed by the server.
+  Macros macros = 5;
+  // True when the item came from the meal plan, false when added ad hoc.
+  bool planned = 6;
+  // True when the user overrode this item's macros; the food's per100g/per_unit are then the user's values and the catalog is not consulted.
+  bool edited = 7;
+}
+
+// Meal is one meal of a day.
+message Meal {
+  // Meal name, for example "Lunch".
+  string name = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 100
+  }];
+  // Planned time of day, for example "13:00"; may be empty.
+  string time = 2 [(buf.validate.field).string.max_len = 16];
+  // Description.
+  string desc = 3 [(buf.validate.field).string.max_len = 2000];
+  // Items eaten or planned.
+  repeated MealItem items = 4 [(buf.validate.field).repeated.max_items = 200];
+}
+
+// ResolvedMealDay is a meal program day as planned for the user.
+message ResolvedMealDay {
+  // Meal program the day belongs to.
+  string program_id = 1;
+  // Date of the day, YYYY-MM-DD, for anchored programs; empty for floating programs.
+  string date = 2;
+  // 1-based week of the program.
+  int32 week = 3;
+  // 1-based day within the week; 0 for a day picked by kind.
+  int32 day = 4;
+  // Workout day kind this meal day serves: "training" or "rest".
+  string kind = 5;
+  // Day name.
+  string name = 6;
+  // Day description.
+  string desc = 7;
+  // Daily target; the sum of the items when the program sets none. A field of 0 means no target for it.
+  Macros target = 8;
+  // Planned meals.
+  repeated Meal meals = 9;
+  // Sum of the planned items' macros.
+  Macros totals = 10;
+}
+
+// MealLog is what the user ate on one date.
+message MealLog {
+  // Log id, a UUID chosen by the client when it creates the log.
+  string id = 1 [(buf.validate.field).string.uuid = true];
+  // Local date, YYYY-MM-DD.
+  string date = 2 [(buf.validate.field).string.(plusultra.v1.date) = true];
+  // Meal program the plan came from; empty when none.
+  string program_id = 3 [
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).ignore = IGNORE_IF_ZERO_VALUE
+  ];
+  // Daily target. A field of 0 means no target for it.
+  Macros target = 4;
+  // Meals eaten, planned items included.
+  repeated Meal meals = 5 [(buf.validate.field).repeated.max_items = 50];
+  // Sum of the eaten items' macros; computed by the server.
+  Macros totals = 6;
+  // Server version, incremented on every change. In a sync push, the version the device last saw, 0 for a new row.
+  int32 version = 7;
+  // Device that last changed the log.
+  string device_id = 8 [(buf.validate.field).string.max_len = 128];
+  // When the log last changed.
+  google.protobuf.Timestamp updated_at = 9;
+  // When the log was deleted; set only on tombstones returned by sync.
+  google.protobuf.Timestamp deleted_at = 10;
+}
+
+// ListMealLogsRequest is the input of ListMealLogs.
+message ListMealLogsRequest {
+  // Dates to list.
+  DateRange dates = 1 [(buf.validate.field).required = true];
+  // Maximum logs to return, at most 500; 0 means 100.
+  int32 limit = 2 [(buf.validate.field).int32 = {
+    gte: 0
+    lte: 500
+  }];
+  // next_cursor from the previous page; empty for the first page.
+  string cursor = 3 [(buf.validate.field).string.max_len = 512];
+}
+
+// ListMealLogsResponse is the output of ListMealLogs.
+message ListMealLogsResponse {
+  // Meal logs, oldest first.
+  repeated MealLog meal_logs = 1;
+  // Cursor for the next page; empty when has_more is false.
+  string next_cursor = 2;
+  // True when more results follow; call again with cursor set to next_cursor.
+  bool has_more = 3;
+}
+
+// GetMealLogRequest is the input of GetMealLog.
+message GetMealLogRequest {
+  // Log id.
+  string id = 1 [(buf.validate.field).string.uuid = true];
+}
+
+// GetMealLogResponse is the output of GetMealLog.
+message GetMealLogResponse {
+  // The meal log.
+  MealLog meal_log = 1;
+}
+
+// CreateMealLogRequest is the input of CreateMealLog.
+message CreateMealLogRequest {
+  // Log to create. The target defaults to the meal plan's target for the date.
+  MealLog meal_log = 1 [(buf.validate.field).required = true];
+}
+
+// CreateMealLogResponse is the output of CreateMealLog.
+message CreateMealLogResponse {
+  // The created log.
+  MealLog meal_log = 1;
+}
+
+// UpdateMealLogRequest is the input of UpdateMealLog.
+message UpdateMealLogRequest {
+  // Log with its new target and meals, found by id.
+  MealLog meal_log = 1 [(buf.validate.field).required = true];
+}
+
+// UpdateMealLogResponse is the output of UpdateMealLog.
+message UpdateMealLogResponse {
+  // The updated log.
+  MealLog meal_log = 1;
+}
+
+// DeleteMealLogRequest is the input of DeleteMealLog.
+message DeleteMealLogRequest {
+  // Log id.
+  string id = 1 [(buf.validate.field).string.uuid = true];
+}
+
+// DeleteMealLogResponse is the output of DeleteMealLog.
+message DeleteMealLogResponse {}

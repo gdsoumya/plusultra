@@ -1,0 +1,756 @@
+syntax = "proto3";
+
+package plusultra.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+import "plusultra/v1/common.proto";
+import "plusultra/v1/meal.proto";
+import "plusultra/v1/rules.proto";
+import "protomcp/v1/annotations.proto";
+
+option go_package = "github.com/gdsoumya/plusultra/gen/go/plusultra/v1;plusultrav1";
+
+// ProgramService manages workout and meal programs written as Starlark scripts. Read the program language reference before writing a script, check it with ValidateProgram, preview it with SimulateProgram, then create and activate it.
+service ProgramService {
+  option (protomcp.v1.service) = {tool_prefix: "program_"};
+
+  // ListPrograms lists the user's programs without their scripts.
+  rpc ListPrograms(ListProgramsRequest) returns (ListProgramsResponse) {
+    option (protomcp.v1.tool) = {
+      name: "list"
+      title: "List Programs"
+      description: "Lists the user's workout and meal programs without scripts, most recently changed first, optionally filtered by kind and status (draft, active, finished, archived). Pages: pass nextCursor back as cursor while hasMore is true. Use program_get to read a script."
+      read_only: true
+      idempotent: true
+    };
+  }
+  // GetProgram returns a program with its script and structure.
+  rpc GetProgram(GetProgramRequest) returns (GetProgramResponse) {
+    option (protomcp.v1.tool) = {
+      name: "get"
+      title: "Get Program"
+      description: "Returns one program by id with its full Starlark script, structure (weeks and days), status, mode and, for a floating program, the next day to do. Read it before program_update so edits start from the current script."
+      read_only: true
+      idempotent: true
+    };
+  }
+  // CreateProgram saves a script as a new draft program. The name comes from the script. Fails with line errors when the script is invalid.
+  rpc CreateProgram(CreateProgramRequest) returns (CreateProgramResponse) {
+    option (protomcp.v1.tool) = {
+      name: "create"
+      title: "Create Program"
+      description: "Saves a Starlark script as a new draft program. First read reference_get_program_language (or reference_get_meal_language) and reference_get_program_examples, then check it with program_validate; preview it with program_simulate. Exercises and foods must be catalog names (foods may use ref); add unresolvable ones with exercise_create_custom or food_create_custom. Activate with program_activate. Returns the draft."
+    };
+  }
+  // UpdateProgram saves a new revision of a program's script. An active program re-resolves from today and keeps progression state for exercises that still exist.
+  rpc UpdateProgram(UpdateProgramRequest) returns (UpdateProgramResponse) {
+    option (protomcp.v1.tool) = {
+      name: "update"
+      title: "Update Program"
+      description: "Saves a new revision of a program's script by id; older revisions stay in program_list_revisions. Start from program_get and check the new script with program_validate first. An active program re-resolves from today and keeps progression state for exercises that remain. Returns the program at its new revision."
+    };
+  }
+  // DeleteProgram deletes a program. Past workout and meal logs are kept.
+  rpc DeleteProgram(DeleteProgramRequest) returns (DeleteProgramResponse) {
+    option (protomcp.v1.tool) = {
+      name: "delete"
+      title: "Delete Program"
+      description: "Deletes a program by id. Past workout records and meal logs are kept. Cannot be undone; prefer program_finish for a program that ended. Confirm with the user first."
+      idempotent: true
+      destructive: true
+    };
+  }
+  // ValidateProgram checks a script without saving it and returns every error with its line.
+  rpc ValidateProgram(ValidateProgramRequest) returns (ValidateProgramResponse) {
+    option (protomcp.v1.tool) = {
+      name: "validate"
+      title: "Validate Program"
+      description: "Checks a workout or meal script without saving it. Returns every error with its line, unknown exercise and food names with suggested catalog names, and the structure when valid. Exercise names must be exact; foods use a catalog name, alias or ref=\"<source>:<sourceId>\". Fix every error; find names with exercise_search or food_search, and add unresolvable ones with exercise_create_custom or food_create_custom."
+      read_only: true
+      idempotent: true
+    };
+  }
+  // SimulateProgram runs a workout script forward with assumed results and returns the resolved days, or resolves a meal script against the catalog, without saving anything.
+  rpc SimulateProgram(SimulateProgramRequest) returns (SimulateProgramResponse) {
+    option (protomcp.v1.tool) = {
+      name: "simulate"
+      title: "Simulate Program"
+      description: "Runs a script, or a saved program from its real state, forward 1 to 104 weeks without saving. Ask for compact (one line per session) and read warnings first; add trace, expect, compare_script or meals when needed, and leave include_days off. A scenario logs results per session; everything else goes as planned. A meal script returns its resolved days."
+      read_only: true
+      idempotent: true
+    };
+  }
+  // ActivateProgram starts a program: anchored to calendar dates when start_date is given, floating (a sequence of days) otherwise. Only one workout and one meal program can be active.
+  rpc ActivateProgram(ActivateProgramRequest) returns (ActivateProgramResponse) {
+    option (protomcp.v1.tool) = {
+      name: "activate"
+      title: "Activate Program"
+      description: "Starts a program by id. With startDate (YYYY-MM-DD) days anchor to weekdays from that date, day 1 being Monday; without it the program floats and each finalized workout moves to the next day. Only one workout and one meal program can be active: if another of that kind is active, program_finish it first. Returns the active program."
+    };
+  }
+  // FinishProgram marks an active program finished.
+  rpc FinishProgram(FinishProgramRequest) returns (FinishProgramResponse) {
+    option (protomcp.v1.tool) = {
+      name: "finish"
+      title: "Finish Program"
+      description: "Marks an active program finished by id, ending its plan. Logged workouts and meals are kept. Ask the user before calling. Returns the finished program."
+      destructive: true
+    };
+  }
+  // ListRevisions lists every saved revision of a program's script.
+  rpc ListRevisions(ListRevisionsRequest) returns (ListRevisionsResponse) {
+    option (protomcp.v1.tool) = {
+      name: "list_revisions"
+      title: "List Program Revisions"
+      description: "Lists a program's saved script revisions, newest first, with who saved each (user, api or mcp) and its structure. Scripts are left out unless includeScript is true. Pages: pass nextCursor back as cursor while hasMore is true."
+      read_only: true
+      idempotent: true
+    };
+  }
+  // GetResolvedDays returns an active program's days with concrete sets or meals for the user.
+  rpc GetResolvedDays(GetResolvedDaysRequest) returns (GetResolvedDaysResponse) {
+    option (protomcp.v1.tool) = {
+      name: "get_resolved_days"
+      title: "Get Resolved Days"
+      description: "Returns an active program's days with concrete sets, reps and weights (or meals with quantities and macros), resolved from the user's 1RMs, equipment rounding and progression state. Pass week for one week, or 0 for all. For what is planned on a date, use calendar_get_day."
+      read_only: true
+      idempotent: true
+    };
+  }
+}
+
+// ProgramKind is what a program plans.
+enum ProgramKind {
+  // Any kind; used only as a filter.
+  PROGRAM_KIND_UNSPECIFIED = 0;
+  // A workout program, written with program(...).
+  PROGRAM_KIND_WORKOUT = 1;
+  // A meal program, written with meal_program(...).
+  PROGRAM_KIND_MEAL = 2;
+}
+
+// ProgramStatus is where a program is in its life.
+enum ProgramStatus {
+  // Any status; used only as a filter.
+  PROGRAM_STATUS_UNSPECIFIED = 0;
+  // Saved but not started.
+  PROGRAM_STATUS_DRAFT = 1;
+  // Running now.
+  PROGRAM_STATUS_ACTIVE = 2;
+  // Ran to its end or was finished by the user.
+  PROGRAM_STATUS_FINISHED = 3;
+  // Kept for reference.
+  PROGRAM_STATUS_ARCHIVED = 4;
+}
+
+// ProgramMode is how an active program maps its days to dates.
+enum ProgramMode {
+  // Not active yet, so no mode.
+  PROGRAM_MODE_UNSPECIFIED = 0;
+  // Day numbers are weekdays from the start date (day 1 is Monday); the program ends after its last week.
+  PROGRAM_MODE_ANCHORED = 1;
+  // Days form a sequence; finishing a workout moves to the next day.
+  PROGRAM_MODE_FLOATING = 2;
+}
+
+// Program is a workout or meal program.
+message Program {
+  // Program id.
+  string id = 1;
+  // Workout or meal.
+  ProgramKind kind = 2;
+  // Name from the script.
+  string name = 3;
+  // Starlark script, stored byte for byte as written. Empty in lists.
+  string script = 4;
+  // Revision number of the script, starting at 1.
+  int32 revision = 5;
+  // Life-cycle status.
+  ProgramStatus status = 6;
+  // First date, YYYY-MM-DD, for an anchored program; empty for floating or draft programs.
+  string start_date = 7;
+  // Last date, YYYY-MM-DD, the Sunday of the last week, for an anchored program; empty otherwise.
+  string end_date = 8;
+  // When the program was created.
+  google.protobuf.Timestamp created_at = 9;
+  // When the program last changed.
+  google.protobuf.Timestamp updated_at = 10;
+  // Summary of the program's weeks and days.
+  ProgramStructure structure = 11;
+  // Next day to do, for an active floating program; unset otherwise.
+  ProgramCursor cursor = 12;
+  // Anchored or floating; unspecified for a draft.
+  ProgramMode mode = 13;
+}
+
+// ProgramStructure summarises the weeks and days a script declares.
+message ProgramStructure {
+  // Number of weeks.
+  int32 weeks = 1;
+  // True when a floating program starts again at week 1 after the last week.
+  bool loop = 2;
+  // Every declared day, in week then day order.
+  repeated StructureDay days = 3;
+}
+
+// StructureDay is one day of a program's structure.
+message StructureDay {
+  // 1-based week.
+  int32 week = 1;
+  // 1-based day within the week; 0 for a meal day picked by kind.
+  int32 day = 2;
+  // Day name.
+  string name = 3;
+  // Day kind: "training", "conditioning", "rest" or "note".
+  string kind = 4;
+}
+
+// ProgramCursor is the next day of a floating program.
+message ProgramCursor {
+  // 1-based week of the next day.
+  int32 next_week = 1;
+  // 1-based day of the next day.
+  int32 next_day = 2;
+}
+
+// ProgramRevision is one saved version of a program's script.
+message ProgramRevision {
+  // Revision number, starting at 1.
+  int32 revision = 1;
+  // Script of this revision; empty unless include_script was set.
+  string script = 2;
+  // Who saved it: "user", "api" or "mcp".
+  string created_by = 3;
+  // When it was saved.
+  google.protobuf.Timestamp created_at = 4;
+  // Summary of this revision's weeks and days.
+  ProgramStructure structure = 5;
+}
+
+// ScriptError is an error at a position in a script.
+message ScriptError {
+  // 1-based line.
+  int32 line = 1;
+  // 1-based column; 0 when unknown.
+  int32 col = 2;
+  // What is wrong.
+  string message = 3;
+}
+
+// NameError is an exercise or food name the catalog does not know.
+message NameError {
+  // 1-based line of the name.
+  int32 line = 1;
+  // The unknown name.
+  string name = 2;
+  // Closest known names, best first.
+  repeated string suggestions = 3;
+}
+
+// SimulateAssumptions are the results SimulateProgram assumes for every workout.
+message SimulateAssumptions {
+  // Ignored: every planned set counts as completed unless the scenario says otherwise. Kept for older clients.
+  bool complete_all = 1;
+  // Reps done on every working set of an exercise, by catalog slug, overriding complete_all for it, for example {"squat-barbell": 3}.
+  map<string, int32> reps = 2 [(buf.validate.field).map = {
+    max_pairs: 100
+    values: {
+      int32: {
+        gte: 0
+        lte: 1000
+      }
+    }
+  }];
+}
+
+// ListProgramsRequest is the input of ListPrograms.
+message ListProgramsRequest {
+  // Only programs of this kind; unspecified lists both.
+  ProgramKind kind = 1 [(buf.validate.field).enum.defined_only = true];
+  // Only programs with this status; unspecified lists every status.
+  ProgramStatus status = 2 [(buf.validate.field).enum.defined_only = true];
+  // Maximum programs to return, at most 500; 0 means 100.
+  int32 limit = 3 [(buf.validate.field).int32 = {
+    gte: 0
+    lte: 500
+  }];
+  // next_cursor from the previous page; empty for the first page.
+  string cursor = 4 [(buf.validate.field).string.max_len = 512];
+}
+
+// ListProgramsResponse is the output of ListPrograms.
+message ListProgramsResponse {
+  // Programs, most recently changed first.
+  repeated Program programs = 1;
+  // Cursor for the next page; empty when has_more is false.
+  string next_cursor = 2;
+  // True when more results follow; call again with cursor set to next_cursor.
+  bool has_more = 3;
+}
+
+// GetProgramRequest is the input of GetProgram.
+message GetProgramRequest {
+  // Program id.
+  string id = 1 [(buf.validate.field).string.uuid = true];
+}
+
+// GetProgramResponse is the output of GetProgram.
+message GetProgramResponse {
+  // The program.
+  Program program = 1;
+}
+
+// CreateProgramRequest is the input of CreateProgram.
+message CreateProgramRequest {
+  // Workout or meal; must match the script's program(...) or meal_program(...) call.
+  ProgramKind kind = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: [0]
+  }];
+  // Starlark script, at most 256 KiB.
+  string script = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_bytes: 262144
+  }];
+}
+
+// CreateProgramResponse is the output of CreateProgram.
+message CreateProgramResponse {
+  // The new draft program.
+  Program program = 1;
+}
+
+// UpdateProgramRequest is the input of UpdateProgram.
+message UpdateProgramRequest {
+  // Program id.
+  string id = 1 [(buf.validate.field).string.uuid = true];
+  // New Starlark script, at most 256 KiB.
+  string script = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_bytes: 262144
+  }];
+}
+
+// UpdateProgramResponse is the output of UpdateProgram.
+message UpdateProgramResponse {
+  // The program at its new revision.
+  Program program = 1;
+}
+
+// DeleteProgramRequest is the input of DeleteProgram.
+message DeleteProgramRequest {
+  // Program id.
+  string id = 1 [(buf.validate.field).string.uuid = true];
+}
+
+// DeleteProgramResponse is the output of DeleteProgram.
+message DeleteProgramResponse {}
+
+// ValidateProgramRequest is the input of ValidateProgram.
+message ValidateProgramRequest {
+  // Workout or meal.
+  ProgramKind kind = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: [0]
+  }];
+  // Starlark script, at most 256 KiB.
+  string script = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_bytes: 262144
+  }];
+}
+
+// ValidateProgramResponse is the output of ValidateProgram. The script is valid when both error lists are empty.
+message ValidateProgramResponse {
+  // Syntax, evaluation and rule errors.
+  repeated ScriptError errors = 1;
+  // Exercise and food names the catalog does not know, with suggestions.
+  repeated NameError name_errors = 2;
+  // Summary of the program; set when the script is valid.
+  ProgramStructure structure = 3;
+}
+
+// SimulateProgramRequest is the input of SimulateProgram. Give script or program_id.
+message SimulateProgramRequest {
+  option (buf.validate.message).cel = {
+    id: "simulate.source"
+    message: "give script or program_id"
+    expression: "this.script != '' || this.program_id != ''"
+  };
+
+  // Workout or meal script, at most 256 KiB. With program_id, a script that replaces the program's for this run.
+  string script = 1 [
+    (buf.validate.field).string.max_bytes = 262144,
+    (buf.validate.field).ignore = IGNORE_IF_ZERO_VALUE
+  ];
+  // Number of weeks to run, 1 to 104.
+  int32 weeks = 2 [(buf.validate.field).int32 = {
+    gte: 1
+    lte: 104
+  }];
+  // Results to assume for every workout.
+  SimulateAssumptions assumptions = 3;
+  // Program to start from: its script unless script is given, its progression state, its position (the cursor, or today when anchored) and its dates when anchored. Empty to run a script from week 1.
+  string program_id = 4 [
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).ignore = IGNORE_IF_ZERO_VALUE
+  ];
+  // Week and day to start at; unset means the program's position, or week 1 day 1.
+  SimulatePosition from = 5;
+  // Date to start at, YYYY-MM-DD, instead of from; needs anchor_start_date or an anchored program.
+  string from_date = 6 [
+    (buf.validate.field).string.(plusultra.v1.date) = true,
+    (buf.validate.field).ignore = IGNORE_IF_ZERO_VALUE
+  ];
+  // Start date of week 1, YYYY-MM-DD (day 1 is its Monday), to date every session; an anchored program's own start date by default.
+  string anchor_start_date = 7 [
+    (buf.validate.field).string.(plusultra.v1.date) = true,
+    (buf.validate.field).ignore = IGNORE_IF_ZERO_VALUE
+  ];
+  // State to use instead of the user's, without saving it.
+  SimulateOverrides overrides = 8;
+  // What the user logged in particular sessions; every session not listed goes as planned.
+  repeated SimulateSession scenario = 9 [(buf.validate.field).repeated.max_items = 1000];
+  // Keeps only part of the days, compact lines and trace.
+  SimulateFilter filter = 10;
+  // Return compact, one text line per session. Full days are then left out unless include_days is true.
+  bool compact = 11;
+  // Return trace, one entry per progression run. Full days are then left out unless include_days is true.
+  bool trace = 12;
+  // Return the full days with compact or trace.
+  bool include_days = 13;
+  // Checks on the result, answered in assertions.
+  repeated SimulateExpectation expect = 14 [(buf.validate.field).repeated.max_items = 1000];
+  // A second script to run the same way; diff lists the cells that differ.
+  string compare_script = 15 [
+    (buf.validate.field).string.max_bytes = 262144,
+    (buf.validate.field).ignore = IGNORE_IF_ZERO_VALUE
+  ];
+  // A second scenario to run the same script with; diff lists the cells that differ.
+  repeated SimulateSession compare_scenario = 16 [(buf.validate.field).repeated.max_items = 1000];
+  // Meal program to map onto the run's dates, answered in meals; needs dated sessions.
+  string meal_program_id = 17 [
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).ignore = IGNORE_IF_ZERO_VALUE
+  ];
+  // Meal script to map onto the run's dates instead of a saved program, anchored like the workout.
+  string meal_script = 18 [
+    (buf.validate.field).string.max_bytes = 262144,
+    (buf.validate.field).ignore = IGNORE_IF_ZERO_VALUE
+  ];
+}
+
+// SimulatePosition is a week and day of a program.
+message SimulatePosition {
+  // 1-based week.
+  int32 week = 1 [(buf.validate.field).int32 = {
+    gte: 1
+    lte: 104
+  }];
+  // 1-based day; 0 means the first day of the week.
+  int32 day = 2 [(buf.validate.field).int32 = {
+    gte: 0
+    lte: 1000
+  }];
+}
+
+// SimulateOverrides replace parts of the user's state for one simulation.
+message SimulateOverrides {
+  // Rounding by exercise or equipment name, in the user's units, for example {"Squat": {"kind": "plates", "bar": 20, "plates": [2.5, 5, 10, 20]}}.
+  map<string, Rounding> rounding = 1 [(buf.validate.field).map.max_pairs = 100];
+  // 1RM by exercise name, for example {"Deadlift": {"value": 115}}.
+  map<string, Weight> rm1 = 2 [(buf.validate.field).map.max_pairs = 100];
+  // Bodyweight for bw() loads.
+  Weight bodyweight = 3;
+}
+
+// SimulateSession is what the user logged for one exercise of one session. Without sets, every planned set is completed, changed by the shorthands.
+message SimulateSession {
+  // Program week of the session.
+  int32 week = 1 [(buf.validate.field).int32 = {
+    gte: 1
+    lte: 104
+  }];
+  // Day of the session.
+  int32 day = 2 [(buf.validate.field).int32 = {
+    gte: 1
+    lte: 1000
+  }];
+  // Exercise name, any alternate, matched ignoring case.
+  string exercise = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 200
+  }];
+  // Label of the exercise instance; empty for an unlabeled one.
+  string label = 4 [(buf.validate.field).string.max_len = 100];
+  // Working sets as logged, in order; wins over the shorthands.
+  repeated SimulateSet sets = 5 [(buf.validate.field).repeated.max_items = 1000];
+  // Weight lifted on every set instead of the plan.
+  Weight weight = 6;
+  // Added to every planned weight, negative to lift less.
+  Weight weight_delta = 7;
+  // Reps short of the target on the last set.
+  int32 miss_last_set_by = 8 [(buf.validate.field).int32 = {
+    gte: 0
+    lte: 1000
+  }];
+  // True to leave the exercise unlogged, so its progression does not run.
+  bool skip = 9;
+  // Answers to the progression's prompt() state by name: a number, true/false or text, for example {"rating": "4"}.
+  map<string, string> prompts = 10 [(buf.validate.field).map = {
+    max_pairs: 50
+    values: {
+      string: {max_len: 200}
+    }
+  }];
+}
+
+// SimulateSet is one logged working set.
+message SimulateSet {
+  // Weight lifted.
+  Weight weight = 1;
+  // Reps done.
+  int32 reps = 2 [(buf.validate.field).int32 = {
+    gte: 0
+    lte: 1000
+  }];
+  // True when the set was done.
+  bool completed = 3;
+  // RPE reached; 0 for none.
+  double rpe = 4 [(buf.validate.field).double = {
+    gte: 0
+    lte: 10
+  }];
+}
+
+// SimulateFilter keeps part of a simulation's output.
+message SimulateFilter {
+  // Only these exercises, any alternate name, ignoring case.
+  repeated string exercises = 1 [(buf.validate.field).repeated.max_items = 100];
+  // Only these program weeks.
+  repeated int32 weeks = 2 [(buf.validate.field).repeated.max_items = 104];
+  // Only these days of the week.
+  repeated int32 days = 3 [(buf.validate.field).repeated.max_items = 100];
+  // Leave warmup sets out.
+  bool working_only = 4;
+}
+
+// SimulateExpectation is a check on one set of the simulated schedule.
+message SimulateExpectation {
+  // Program week.
+  int32 week = 1 [(buf.validate.field).int32 = {
+    gte: 1
+    lte: 104
+  }];
+  // Day of the week.
+  int32 day = 2 [(buf.validate.field).int32 = {
+    gte: 1
+    lte: 1000
+  }];
+  // Exercise name, any alternate, ignoring case.
+  string exercise = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 200
+  }];
+  // 1-based working set; 0 means the first.
+  int32 set = 4 [(buf.validate.field).int32 = {
+    gte: 0
+    lte: 1000
+  }];
+  // Expected weight; unset to skip the check.
+  Weight weight = 5;
+  // Expected reps; 0 to skip the check.
+  int32 reps = 6 [(buf.validate.field).int32 = {
+    gte: 0
+    lte: 1000
+  }];
+}
+
+// SimulateProgramResponse is the output of SimulateProgram.
+message SimulateProgramResponse {
+  // Workout days in order, each after the progressions of the days before it, dated when anchored; empty for a meal script, and left out when compact or trace is asked for without include_days.
+  repeated ResolvedDay days = 1;
+  // Lines printed by the script's print() calls.
+  repeated string output = 2;
+  // Errors that stopped the simulation; days is empty when set.
+  repeated ScriptError errors = 3;
+  // Meal days of a meal script, in week then day order; days is empty then.
+  repeated ResolvedMealDay meal_days = 4;
+  // One line per session, working sets grouped, weights in the user's units: "W2D3 Wed 2026-11-25 Lower B | Deadlift 115x5 x3, 100x5 x2 | Hack Squat 45x8 x3".
+  repeated string compact = 5;
+  // One entry per progression run, in order.
+  repeated SessionTrace trace = 6;
+  // What the program does that its author may not intend.
+  repeated SimulateWarning warnings = 7;
+  // One answer per expect entry, in order.
+  repeated SimulateAssertion assertions = 8;
+  // Cells where the compare run differs from the main run; empty when nothing differs or nothing was compared.
+  repeated SimulateDiff diff = 9;
+  // The meal day of every date of the run, when a meal program or script was given.
+  repeated SimulateMealDay meals = 10;
+}
+
+// SessionTrace is one progression run of a simulation.
+message SessionTrace {
+  // Program week of the session.
+  int32 week = 1;
+  // Day of the session.
+  int32 day = 2;
+  // Date of the session, YYYY-MM-DD, when anchored.
+  string date = 3;
+  // Exercise name.
+  string exercise = 4;
+  // Exercise label; empty for an unlabeled one.
+  string label = 5;
+  // Progression that ran: "lp", "dp", "sum_reps" or the custom function's name.
+  string function = 6;
+  // ctx.state before the run, values as the script prints them.
+  map<string, string> state_before = 7;
+  // ctx.state after the run.
+  map<string, string> state_after = 8;
+  // Overlay entries the run wrote.
+  repeated OverlayWrite writes = 9;
+  // print() output of the run.
+  repeated string prints = 10;
+}
+
+// OverlayWrite is one overlay entry a progression wrote.
+message OverlayWrite {
+  // Field and address: "weights Squat" for every set, "reps Squat[w2 d1 s3]" narrowed to week 2, day 1, set 3; labels as "Squat:heavy".
+  string address = 1;
+  // "absolute" replaces the script value; "relative" adds to it, so per-week script values stay different.
+  string kind = 2;
+  // The value written, such as "+2.5 kg", "x0.9", "100 kg", "+1" or "5".
+  string value = 3;
+}
+
+// SimulateWarning flags something a program does that its author may not intend.
+message SimulateWarning {
+  // One of rounding_moved (a weight rounded to something else), rounding_source (which rounding an exercise uses, once per exercise), stalled_progression (the step is smaller than the equipment loads), pct_without_rm1, double_progression_in_week, truncated.
+  string code = 1;
+  // Program week where it was first seen.
+  int32 week = 2;
+  // Day where it was first seen.
+  int32 day = 3;
+  // Exercise concerned.
+  string exercise = 4;
+  // What happened and what to do.
+  string message = 5;
+}
+
+// SimulateAssertion answers one expectation.
+message SimulateAssertion {
+  // The expectation checked.
+  SimulateExpectation expect = 1;
+  // True when the set matched.
+  bool ok = 2;
+  // The set as simulated, such as "102.5 kg x5"; empty when the session or set does not exist.
+  string actual = 3;
+  // Why it failed; empty when ok.
+  string message = 4;
+}
+
+// SimulateDiff is one cell that differs between the main run (a) and the compare run (b).
+message SimulateDiff {
+  // Program week.
+  int32 week = 1;
+  // Day of the week.
+  int32 day = 2;
+  // Exercise name; empty when a whole day differs.
+  string exercise = 3;
+  // 1-based working set; 0 when the cell is not a set.
+  int32 set = 4;
+  // "weight", "reps", "sets" (the set count), "exercise" or "day" (present in one run only).
+  string field = 5;
+  // Value in the main run.
+  string a = 6;
+  // Value in the compare run.
+  string b = 7;
+}
+
+// SimulateMealDay is the meal day planned on one date of a simulated run.
+message SimulateMealDay {
+  // Date, YYYY-MM-DD.
+  string date = 1;
+  // Meal day name; empty when missing.
+  string name = 2;
+  // Workout day kind on that date: "training", "conditioning" or "rest".
+  string kind = 3;
+  // Sum of the planned items' macros.
+  Macros totals = 4;
+  // Daily target; the totals when the program sets none.
+  Macros target = 5;
+  // True when the meal program has no day for this date.
+  bool missing = 6;
+}
+
+// ActivateProgramRequest is the input of ActivateProgram.
+message ActivateProgramRequest {
+  // Program id.
+  string id = 1 [(buf.validate.field).string.uuid = true];
+  // First date, YYYY-MM-DD, to anchor day numbers to weekdays (day 1 is Monday); empty to run floating.
+  string start_date = 2 [
+    (buf.validate.field).string.(plusultra.v1.date) = true,
+    (buf.validate.field).ignore = IGNORE_IF_ZERO_VALUE
+  ];
+}
+
+// ActivateProgramResponse is the output of ActivateProgram.
+message ActivateProgramResponse {
+  // The active program.
+  Program program = 1;
+}
+
+// FinishProgramRequest is the input of FinishProgram.
+message FinishProgramRequest {
+  // Program id.
+  string id = 1 [(buf.validate.field).string.uuid = true];
+}
+
+// FinishProgramResponse is the output of FinishProgram.
+message FinishProgramResponse {
+  // The finished program.
+  Program program = 1;
+}
+
+// ListRevisionsRequest is the input of ListRevisions.
+message ListRevisionsRequest {
+  // Program id.
+  string program_id = 1 [(buf.validate.field).string.uuid = true];
+  // True to include each revision's script.
+  bool include_script = 2;
+  // Maximum revisions to return, at most 500; 0 means 100.
+  int32 limit = 3 [(buf.validate.field).int32 = {
+    gte: 0
+    lte: 500
+  }];
+  // next_cursor from the previous page; empty for the first page.
+  string cursor = 4 [(buf.validate.field).string.max_len = 512];
+}
+
+// ListRevisionsResponse is the output of ListRevisions.
+message ListRevisionsResponse {
+  // Revisions, newest first.
+  repeated ProgramRevision revisions = 1;
+  // Cursor for the next page; empty when has_more is false.
+  string next_cursor = 2;
+  // True when more results follow; call again with cursor set to next_cursor.
+  bool has_more = 3;
+}
+
+// GetResolvedDaysRequest is the input of GetResolvedDays.
+message GetResolvedDaysRequest {
+  // Program id of an active program.
+  string program_id = 1 [(buf.validate.field).string.uuid = true];
+  // 1-based week to return; 0 returns every week.
+  int32 week = 2 [(buf.validate.field).int32.gte = 0];
+}
+
+// GetResolvedDaysResponse is the output of GetResolvedDays.
+message GetResolvedDaysResponse {
+  // Workout days, in week then day order; empty for a meal program.
+  repeated ResolvedDay days = 1;
+  // Meal days, in week then day order; empty for a workout program.
+  repeated ResolvedMealDay meal_days = 2;
+}

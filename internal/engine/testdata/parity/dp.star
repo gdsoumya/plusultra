@@ -1,0 +1,6 @@
+# Reference syntax: Bench Press / 3x8 60kg / progress: dp(2.5kg, 8, 12)
+#              Lateral Raise / 3x12 10kg / progress: dp(2.5kg, 8, 12)   (at the top: reps reset, weight up)
+program("dp", weeks=2)
+day(1, 1, "Upper", weeks="1-2")
+ex("Bench Press", warmup=[], sets=[s(3, 8, kg(60))], progress=dp(kg(2.5), 8, 12))
+ex("Lateral Raise", eq="dumbbell", warmup=[], sets=[s(3, 12, kg(10))], progress=dp(kg(2.5), 8, 12))

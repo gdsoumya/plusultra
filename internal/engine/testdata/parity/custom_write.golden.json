@@ -1,0 +1,1236 @@
+{
+  "Program": {
+    "Name": "Custom progress writes",
+    "Notes": "",
+    "Weeks": 2,
+    "Units": "kg",
+    "Loop": true,
+    "WeekDesc": {}
+  },
+  "Weeks": [
+    {
+      "Week": 1,
+      "Day": 1,
+      "Name": "Full body",
+      "Desc": "",
+      "Kind": "training",
+      "Exercises": [
+        {
+          "Name": "Squat",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Squat"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "",
+          "Progression": "Custom (sets_and_load)",
+          "Sets": [
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 100,
+                "Unit": "kg"
+              },
+              "RPE": 7,
+              "Rest": 120,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 100,
+                "Unit": "kg"
+              },
+              "RPE": 7,
+              "Rest": 120,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 100,
+                "Unit": "kg"
+              },
+              "RPE": 7,
+              "Rest": 120,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        },
+        {
+          "Name": "Bench Press",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Bench Press"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "",
+          "Progression": "Custom (one_rm)",
+          "Sets": [
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 70,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 70,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 70,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        },
+        {
+          "Name": "Overhead Press",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Overhead Press"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "",
+          "Progression": "Custom (timers_and_flags)",
+          "Sets": [
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 40,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 30,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 40,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 30,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 40,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 30,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        },
+        {
+          "Name": "Deadlift",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Deadlift",
+            "Deadlift, Trap Bar"
+          ],
+          "Current": 1,
+          "Desc": "Hook grip",
+          "Superset": "",
+          "Progression": "Custom (indexes)",
+          "Sets": [
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 140,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Week": 2,
+      "Day": 1,
+      "Name": "Full body",
+      "Desc": "",
+      "Kind": "training",
+      "Exercises": [
+        {
+          "Name": "Squat",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Squat"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "",
+          "Progression": "Custom (sets_and_load)",
+          "Sets": [
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 100,
+                "Unit": "kg"
+              },
+              "RPE": 7,
+              "Rest": 120,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 100,
+                "Unit": "kg"
+              },
+              "RPE": 7,
+              "Rest": 120,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 100,
+                "Unit": "kg"
+              },
+              "RPE": 7,
+              "Rest": 120,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        },
+        {
+          "Name": "Bench Press",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Bench Press"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "",
+          "Progression": "Custom (one_rm)",
+          "Sets": [
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 70,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 70,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 70,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        },
+        {
+          "Name": "Overhead Press",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Overhead Press"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "",
+          "Progression": "Custom (timers_and_flags)",
+          "Sets": [
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 40,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 30,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 40,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 30,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 40,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 30,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        },
+        {
+          "Name": "Deadlift",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Deadlift",
+            "Deadlift, Trap Bar"
+          ],
+          "Current": 1,
+          "Desc": "Hook grip",
+          "Superset": "",
+          "Progression": "Custom (indexes)",
+          "Sets": [
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 140,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "Updates": [
+    {
+      "Exercise": "Squat",
+      "SetIndex": 0,
+      "Sets": [
+        {
+          "Reps": 5,
+          "MinReps": 5,
+          "Weight": {
+            "Value": 100,
+            "Unit": "kg"
+          },
+          "RPE": 7,
+          "Rest": 120,
+          "Work": 40,
+          "Amrap": false,
+          "Ask": true,
+          "LogRPE": true,
+          "Auto": false,
+          "CountUp": false,
+          "Warmup": false,
+          "Label": ""
+        },
+        {
+          "Reps": 5,
+          "MinReps": 5,
+          "Weight": {
+            "Value": 100,
+            "Unit": "kg"
+          },
+          "RPE": 7,
+          "Rest": 120,
+          "Work": 40,
+          "Amrap": false,
+          "Ask": true,
+          "LogRPE": true,
+          "Auto": false,
+          "CountUp": false,
+          "Warmup": false,
+          "Label": ""
+        },
+        {
+          "Reps": 5,
+          "MinReps": 5,
+          "Weight": {
+            "Value": 100,
+            "Unit": "kg"
+          },
+          "RPE": 7,
+          "Rest": 120,
+          "Work": 40,
+          "Amrap": true,
+          "Ask": true,
+          "LogRPE": true,
+          "Auto": false,
+          "CountUp": false,
+          "Warmup": false,
+          "Label": ""
+        }
+      ]
+    },
+    {
+      "Exercise": "Squat",
+      "SetIndex": 1,
+      "Sets": [
+        {
+          "Reps": 5,
+          "MinReps": 5,
+          "Weight": {
+            "Value": 100,
+            "Unit": "kg"
+          },
+          "RPE": 7,
+          "Rest": 120,
+          "Work": 0,
+          "Amrap": false,
+          "Ask": false,
+          "LogRPE": false,
+          "Auto": false,
+          "CountUp": false,
+          "Warmup": false,
+          "Label": ""
+        },
+        {
+          "Reps": 5,
+          "MinReps": 5,
+          "Weight": {
+            "Value": 100,
+            "Unit": "kg"
+          },
+          "RPE": 7,
+          "Rest": 120,
+          "Work": 0,
+          "Amrap": false,
+          "Ask": false,
+          "LogRPE": false,
+          "Auto": false,
+          "CountUp": false,
+          "Warmup": false,
+          "Label": ""
+        },
+        {
+          "Reps": 5,
+          "MinReps": 5,
+          "Weight": {
+            "Value": 100,
+            "Unit": "kg"
+          },
+          "RPE": 7,
+          "Rest": 120,
+          "Work": 0,
+          "Amrap": false,
+          "Ask": false,
+          "LogRPE": false,
+          "Auto": false,
+          "CountUp": false,
+          "Warmup": false,
+          "Label": ""
+        }
+      ]
+    }
+  ],
+  "Progress": {
+    "Print": null,
+    "State": {
+      "Deadlift": {
+        "count": "1"
+      }
+    },
+    "Weeks": [
+      {
+        "Week": 1,
+        "Day": 1,
+        "Name": "Full body",
+        "Desc": "",
+        "Kind": "training",
+        "Exercises": [
+          {
+            "Name": "Squat",
+            "Equipment": "",
+            "Label": "",
+            "Alternates": [
+              "Squat"
+            ],
+            "Current": 1,
+            "Desc": "",
+            "Superset": "",
+            "Progression": "Custom (sets_and_load)",
+            "Sets": [
+              {
+                "Reps": 6,
+                "MinReps": 4,
+                "Weight": {
+                  "Value": 105,
+                  "Unit": "kg"
+                },
+                "RPE": 8.5,
+                "Rest": 150,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 5,
+                "MinReps": 4,
+                "Weight": {
+                  "Value": 105,
+                  "Unit": "kg"
+                },
+                "RPE": 8.5,
+                "Rest": 150,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 5,
+                "MinReps": 4,
+                "Weight": {
+                  "Value": 105,
+                  "Unit": "kg"
+                },
+                "RPE": 8.5,
+                "Rest": 150,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 5,
+                "MinReps": 4,
+                "Weight": {
+                  "Value": 105,
+                  "Unit": "kg"
+                },
+                "RPE": 8.5,
+                "Rest": 150,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              }
+            ]
+          },
+          {
+            "Name": "Bench Press",
+            "Equipment": "",
+            "Label": "",
+            "Alternates": [
+              "Bench Press"
+            ],
+            "Current": 1,
+            "Desc": "",
+            "Superset": "",
+            "Progression": "Custom (one_rm)",
+            "Sets": [
+              {
+                "Reps": 5,
+                "MinReps": 5,
+                "Weight": {
+                  "Value": 72.5,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 5,
+                "MinReps": 5,
+                "Weight": {
+                  "Value": 72.5,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 5,
+                "MinReps": 5,
+                "Weight": {
+                  "Value": 72.5,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              }
+            ]
+          },
+          {
+            "Name": "Overhead Press",
+            "Equipment": "",
+            "Label": "",
+            "Alternates": [
+              "Overhead Press"
+            ],
+            "Current": 1,
+            "Desc": "",
+            "Superset": "",
+            "Progression": "Custom (timers_and_flags)",
+            "Sets": [
+              {
+                "Reps": 5,
+                "MinReps": 5,
+                "Weight": {
+                  "Value": 40,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 45,
+                "Amrap": false,
+                "Ask": true,
+                "LogRPE": true,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 5,
+                "MinReps": 5,
+                "Weight": {
+                  "Value": 40,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 45,
+                "Amrap": false,
+                "Ask": true,
+                "LogRPE": true,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 5,
+                "MinReps": 5,
+                "Weight": {
+                  "Value": 40,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 45,
+                "Amrap": true,
+                "Ask": true,
+                "LogRPE": true,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              }
+            ]
+          },
+          {
+            "Name": "Deadlift, Trap Bar",
+            "Equipment": "Trap Bar",
+            "Label": "",
+            "Alternates": [
+              "Deadlift",
+              "Deadlift, Trap Bar"
+            ],
+            "Current": 2,
+            "Desc": "Mixed grip",
+            "Superset": "",
+            "Progression": "Custom (indexes)",
+            "Sets": [
+              {
+                "Reps": 3,
+                "MinReps": 3,
+                "Weight": {
+                  "Value": 150,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 3,
+                "MinReps": 3,
+                "Weight": {
+                  "Value": 150,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 3,
+                "MinReps": 3,
+                "Weight": {
+                  "Value": 150,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "Week": 2,
+        "Day": 1,
+        "Name": "Full body",
+        "Desc": "",
+        "Kind": "training",
+        "Exercises": [
+          {
+            "Name": "Squat",
+            "Equipment": "",
+            "Label": "",
+            "Alternates": [
+              "Squat"
+            ],
+            "Current": 1,
+            "Desc": "",
+            "Superset": "",
+            "Progression": "Custom (sets_and_load)",
+            "Sets": [
+              {
+                "Reps": 6,
+                "MinReps": 4,
+                "Weight": {
+                  "Value": 105,
+                  "Unit": "kg"
+                },
+                "RPE": 8.5,
+                "Rest": 150,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 5,
+                "MinReps": 4,
+                "Weight": {
+                  "Value": 105,
+                  "Unit": "kg"
+                },
+                "RPE": 8.5,
+                "Rest": 150,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 5,
+                "MinReps": 4,
+                "Weight": {
+                  "Value": 105,
+                  "Unit": "kg"
+                },
+                "RPE": 8.5,
+                "Rest": 150,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 5,
+                "MinReps": 4,
+                "Weight": {
+                  "Value": 105,
+                  "Unit": "kg"
+                },
+                "RPE": 8.5,
+                "Rest": 150,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              }
+            ]
+          },
+          {
+            "Name": "Bench Press",
+            "Equipment": "",
+            "Label": "",
+            "Alternates": [
+              "Bench Press"
+            ],
+            "Current": 1,
+            "Desc": "",
+            "Superset": "",
+            "Progression": "Custom (one_rm)",
+            "Sets": [
+              {
+                "Reps": 5,
+                "MinReps": 5,
+                "Weight": {
+                  "Value": 72.5,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 5,
+                "MinReps": 5,
+                "Weight": {
+                  "Value": 72.5,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 5,
+                "MinReps": 5,
+                "Weight": {
+                  "Value": 72.5,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              }
+            ]
+          },
+          {
+            "Name": "Overhead Press",
+            "Equipment": "",
+            "Label": "",
+            "Alternates": [
+              "Overhead Press"
+            ],
+            "Current": 1,
+            "Desc": "",
+            "Superset": "",
+            "Progression": "Custom (timers_and_flags)",
+            "Sets": [
+              {
+                "Reps": 5,
+                "MinReps": 5,
+                "Weight": {
+                  "Value": 40,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 45,
+                "Amrap": false,
+                "Ask": true,
+                "LogRPE": true,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 5,
+                "MinReps": 5,
+                "Weight": {
+                  "Value": 40,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 45,
+                "Amrap": false,
+                "Ask": true,
+                "LogRPE": true,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 5,
+                "MinReps": 5,
+                "Weight": {
+                  "Value": 40,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 45,
+                "Amrap": true,
+                "Ask": true,
+                "LogRPE": true,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              }
+            ]
+          },
+          {
+            "Name": "Deadlift, Trap Bar",
+            "Equipment": "Trap Bar",
+            "Label": "",
+            "Alternates": [
+              "Deadlift",
+              "Deadlift, Trap Bar"
+            ],
+            "Current": 2,
+            "Desc": "Mixed grip",
+            "Superset": "",
+            "Progression": "Custom (indexes)",
+            "Sets": [
+              {
+                "Reps": 3,
+                "MinReps": 3,
+                "Weight": {
+                  "Value": 150,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 3,
+                "MinReps": 3,
+                "Weight": {
+                  "Value": 150,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 3,
+                "MinReps": 3,
+                "Weight": {
+                  "Value": 150,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

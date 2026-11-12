@@ -1,0 +1,20 @@
+# plusultra
+
+> plusultra is a self-hosted training and nutrition server. Workout and meal programs are Starlark scripts that the server evaluates and resolves for each user; nothing runs on clients. Its API is ConnectRPC, and the same operations are MCP tools at `{{.URL}}/mcp`.
+
+- Workout programs are `program(...)` scripts with days, exercises, set groups and progressions. Meal programs are `meal_program(...)` scripts with foods, meals and daily targets.
+- The server stores each script byte for byte. Editing one saves a new revision. Progression results live in an overlay, never in the script.
+- A program is activated anchored, with a start date and weekday-numbered days, or floating, as a sequence of days with a cursor. One workout and one meal program can be active at once.
+- MCP tools are generated from the API's proto definitions: each tool's name and description come from its tool annotation in the proto, and each argument's description from the field's comment. Tool names are snake_case with a service prefix, such as `program_validate` for the ValidateProgram RPC. MCP calls need an API key as a Bearer token.
+- The reference tools (`reference_get_program_language`, `reference_get_program_examples`, `reference_get_meal_language`, `reference_get_log_format`) return these same documents, and they need no sign-in.
+
+## Docs
+
+- [Program language reference]({{.URL}}/llms/program-language.md): every workout function, `ctx` for progress and update scripts, resolution rules, Reference syntax equivalents and common mistakes. Read it before writing a workout program.
+- [Program examples]({{.URL}}/llms/program-examples.md): complete workout and meal programs, including a multi-phase strength plan.
+- [Meal language reference]({{.URL}}/llms/meal-language.md): foods, meals, kind days, targets and catalog snapshots.
+- [Day log format]({{.URL}}/llms/log-format.md): the text format of exported and imported day logs.
+
+## Workflow for an assistant
+
+Read the program language reference and the examples first. Find exercise names with `exercise_search` (SearchExercises) and foods with `food_search` (SearchFoods). Write the script, then call `program_validate` (ValidateProgram) and fix every error it reports by line. Call `program_simulate` (SimulateProgram) to check the resolved weeks: a workout script or saved program under a logged scenario, with `compact: true` and its warnings first, then a trace, assertions or a diff when needed (see "Verifying a program" in the program language reference); a meal script returns its days resolved against the food catalog with totals and targets. Then `program_create` (CreateProgram) saves the script as a draft, and `program_activate` (ActivateProgram) starts it, with a start_date for an anchored program or without one for a floating program. To change a program later, `program_update` (UpdateProgram) saves a new revision and keeps progression state for exercises that still exist. Never write `state({...})` or `catalog_snapshot({...})` blocks by hand; export adds them.

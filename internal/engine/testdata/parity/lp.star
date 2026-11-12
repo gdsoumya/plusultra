@@ -1,0 +1,13 @@
+# Reference syntax: Squat / 3x5 100kg / progress: lp(2.5kg)
+#              Deadlift / 1x5 140kg / progress: lp(5kg, 2, 1)       (2 successes, 1 banked)
+#              Bench Press / 3x5 80kg / progress: lp(2.5kg, 3)      (fail_reset scales after 3 failures)
+#              Overhead Press / 3x5 40kg / progress: lp(5%)
+#              Row / 3x8 60kg / progress: lp(2.5kg, 1, 0, 5kg, 3)  (absolute decrement)
+program("lp", weeks=2)
+
+day(1, 1, "Full body", weeks="1-2")
+ex("Squat", warmup=[], sets=[s(3, 5, kg(100))], progress=lp(kg(2.5)))
+ex("Deadlift", warmup=[], sets=[s(1, 5, kg(140))], progress=lp(kg(5), after=2), state={"successes": 1})
+ex("Bench Press", warmup=[], sets=[s(3, 5, kg(80))], progress=lp(kg(2.5), after=3, fail_reset=0.9))
+ex("Overhead Press", warmup=[], sets=[s(3, 5, kg(40))], progress=lp(pct(5)))
+ex("Row", warmup=[], sets=[s(3, 8, kg(60))], progress=lp(kg(2.5), fail_after=3, fail_dec=kg(5)))

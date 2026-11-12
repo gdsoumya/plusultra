@@ -1,0 +1,5 @@
+meal_program("Ref", weeks=1)
+oats = food("Oats", ref="usda:173904")
+banana = food("Banana", ref="usda:173944", per100g={"kcal": 89})
+day(1, 1)
+meal("Breakfast", oats(50), banana(100))

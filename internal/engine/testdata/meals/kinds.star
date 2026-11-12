@@ -1,0 +1,6 @@
+meal_program("Kinds", weeks=2)
+oats = food("Oats", per100g={"kcal": 380})
+day(1, kind="training", target=target(kcal=2600))
+meal("Breakfast", oats(100))
+day(1, kind="rest", target=target(kcal=2100))
+day(1, 2, "Heavy", target=target(kcal=3000))

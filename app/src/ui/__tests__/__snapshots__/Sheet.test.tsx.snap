@@ -1,0 +1,898 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`Sheet matches snapshot (1 x) 1`] = `
+<Modal
+  animationType="none"
+  navigationBarTranslucent={true}
+  onRequestClose={[Function]}
+  statusBarTranslucent={true}
+  transparent={true}
+  visible={true}
+>
+  <View
+    style={
+      {
+        "flex": 1,
+      }
+    }
+  >
+    <View
+      collapsable={false}
+      jestAnimatedProps={
+        {
+          "value": {},
+        }
+      }
+      jestAnimatedStyle={
+        {
+          "value": {
+            "opacity": 1,
+          },
+        }
+      }
+      jestInlineStyle={
+        [
+          {
+            "bottom": 0,
+            "left": 0,
+            "position": "absolute",
+            "right": 0,
+            "top": 0,
+          },
+          {
+            "backgroundColor": "rgba(0, 0, 0, 0.7)",
+          },
+        ]
+      }
+      style={
+        [
+          {
+            "bottom": 0,
+            "left": 0,
+            "position": "absolute",
+            "right": 0,
+            "top": 0,
+          },
+          {
+            "backgroundColor": "rgba(0, 0, 0, 0.7)",
+          },
+          {
+            "opacity": 0,
+          },
+        ]
+      }
+    >
+      <View
+        accessibilityLabel="Close"
+        accessibilityRole="button"
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          {
+            "flex": 1,
+          }
+        }
+      />
+    </View>
+    <View
+      onLayout={[Function]}
+      pointerEvents="box-none"
+      style={
+        [
+          {
+            "flex": 1,
+          },
+          {
+            "paddingBottom": 0,
+          },
+        ]
+      }
+    >
+      <View
+        onLayout={[Function]}
+        pointerEvents="box-none"
+        style={
+          {
+            "flex": 1,
+            "justifyContent": "flex-end",
+          }
+        }
+      >
+        <View
+          accessibilityViewIsModal={true}
+          collapsable={false}
+          jestAnimatedProps={
+            {
+              "value": {},
+            }
+          }
+          jestAnimatedStyle={
+            {
+              "value": {
+                "height": 667,
+                "transform": [
+                  {
+                    "translateY": 0,
+                  },
+                ],
+              },
+            }
+          }
+          jestInlineStyle={
+            [
+              {
+                "backgroundColor": "#15171C",
+                "borderColor": "#2A2E37",
+                "paddingBottom": 16,
+              },
+              {
+                "alignSelf": "center",
+                "borderBottomWidth": 0,
+                "borderTopLeftRadius": 16,
+                "borderTopRightRadius": 16,
+                "borderWidth": 1,
+                "maxWidth": 752,
+                "overflow": "hidden",
+                "paddingHorizontal": 16,
+                "width": "100%",
+              },
+            ]
+          }
+          style={
+            [
+              {
+                "backgroundColor": "#15171C",
+                "borderColor": "#2A2E37",
+                "paddingBottom": 16,
+              },
+              {
+                "alignSelf": "center",
+                "borderBottomWidth": 0,
+                "borderTopLeftRadius": 16,
+                "borderTopRightRadius": 16,
+                "borderWidth": 1,
+                "maxWidth": 752,
+                "overflow": "hidden",
+                "paddingHorizontal": 16,
+                "width": "100%",
+              },
+              {
+                "height": 667,
+                "transform": [
+                  {
+                    "translateY": 667,
+                  },
+                ],
+              },
+            ]
+          }
+        >
+          <View
+            handlerTags={
+              [
+                1,
+              ]
+            }
+            onGestureHandlerEvent={[Function]}
+            onGestureHandlerStateChange={[Function]}
+            onGestureHandlerTouchEvent={[Function]}
+            onStartShouldSetResponder={[Function]}
+            pointerEvents="box-none"
+            style={
+              {
+                "display": "contents",
+              }
+            }
+          >
+            <View
+              style={
+                {
+                  "gap": 12,
+                  "minHeight": 44,
+                  "paddingBottom": 12,
+                  "paddingTop": 8,
+                }
+              }
+            >
+              <View
+                style={
+                  [
+                    {
+                      "alignSelf": "center",
+                      "borderRadius": 2,
+                      "height": 4,
+                      "width": 40,
+                    },
+                    {
+                      "backgroundColor": "#9AA0A6",
+                    },
+                  ]
+                }
+              />
+              <Text
+                numberOfLines={2}
+                style={
+                  [
+                    {
+                      "fontSize": 20,
+                      "fontWeight": "600",
+                      "letterSpacing": -0.2,
+                      "lineHeight": 26,
+                    },
+                    {
+                      "color": "#F2F3F5",
+                    },
+                    undefined,
+                  ]
+                }
+              >
+                Log set
+              </Text>
+            </View>
+          </View>
+          <RCTScrollView
+            contentContainerStyle={
+              {
+                "flexGrow": 1,
+                "gap": 12,
+              }
+            }
+            keyboardShouldPersistTaps="handled"
+            style={
+              {
+                "flex": 1,
+              }
+            }
+          >
+            <View>
+              <Text
+                style={
+                  [
+                    {
+                      "fontSize": 16,
+                      "fontWeight": "400",
+                      "letterSpacing": 0,
+                      "lineHeight": 22,
+                    },
+                    {
+                      "color": "#F2F3F5",
+                    },
+                    undefined,
+                  ]
+                }
+              >
+                Sheet body
+              </Text>
+            </View>
+          </RCTScrollView>
+        </View>
+      </View>
+    </View>
+  </View>
+</Modal>
+`;
+
+exports[`Sheet matches snapshot (1.3 x) 1`] = `
+<Modal
+  animationType="none"
+  navigationBarTranslucent={true}
+  onRequestClose={[Function]}
+  statusBarTranslucent={true}
+  transparent={true}
+  visible={true}
+>
+  <View
+    style={
+      {
+        "flex": 1,
+      }
+    }
+  >
+    <View
+      collapsable={false}
+      jestAnimatedProps={
+        {
+          "value": {},
+        }
+      }
+      jestAnimatedStyle={
+        {
+          "value": {
+            "opacity": 1,
+          },
+        }
+      }
+      jestInlineStyle={
+        [
+          {
+            "bottom": 0,
+            "left": 0,
+            "position": "absolute",
+            "right": 0,
+            "top": 0,
+          },
+          {
+            "backgroundColor": "rgba(0, 0, 0, 0.7)",
+          },
+        ]
+      }
+      style={
+        [
+          {
+            "bottom": 0,
+            "left": 0,
+            "position": "absolute",
+            "right": 0,
+            "top": 0,
+          },
+          {
+            "backgroundColor": "rgba(0, 0, 0, 0.7)",
+          },
+          {
+            "opacity": 0,
+          },
+        ]
+      }
+    >
+      <View
+        accessibilityLabel="Close"
+        accessibilityRole="button"
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          {
+            "flex": 1,
+          }
+        }
+      />
+    </View>
+    <View
+      onLayout={[Function]}
+      pointerEvents="box-none"
+      style={
+        [
+          {
+            "flex": 1,
+          },
+          {
+            "paddingBottom": 0,
+          },
+        ]
+      }
+    >
+      <View
+        onLayout={[Function]}
+        pointerEvents="box-none"
+        style={
+          {
+            "flex": 1,
+            "justifyContent": "flex-end",
+          }
+        }
+      >
+        <View
+          accessibilityViewIsModal={true}
+          collapsable={false}
+          jestAnimatedProps={
+            {
+              "value": {},
+            }
+          }
+          jestAnimatedStyle={
+            {
+              "value": {
+                "height": 667,
+                "transform": [
+                  {
+                    "translateY": 0,
+                  },
+                ],
+              },
+            }
+          }
+          jestInlineStyle={
+            [
+              {
+                "backgroundColor": "#15171C",
+                "borderColor": "#2A2E37",
+                "paddingBottom": 16,
+              },
+              {
+                "alignSelf": "center",
+                "borderBottomWidth": 0,
+                "borderTopLeftRadius": 16,
+                "borderTopRightRadius": 16,
+                "borderWidth": 1,
+                "maxWidth": 752,
+                "overflow": "hidden",
+                "paddingHorizontal": 16,
+                "width": "100%",
+              },
+            ]
+          }
+          style={
+            [
+              {
+                "backgroundColor": "#15171C",
+                "borderColor": "#2A2E37",
+                "paddingBottom": 16,
+              },
+              {
+                "alignSelf": "center",
+                "borderBottomWidth": 0,
+                "borderTopLeftRadius": 16,
+                "borderTopRightRadius": 16,
+                "borderWidth": 1,
+                "maxWidth": 752,
+                "overflow": "hidden",
+                "paddingHorizontal": 16,
+                "width": "100%",
+              },
+              {
+                "height": 667,
+                "transform": [
+                  {
+                    "translateY": 667,
+                  },
+                ],
+              },
+            ]
+          }
+        >
+          <View
+            handlerTags={
+              [
+                2,
+              ]
+            }
+            onGestureHandlerEvent={[Function]}
+            onGestureHandlerStateChange={[Function]}
+            onGestureHandlerTouchEvent={[Function]}
+            onStartShouldSetResponder={[Function]}
+            pointerEvents="box-none"
+            style={
+              {
+                "display": "contents",
+              }
+            }
+          >
+            <View
+              style={
+                {
+                  "gap": 12,
+                  "minHeight": 44,
+                  "paddingBottom": 12,
+                  "paddingTop": 8,
+                }
+              }
+            >
+              <View
+                style={
+                  [
+                    {
+                      "alignSelf": "center",
+                      "borderRadius": 2,
+                      "height": 4,
+                      "width": 40,
+                    },
+                    {
+                      "backgroundColor": "#9AA0A6",
+                    },
+                  ]
+                }
+              />
+              <Text
+                numberOfLines={2}
+                style={
+                  [
+                    {
+                      "fontSize": 26,
+                      "fontWeight": "600",
+                      "letterSpacing": -0.2,
+                      "lineHeight": 33.800000000000004,
+                    },
+                    {
+                      "color": "#F2F3F5",
+                    },
+                    undefined,
+                  ]
+                }
+              >
+                Log set
+              </Text>
+            </View>
+          </View>
+          <RCTScrollView
+            contentContainerStyle={
+              {
+                "flexGrow": 1,
+                "gap": 12,
+              }
+            }
+            keyboardShouldPersistTaps="handled"
+            style={
+              {
+                "flex": 1,
+              }
+            }
+          >
+            <View>
+              <Text
+                style={
+                  [
+                    {
+                      "fontSize": 20.8,
+                      "fontWeight": "400",
+                      "letterSpacing": 0,
+                      "lineHeight": 28.6,
+                    },
+                    {
+                      "color": "#F2F3F5",
+                    },
+                    undefined,
+                  ]
+                }
+              >
+                Sheet body
+              </Text>
+            </View>
+          </RCTScrollView>
+        </View>
+      </View>
+    </View>
+  </View>
+</Modal>
+`;
+
+exports[`Sheet matches snapshot (2 x) 1`] = `
+<Modal
+  animationType="none"
+  navigationBarTranslucent={true}
+  onRequestClose={[Function]}
+  statusBarTranslucent={true}
+  transparent={true}
+  visible={true}
+>
+  <View
+    style={
+      {
+        "flex": 1,
+      }
+    }
+  >
+    <View
+      collapsable={false}
+      jestAnimatedProps={
+        {
+          "value": {},
+        }
+      }
+      jestAnimatedStyle={
+        {
+          "value": {
+            "opacity": 1,
+          },
+        }
+      }
+      jestInlineStyle={
+        [
+          {
+            "bottom": 0,
+            "left": 0,
+            "position": "absolute",
+            "right": 0,
+            "top": 0,
+          },
+          {
+            "backgroundColor": "rgba(0, 0, 0, 0.7)",
+          },
+        ]
+      }
+      style={
+        [
+          {
+            "bottom": 0,
+            "left": 0,
+            "position": "absolute",
+            "right": 0,
+            "top": 0,
+          },
+          {
+            "backgroundColor": "rgba(0, 0, 0, 0.7)",
+          },
+          {
+            "opacity": 0,
+          },
+        ]
+      }
+    >
+      <View
+        accessibilityLabel="Close"
+        accessibilityRole="button"
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          {
+            "flex": 1,
+          }
+        }
+      />
+    </View>
+    <View
+      onLayout={[Function]}
+      pointerEvents="box-none"
+      style={
+        [
+          {
+            "flex": 1,
+          },
+          {
+            "paddingBottom": 0,
+          },
+        ]
+      }
+    >
+      <View
+        onLayout={[Function]}
+        pointerEvents="box-none"
+        style={
+          {
+            "flex": 1,
+            "justifyContent": "flex-end",
+          }
+        }
+      >
+        <View
+          accessibilityViewIsModal={true}
+          collapsable={false}
+          jestAnimatedProps={
+            {
+              "value": {},
+            }
+          }
+          jestAnimatedStyle={
+            {
+              "value": {
+                "height": 667,
+                "transform": [
+                  {
+                    "translateY": 0,
+                  },
+                ],
+              },
+            }
+          }
+          jestInlineStyle={
+            [
+              {
+                "backgroundColor": "#15171C",
+                "borderColor": "#2A2E37",
+                "paddingBottom": 16,
+              },
+              {
+                "alignSelf": "center",
+                "borderBottomWidth": 0,
+                "borderTopLeftRadius": 16,
+                "borderTopRightRadius": 16,
+                "borderWidth": 1,
+                "maxWidth": 752,
+                "overflow": "hidden",
+                "paddingHorizontal": 16,
+                "width": "100%",
+              },
+            ]
+          }
+          style={
+            [
+              {
+                "backgroundColor": "#15171C",
+                "borderColor": "#2A2E37",
+                "paddingBottom": 16,
+              },
+              {
+                "alignSelf": "center",
+                "borderBottomWidth": 0,
+                "borderTopLeftRadius": 16,
+                "borderTopRightRadius": 16,
+                "borderWidth": 1,
+                "maxWidth": 752,
+                "overflow": "hidden",
+                "paddingHorizontal": 16,
+                "width": "100%",
+              },
+              {
+                "height": 667,
+                "transform": [
+                  {
+                    "translateY": 667,
+                  },
+                ],
+              },
+            ]
+          }
+        >
+          <View
+            handlerTags={
+              [
+                3,
+              ]
+            }
+            onGestureHandlerEvent={[Function]}
+            onGestureHandlerStateChange={[Function]}
+            onGestureHandlerTouchEvent={[Function]}
+            onStartShouldSetResponder={[Function]}
+            pointerEvents="box-none"
+            style={
+              {
+                "display": "contents",
+              }
+            }
+          >
+            <View
+              style={
+                {
+                  "gap": 12,
+                  "minHeight": 44,
+                  "paddingBottom": 12,
+                  "paddingTop": 8,
+                }
+              }
+            >
+              <View
+                style={
+                  [
+                    {
+                      "alignSelf": "center",
+                      "borderRadius": 2,
+                      "height": 4,
+                      "width": 40,
+                    },
+                    {
+                      "backgroundColor": "#9AA0A6",
+                    },
+                  ]
+                }
+              />
+              <Text
+                numberOfLines={2}
+                style={
+                  [
+                    {
+                      "fontSize": 40,
+                      "fontWeight": "600",
+                      "letterSpacing": -0.2,
+                      "lineHeight": 52,
+                    },
+                    {
+                      "color": "#F2F3F5",
+                    },
+                    undefined,
+                  ]
+                }
+              >
+                Log set
+              </Text>
+            </View>
+          </View>
+          <RCTScrollView
+            contentContainerStyle={
+              {
+                "flexGrow": 1,
+                "gap": 12,
+              }
+            }
+            keyboardShouldPersistTaps="handled"
+            style={
+              {
+                "flex": 1,
+              }
+            }
+          >
+            <View>
+              <Text
+                style={
+                  [
+                    {
+                      "fontSize": 32,
+                      "fontWeight": "400",
+                      "letterSpacing": 0,
+                      "lineHeight": 44,
+                    },
+                    {
+                      "color": "#F2F3F5",
+                    },
+                    undefined,
+                  ]
+                }
+              >
+                Sheet body
+              </Text>
+            </View>
+          </RCTScrollView>
+        </View>
+      </View>
+    </View>
+  </View>
+</Modal>
+`;

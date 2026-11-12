@@ -1,0 +1,8 @@
+version: v2
+clean: true
+plugins:
+  # Run locally through npx: the remote Buf plugin rate-limits unauthenticated use.
+  - local: [npx, --yes, --package=@bufbuild/protoc-gen-es@2.17.0, protoc-gen-es]
+    out: app/src/gen
+    include_imports: true
+    opt: target=ts

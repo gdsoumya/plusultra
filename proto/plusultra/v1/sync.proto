@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+package plusultra.v1;
+
+import "buf/validate/validate.proto";
+import "plusultra/v1/calendar.proto";
+import "plusultra/v1/checkin.proto";
+import "plusultra/v1/common.proto";
+import "plusultra/v1/meal.proto";
+import "plusultra/v1/program.proto";
+import "plusultra/v1/workout.proto";
+
+option go_package = "github.com/gdsoumya/plusultra/gen/go/plusultra/v1;plusultrav1";
+
+// SyncService keeps the app's offline store in step with the server. For the app only.
+service SyncService {
+  // Pull returns up to limit rows per table changed since a cursor, the resolved days of the next 28 days, and the active programs. Call again with the new cursor while has_more is true.
+  rpc Pull(PullRequest) returns (PullResponse);
+  // Push applies rows changed on a device. A row is applied unless its version is behind the server's and the server's change is newer; then the server row comes back as a conflict. Reasons say why a row was not applied. An edited finalized workout record stays finalized and its progression is replayed with the edit; its tombstone keeps the progression the workout applied.
+  rpc Push(PushRequest) returns (PushResponse);
+}
+
+// SyncRows are rows of the synced tables. Rows with deleted_at set are tombstones. Check-ins never carry photo bytes here, only photo_id.
+message SyncRows {
+  option (buf.validate.message).cel = {
+    id: "sync_rows.photo"
+    message: "check-in photos are not synced; use CreateCheckin or UpdateCheckin"
+    expression: "this.checkins.all(c, size(c.photo) == 0)"
+  };
+
+  // Day logs.
+  repeated DayLog day_logs = 1 [(buf.validate.field).repeated.max_items = 1000];
+  // Workout records.
+  repeated WorkoutRecord workout_records = 2 [(buf.validate.field).repeated.max_items = 1000];
+  // Meal logs.
+  repeated MealLog meal_logs = 3 [(buf.validate.field).repeated.max_items = 1000];
+  // Check-ins.
+  repeated Checkin checkins = 4 [(buf.validate.field).repeated.max_items = 1000];
+}
+
+// PullRequest is the input of Pull.
+message PullRequest {
+  // Cursor from the last pull, an opaque watermark of the last row returned (server updated_at and id); empty for a full sync.
+  string cursor = 1 [(buf.validate.field).string.max_len = 512];
+  // Maximum rows per table, at most 500; 0 means 500.
+  int32 limit = 2 [(buf.validate.field).int32 = {
+    gte: 0
+    lte: 500
+  }];
+}
+
+// PullResponse is the output of Pull.
+message PullResponse {
+  // Rows changed since the cursor.
+  SyncRows rows = 1;
+  // Workout days of the active program for the next 28 days, or its next days when floating.
+  repeated ResolvedDay resolved_days = 2;
+  // Meal days of the active meal program for the next 28 days.
+  repeated ResolvedMealDay resolved_meal_days = 3;
+  // Active programs with their structures.
+  repeated Program programs = 4;
+  // Cursor to send on the next pull; store it once the rows are applied.
+  string cursor = 5;
+  // True when some table had more changed rows than limit; pull again with cursor.
+  bool has_more = 6;
+}
+
+// PushRequest is the input of Push.
+message PushRequest {
+  // Id of the pushing device.
+  string device_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  // Rows changed on the device, each carrying the version it last saw.
+  SyncRows rows = 2 [(buf.validate.field).required = true];
+}
+
+// PushResponse is the output of Push.
+message PushResponse {
+  // Ids of rows applied.
+  repeated string applied_ids = 1;
+  // Server rows for pushes that were not applied: the pushed version was stale, or another row already holds that date (day log, meal log, check-in). Merge and push again.
+  SyncRows conflicts = 2;
+  // Why pushed rows were not applied, by pushed row id: "outdated", "date_taken", "finalized", "finalize_failed", "invalid" or "unknown_program". A row with a conflict row has reason outdated or date_taken; a row with a reason and no conflict row was rejected.
+  map<string, string> reasons = 3;
+}

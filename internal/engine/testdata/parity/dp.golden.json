@@ -1,0 +1,598 @@
+{
+  "Program": {
+    "Name": "dp",
+    "Notes": "",
+    "Weeks": 2,
+    "Units": "kg",
+    "Loop": true,
+    "WeekDesc": {}
+  },
+  "Weeks": [
+    {
+      "Week": 1,
+      "Day": 1,
+      "Name": "Upper",
+      "Desc": "",
+      "Kind": "training",
+      "Exercises": [
+        {
+          "Name": "Bench Press",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Bench Press"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "",
+          "Progression": "Double progression 8-12 reps, then +2.5 kg",
+          "Sets": [
+            {
+              "Reps": 8,
+              "MinReps": 8,
+              "Weight": {
+                "Value": 60,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 8,
+              "MinReps": 8,
+              "Weight": {
+                "Value": 60,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 8,
+              "MinReps": 8,
+              "Weight": {
+                "Value": 60,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        },
+        {
+          "Name": "Lateral Raise",
+          "Equipment": "dumbbell",
+          "Label": "",
+          "Alternates": [
+            "Lateral Raise"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "",
+          "Progression": "Double progression 8-12 reps, then +2.5 kg",
+          "Sets": [
+            {
+              "Reps": 12,
+              "MinReps": 12,
+              "Weight": {
+                "Value": 10,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 12,
+              "MinReps": 12,
+              "Weight": {
+                "Value": 10,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 12,
+              "MinReps": 12,
+              "Weight": {
+                "Value": 10,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Week": 2,
+      "Day": 1,
+      "Name": "Upper",
+      "Desc": "",
+      "Kind": "training",
+      "Exercises": [
+        {
+          "Name": "Bench Press",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Bench Press"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "",
+          "Progression": "Double progression 8-12 reps, then +2.5 kg",
+          "Sets": [
+            {
+              "Reps": 8,
+              "MinReps": 8,
+              "Weight": {
+                "Value": 60,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 8,
+              "MinReps": 8,
+              "Weight": {
+                "Value": 60,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 8,
+              "MinReps": 8,
+              "Weight": {
+                "Value": 60,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        },
+        {
+          "Name": "Lateral Raise",
+          "Equipment": "dumbbell",
+          "Label": "",
+          "Alternates": [
+            "Lateral Raise"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "",
+          "Progression": "Double progression 8-12 reps, then +2.5 kg",
+          "Sets": [
+            {
+              "Reps": 12,
+              "MinReps": 12,
+              "Weight": {
+                "Value": 10,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 12,
+              "MinReps": 12,
+              "Weight": {
+                "Value": 10,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 12,
+              "MinReps": 12,
+              "Weight": {
+                "Value": 10,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "Progress": {
+    "Print": null,
+    "State": {},
+    "Weeks": [
+      {
+        "Week": 1,
+        "Day": 1,
+        "Name": "Upper",
+        "Desc": "",
+        "Kind": "training",
+        "Exercises": [
+          {
+            "Name": "Bench Press",
+            "Equipment": "",
+            "Label": "",
+            "Alternates": [
+              "Bench Press"
+            ],
+            "Current": 1,
+            "Desc": "",
+            "Superset": "",
+            "Progression": "Double progression 8-12 reps, then +2.5 kg",
+            "Sets": [
+              {
+                "Reps": 9,
+                "MinReps": 9,
+                "Weight": {
+                  "Value": 60,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 9,
+                "MinReps": 9,
+                "Weight": {
+                  "Value": 60,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 9,
+                "MinReps": 9,
+                "Weight": {
+                  "Value": 60,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              }
+            ]
+          },
+          {
+            "Name": "Lateral Raise",
+            "Equipment": "dumbbell",
+            "Label": "",
+            "Alternates": [
+              "Lateral Raise"
+            ],
+            "Current": 1,
+            "Desc": "",
+            "Superset": "",
+            "Progression": "Double progression 8-12 reps, then +2.5 kg",
+            "Sets": [
+              {
+                "Reps": 8,
+                "MinReps": 8,
+                "Weight": {
+                  "Value": 12.5,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 8,
+                "MinReps": 8,
+                "Weight": {
+                  "Value": 12.5,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 8,
+                "MinReps": 8,
+                "Weight": {
+                  "Value": 12.5,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "Week": 2,
+        "Day": 1,
+        "Name": "Upper",
+        "Desc": "",
+        "Kind": "training",
+        "Exercises": [
+          {
+            "Name": "Bench Press",
+            "Equipment": "",
+            "Label": "",
+            "Alternates": [
+              "Bench Press"
+            ],
+            "Current": 1,
+            "Desc": "",
+            "Superset": "",
+            "Progression": "Double progression 8-12 reps, then +2.5 kg",
+            "Sets": [
+              {
+                "Reps": 9,
+                "MinReps": 9,
+                "Weight": {
+                  "Value": 60,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 9,
+                "MinReps": 9,
+                "Weight": {
+                  "Value": 60,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 9,
+                "MinReps": 9,
+                "Weight": {
+                  "Value": 60,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              }
+            ]
+          },
+          {
+            "Name": "Lateral Raise",
+            "Equipment": "dumbbell",
+            "Label": "",
+            "Alternates": [
+              "Lateral Raise"
+            ],
+            "Current": 1,
+            "Desc": "",
+            "Superset": "",
+            "Progression": "Double progression 8-12 reps, then +2.5 kg",
+            "Sets": [
+              {
+                "Reps": 8,
+                "MinReps": 8,
+                "Weight": {
+                  "Value": 12.5,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 8,
+                "MinReps": 8,
+                "Weight": {
+                  "Value": 12.5,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 8,
+                "MinReps": 8,
+                "Weight": {
+                  "Value": 12.5,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

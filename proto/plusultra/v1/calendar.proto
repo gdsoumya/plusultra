@@ -1,0 +1,212 @@
+syntax = "proto3";
+
+package plusultra.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+import "plusultra/v1/checkin.proto";
+import "plusultra/v1/common.proto";
+import "plusultra/v1/meal.proto";
+import "plusultra/v1/rules.proto";
+import "plusultra/v1/workout.proto";
+import "protomcp/v1/annotations.proto";
+
+option go_package = "github.com/gdsoumya/plusultra/gen/go/plusultra/v1;plusultrav1";
+
+// CalendarService shows plans and logs by local date.
+service CalendarService {
+  option (protomcp.v1.service) = {tool_prefix: "calendar_"};
+
+  // GetCalendar returns one entry per date in a range: the planned workout and meal day and the log status. Future dates show plans only for anchored programs.
+  rpc GetCalendar(GetCalendarRequest) returns (GetCalendarResponse) {
+    option (protomcp.v1.tool) = {
+      name: "get"
+      title: "Get Calendar"
+      description: "Returns one entry per local date (YYYY-MM-DD) in a range of at most 366 days: the planned workout day, meal day kind and log status. Future dates show plans only for anchored programs. Use calendar_get_day for one date's full detail."
+      read_only: true
+      idempotent: true
+    };
+  }
+  // GetDay returns everything about one date: plans, the day log, the workout record, the meal log and the check-in.
+  rpc GetDay(GetDayRequest) returns (GetDayResponse) {
+    option (protomcp.v1.tool) = {
+      name: "get_day"
+      title: "Get Day"
+      description: "Returns everything about one local date (YYYY-MM-DD): the resolved workout and meal plans, the day log (status, notes, readiness), the workout record, the meal log and the check-in without its photo. Start here when the user asks about today or a specific date."
+      read_only: true
+      idempotent: true
+    };
+  }
+  // UpdateDay sets a date's status, notes and readiness.
+  rpc UpdateDay(UpdateDayRequest) returns (UpdateDayResponse) {
+    option (protomcp.v1.tool) = {
+      name: "update_day"
+      title: "Update Day"
+      description: "Sets a local date's status (planned, done, partial, skipped, rest), notes and readiness (sleep, soreness, stress, 1 to 5), creating the day log when needed. Notes and readiness replace the old values; an unset status keeps the current one. Returns the day log."
+    };
+  }
+  // QuickFillDay records a date as done exactly as planned: a workout record with every planned set completed and a meal log with every planned item. Optionally finalizes the workout too.
+  rpc QuickFillDay(QuickFillDayRequest) returns (QuickFillDayResponse) {
+    option (protomcp.v1.tool) = {
+      name: "quick_fill_day"
+      title: "Quick Fill Day"
+      description: "Records a local date as done exactly as planned: a workout record with every planned set completed and a meal log with every planned item. Set workout and meals to choose which. Set finalize to also run the progressions, as workout_finalize_record does; that cannot be undone, so confirm with the user first. Returns the day."
+    };
+  }
+}
+
+// DayStatus is how a date went.
+enum DayStatus {
+  // Nothing logged.
+  DAY_STATUS_UNSPECIFIED = 0;
+  // Planned, not yet done.
+  DAY_STATUS_PLANNED = 1;
+  // Done as planned.
+  DAY_STATUS_DONE = 2;
+  // Partly done.
+  DAY_STATUS_PARTIAL = 3;
+  // Skipped.
+  DAY_STATUS_SKIPPED = 4;
+  // A rest day.
+  DAY_STATUS_REST = 5;
+}
+
+// Readiness is how the user felt, each from 1 (bad) to 5 (good); unset when not given.
+message Readiness {
+  // Sleep quality.
+  optional int32 sleep = 1 [(buf.validate.field).int32 = {
+    gte: 1
+    lte: 5
+  }];
+  // Muscle soreness; 5 means not sore.
+  optional int32 soreness = 2 [(buf.validate.field).int32 = {
+    gte: 1
+    lte: 5
+  }];
+  // Stress; 5 means not stressed.
+  optional int32 stress = 3 [(buf.validate.field).int32 = {
+    gte: 1
+    lte: 5
+  }];
+}
+
+// DayLog is the user's log of one date.
+message DayLog {
+  // Log id.
+  string id = 1 [(buf.validate.field).string.uuid = true];
+  // Local date, YYYY-MM-DD.
+  string date = 2 [(buf.validate.field).string.(plusultra.v1.date) = true];
+  // How the day went.
+  DayStatus status = 3 [(buf.validate.field).enum.defined_only = true];
+  // Free-text notes.
+  string notes = 4 [(buf.validate.field).string.max_len = 10000];
+  // How the user felt.
+  Readiness readiness = 5;
+  // Server version, incremented on every change. In a sync push, the version the device last saw, 0 for a new row.
+  int32 version = 6;
+  // Device that last changed the log.
+  string device_id = 7 [(buf.validate.field).string.max_len = 128];
+  // When the log last changed.
+  google.protobuf.Timestamp updated_at = 8;
+  // When the log was deleted; set only on tombstones returned by sync.
+  google.protobuf.Timestamp deleted_at = 9;
+}
+
+// CalendarDay is one date of the calendar.
+message CalendarDay {
+  // Local date, YYYY-MM-DD.
+  string date = 1;
+  // Planned workout day kind: "training", "conditioning", "rest" or "note"; "rest" when nothing is planned.
+  string kind = 2;
+  // 1-based week of the planned or done workout; 0 when none.
+  int32 workout_week = 3;
+  // 1-based day of the planned or done workout; 0 when none.
+  int32 workout_day = 4;
+  // Name of the planned or done workout day.
+  string workout_name = 5;
+  // Kind of the planned meal day: "training" or "rest"; empty without a meal program.
+  string meal_kind = 6;
+  // Status of the day log; unspecified when nothing is logged.
+  DayStatus log_status = 7;
+}
+
+// DayView is everything about one date.
+message DayView {
+  // Local date, YYYY-MM-DD.
+  string date = 1;
+  // The day log; unset when nothing is logged.
+  DayLog log = 2;
+  // Planned workout day; unset on a rest day or without an active workout program.
+  ResolvedDay plan = 3;
+  // Planned meal day; unset without an active meal program.
+  ResolvedMealDay meal_plan = 4;
+  // Workout record; unset when no workout was started.
+  WorkoutRecord workout = 5;
+  // Meal log; unset when nothing was logged.
+  MealLog meal = 6;
+  // Check-in without photo bytes (photo_id only); unset when none was recorded.
+  Checkin checkin = 7;
+}
+
+// GetCalendarRequest is the input of GetCalendar.
+message GetCalendarRequest {
+  // Dates to show, at most 366 days.
+  DateRange dates = 1 [(buf.validate.field).required = true];
+}
+
+// GetCalendarResponse is the output of GetCalendar.
+message GetCalendarResponse {
+  // One entry per date, in order.
+  repeated CalendarDay days = 1;
+}
+
+// GetDayRequest is the input of GetDay.
+message GetDayRequest {
+  // Local date, YYYY-MM-DD.
+  string date = 1 [(buf.validate.field).string.(plusultra.v1.date) = true];
+}
+
+// GetDayResponse is the output of GetDay.
+message GetDayResponse {
+  // The day.
+  DayView day = 1;
+}
+
+// UpdateDayRequest is the input of UpdateDay.
+message UpdateDayRequest {
+  // Local date, YYYY-MM-DD.
+  string date = 1 [(buf.validate.field).string.(plusultra.v1.date) = true];
+  // How the day went; unset keeps the current status, or planned for a new log.
+  optional DayStatus status = 2 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: [0]
+  }];
+  // Free-text notes; replaces the old notes.
+  string notes = 3 [(buf.validate.field).string.max_len = 10000];
+  // How the user felt; replaces the old readiness.
+  Readiness readiness = 4;
+}
+
+// UpdateDayResponse is the output of UpdateDay.
+message UpdateDayResponse {
+  // The day log.
+  DayLog log = 1;
+}
+
+// QuickFillDayRequest is the input of QuickFillDay.
+message QuickFillDayRequest {
+  // Local date, YYYY-MM-DD.
+  string date = 1 [(buf.validate.field).string.(plusultra.v1.date) = true];
+  // True to fill the planned workout.
+  bool workout = 2;
+  // True to fill the planned meals.
+  bool meals = 3;
+  // True to also finalize the filled workout, running its progressions.
+  bool finalize = 4;
+}
+
+// QuickFillDayResponse is the output of QuickFillDay.
+message QuickFillDayResponse {
+  // The day after filling.
+  DayView day = 1;
+}

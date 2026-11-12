@@ -1,0 +1,23 @@
+version: "2"
+run:
+  build-tags: [e2e]
+linters:
+  default: none
+  exclusions:
+    paths:
+      - app/
+  enable:
+    - errcheck
+    - govet
+    - staticcheck
+    - revive
+    - gosec
+    - gocritic
+    - unused
+    - misspell
+formatters:
+  enable:
+    - gofmt
+  exclusions:
+    paths:
+      - app/

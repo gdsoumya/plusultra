@@ -1,0 +1,292 @@
+syntax = "proto3";
+
+package plusultra.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+import "plusultra/v1/common.proto";
+import "plusultra/v1/rules.proto";
+import "protomcp/v1/annotations.proto";
+
+option go_package = "github.com/gdsoumya/plusultra/gen/go/plusultra/v1;plusultrav1";
+
+// WorkoutService records workouts. A record starts as a snapshot of the planned day, is filled in set by set, then finalized to run progressions.
+service WorkoutService {
+  option (protomcp.v1.service) = {tool_prefix: "workout_"};
+
+  // ListWorkoutRecords lists workout records in a date range, oldest first.
+  rpc ListWorkoutRecords(ListWorkoutRecordsRequest) returns (ListWorkoutRecordsResponse) {
+    option (protomcp.v1.tool) = {
+      name: "list_records"
+      title: "List Workout Records"
+      description: "Lists workout records in a local date range (YYYY-MM-DD), oldest first, optionally for one program. Each record has its exercises, sets as planned and done, and whether it is finalized. Pages: pass nextCursor back as cursor while hasMore is true."
+      read_only: true
+      idempotent: true
+    };
+  }
+  // GetWorkoutRecord returns one workout record.
+  rpc GetWorkoutRecord(GetWorkoutRecordRequest) returns (GetWorkoutRecordResponse) {
+    option (protomcp.v1.tool) = {
+      name: "get_record"
+      title: "Get Workout Record"
+      description: "Returns one workout record by id with every exercise and set as planned and as done. Find ids with workout_list_records or calendar_get_day."
+      read_only: true
+      idempotent: true
+    };
+  }
+  // CreateWorkoutRecord starts a workout for a date, with no set completed: from a chosen program day, as an ad hoc workout, or by default from the active program's day.
+  rpc CreateWorkoutRecord(CreateWorkoutRecordRequest) returns (CreateWorkoutRecordResponse) {
+    option (protomcp.v1.tool) = {
+      name: "create_record"
+      title: "Start Workout"
+      description: "Starts a workout for a local date with no set completed; choose a UUID for id. Source: programDay (program, week, day), adHoc (named exercises with planned sets, no progression), or unset for the active program's day. Log sets with workout_update_record, then end with workout_finalize_record. Returns the record with planned sets."
+    };
+  }
+  // UpdateWorkoutRecord replaces a record's entries and times. The program is a template: sets and exercises may be edited, added or removed, and the deviation is recorded as modified. The program's per-set update hooks run and may change the pending sets that are not edited. A finalized record stays finalized and keeps its finish time; its progression and every later finished workout's of the program are replayed with the edited results, so the program's next sessions follow the edit; sessions finished before the upgrade that introduced snapshots replay from the program's start.
+  rpc UpdateWorkoutRecord(UpdateWorkoutRecordRequest) returns (UpdateWorkoutRecordResponse) {
+    option (protomcp.v1.tool) = {
+      name: "update_record"
+      title: "Update Workout Record"
+      description: "Replaces a workout record's entries and times: send the full record from workout_get_record with completed sets' reps, weight and RPE. Sets and exercises may be changed, added or removed; mark user-changed sets edited=true so update hooks skip them. Unitless weights use the user's unit. Editing a finished record replays its progression (from the program's start if it predates snapshots)."
+    };
+  }
+  // DeleteWorkoutRecord deletes a record. Deleting a finalized one keeps the progression it applied to the program and the program's cursor; only the record and the day's done status go.
+  rpc DeleteWorkoutRecord(DeleteWorkoutRecordRequest) returns (DeleteWorkoutRecordResponse) {
+    option (protomcp.v1.tool) = {
+      name: "delete_record"
+      title: "Delete Workout Record"
+      description: "Deletes a workout record by id. Deleting a finished (finalized) workout keeps the progression it applied to the program and the program's cursor; only the record and the day's done status go. Cannot be undone; confirm with the user first."
+      idempotent: true
+      destructive: true
+    };
+  }
+  // FinalizeWorkoutRecord ends a workout: runs each exercise's progression once and updates later planned days. A record can be finalized only once.
+  rpc FinalizeWorkoutRecord(FinalizeWorkoutRecordRequest) returns (FinalizeWorkoutRecordResponse) {
+    option (protomcp.v1.tool) = {
+      name: "finalize_record"
+      title: "Finalize Workout"
+      description: "Ends a workout: runs each exercise's progression once and updates later planned days. A record can be finalized only once and it cannot be undone, so first log every set with workout_update_record and fill any promptValues. Returns the record and the progressions' print() output."
+      destructive: true
+    };
+  }
+}
+
+// SetEntry is one set of a workout: what was planned and what was done.
+message SetEntry {
+  // The set as planned.
+  ResolvedSet planned = 1;
+  // True once the set is done.
+  bool completed = 2;
+  // Reps done.
+  int32 reps = 3 [(buf.validate.field).int32 = {
+    gte: 0
+    lte: 1000
+  }];
+  // Weight used.
+  Weight weight = 4;
+  // RPE reached, 1 to 10; 0 when not logged.
+  double rpe = 5 [(buf.validate.field).double = {
+    gte: 0
+    lte: 10
+  }];
+  // Time spent on the set, in seconds.
+  int32 work_time = 6 [(buf.validate.field).int32 = {
+    gte: 0
+    lte: 86400
+  }];
+  // Reps done with the left side for a unilateral exercise; reps is the right side. 0 otherwise.
+  int32 reps_left = 7 [(buf.validate.field).int32 = {
+    gte: 0
+    lte: 1000
+  }];
+  // True when the user changed or added this set. Update hooks leave an edited pending set alone.
+  bool edited = 8;
+}
+
+// ExerciseEntry is one exercise of a workout.
+message ExerciseEntry {
+  // Exercise name done, the current alternate.
+  string name = 1 [(buf.validate.field).string.max_len = 200];
+  // Equipment variant.
+  string equipment = 2 [(buf.validate.field).string.max_len = 100];
+  // Label that tells apart two instances of the same exercise.
+  string label = 3 [(buf.validate.field).string.max_len = 100];
+  // Every alternate exercise name.
+  repeated string alternates = 4 [(buf.validate.field).repeated.max_items = 50];
+  // 1-based index of name in alternates.
+  int32 current = 5 [(buf.validate.field).int32.gte = 0];
+  // Sets, warmups first.
+  repeated SetEntry sets = 6 [(buf.validate.field).repeated.max_items = 100];
+  // Numbers answering the progression's prompt() state, by state name, given before finalizing.
+  map<string, double> prompt_values = 7 [(buf.validate.field).map.max_pairs = 50];
+  // Catalog slug of name; empty when the name is not in the catalog.
+  string slug = 8 [(buf.validate.field).string.max_len = 200];
+  // Description shown with the exercise.
+  string desc = 9 [(buf.validate.field).string.max_len = 10000];
+  // Superset group; exercises with the same group are done back to back.
+  string superset = 10 [(buf.validate.field).string.max_len = 32];
+  // 1-based set variation the sets come from; 0 when the exercise has no set variations.
+  int32 variation = 11 [(buf.validate.field).int32.gte = 0];
+  // Set by the server: true when the exercise is one the planned day had; false for an exercise the user added, which runs no hooks or progression.
+  bool from_program = 12;
+  // True when the exercise was done one side at a time, so reps is the right side and reps_left the left; a snapshot the client writes.
+  bool unilateral = 13;
+}
+
+// WorkoutRecord is one workout on one date.
+message WorkoutRecord {
+  // Record id, a UUID chosen by the client when it creates the record.
+  string id = 1 [(buf.validate.field).string.uuid = true];
+  // Local date, YYYY-MM-DD.
+  string date = 2 [(buf.validate.field).string.(plusultra.v1.date) = true];
+  // Program the workout came from; empty for an ad hoc workout.
+  string program_id = 3 [
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).ignore = IGNORE_IF_ZERO_VALUE
+  ];
+  // 1-based program week done.
+  int32 week = 4 [(buf.validate.field).int32.gte = 0];
+  // 1-based program day done.
+  int32 day = 5 [(buf.validate.field).int32.gte = 0];
+  // Planned day name, for example "Upper A".
+  string day_name = 6 [(buf.validate.field).string.max_len = 200];
+  // Exercises in order.
+  repeated ExerciseEntry entries = 7 [(buf.validate.field).repeated.max_items = 100];
+  // When the workout started.
+  google.protobuf.Timestamp started_at = 8;
+  // When the workout ended.
+  google.protobuf.Timestamp finished_at = 9;
+  // True once progressions have run. In a sync push, true asks the server to finalize.
+  bool finalized = 10;
+  // Server version, incremented on every change. In a sync push, the version the device last saw, 0 for a new row.
+  int32 version = 11;
+  // Device that last changed the record.
+  string device_id = 12 [(buf.validate.field).string.max_len = 128];
+  // When the record last changed.
+  google.protobuf.Timestamp updated_at = 13;
+  // When the record was deleted; set only on tombstones returned by sync.
+  google.protobuf.Timestamp deleted_at = 14;
+  // Planned day description.
+  string day_desc = 15 [(buf.validate.field).string.max_len = 10000];
+  // Planned day kind: "training", "conditioning", "rest" or "note".
+  string kind = 16 [(buf.validate.field).string.max_len = 32];
+  // Set by the server: true when the entries deviate from the planned day by an edited set, another number of sets, or an exercise added or left out.
+  bool modified = 17;
+}
+
+// ProgramDay picks a day of a program for a new workout record.
+message ProgramDay {
+  // Program to take the day from; empty for the active workout program.
+  string program_id = 1 [
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).ignore = IGNORE_IF_ZERO_VALUE
+  ];
+  // 1-based week.
+  int32 week = 2 [(buf.validate.field).int32.gte = 1];
+  // 1-based day within the week.
+  int32 day = 3 [(buf.validate.field).int32.gte = 1];
+}
+
+// AdHoc is a workout outside any program; nothing is filled from a program and finalizing runs no progression.
+message AdHoc {
+  // Workout name, for example "Hotel gym".
+  string day_name = 1 [(buf.validate.field).string.max_len = 200];
+  // Exercises with their planned sets; give name, and slug when known.
+  repeated ExerciseEntry entries = 2 [(buf.validate.field).repeated.max_items = 100];
+}
+
+// ListWorkoutRecordsRequest is the input of ListWorkoutRecords.
+message ListWorkoutRecordsRequest {
+  // Dates to list.
+  DateRange dates = 1 [(buf.validate.field).required = true];
+  // Only records of this program; empty for all.
+  string program_id = 2 [
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).ignore = IGNORE_IF_ZERO_VALUE
+  ];
+  // Maximum records to return, at most 500; 0 means 100.
+  int32 limit = 3 [(buf.validate.field).int32 = {
+    gte: 0
+    lte: 500
+  }];
+  // next_cursor from the previous page; empty for the first page.
+  string cursor = 4 [(buf.validate.field).string.max_len = 512];
+}
+
+// ListWorkoutRecordsResponse is the output of ListWorkoutRecords.
+message ListWorkoutRecordsResponse {
+  // Records, oldest first.
+  repeated WorkoutRecord records = 1;
+  // Cursor for the next page; empty when has_more is false.
+  string next_cursor = 2;
+  // True when more results follow; call again with cursor set to next_cursor.
+  bool has_more = 3;
+}
+
+// GetWorkoutRecordRequest is the input of GetWorkoutRecord.
+message GetWorkoutRecordRequest {
+  // Record id.
+  string id = 1 [(buf.validate.field).string.uuid = true];
+}
+
+// GetWorkoutRecordResponse is the output of GetWorkoutRecord.
+message GetWorkoutRecordResponse {
+  // The record.
+  WorkoutRecord record = 1;
+}
+
+// CreateWorkoutRecordRequest is the input of CreateWorkoutRecord.
+message CreateWorkoutRecordRequest {
+  // Record id, a UUID chosen by the client.
+  string id = 1 [(buf.validate.field).string.uuid = true];
+  // Local date of the workout, YYYY-MM-DD.
+  string date = 2 [(buf.validate.field).string.(plusultra.v1.date) = true];
+  // Where the workout comes from. Unset: the active workout program's day for the date (anchored) or its next day (floating).
+  oneof source {
+    // A chosen day of a program.
+    ProgramDay program_day = 3;
+    // A workout outside any program.
+    AdHoc ad_hoc = 4;
+  }
+}
+
+// CreateWorkoutRecordResponse is the output of CreateWorkoutRecord.
+message CreateWorkoutRecordResponse {
+  // The new record.
+  WorkoutRecord record = 1;
+}
+
+// UpdateWorkoutRecordRequest is the input of UpdateWorkoutRecord.
+message UpdateWorkoutRecordRequest {
+  // Record with its new entries and times; id is required.
+  WorkoutRecord record = 1 [(buf.validate.field).required = true];
+}
+
+// UpdateWorkoutRecordResponse is the output of UpdateWorkoutRecord.
+message UpdateWorkoutRecordResponse {
+  // The updated record, with sets changed by update hooks.
+  WorkoutRecord record = 1;
+}
+
+// DeleteWorkoutRecordRequest is the input of DeleteWorkoutRecord.
+message DeleteWorkoutRecordRequest {
+  // Record id.
+  string id = 1 [(buf.validate.field).string.uuid = true];
+}
+
+// DeleteWorkoutRecordResponse is the output of DeleteWorkoutRecord.
+message DeleteWorkoutRecordResponse {}
+
+// FinalizeWorkoutRecordRequest is the input of FinalizeWorkoutRecord.
+message FinalizeWorkoutRecordRequest {
+  // Record id.
+  string id = 1 [(buf.validate.field).string.uuid = true];
+}
+
+// FinalizeWorkoutRecordResponse is the output of FinalizeWorkoutRecord.
+message FinalizeWorkoutRecordResponse {
+  // The finalized record.
+  WorkoutRecord record = 1;
+  // Lines printed by the progressions' print() calls.
+  repeated string output = 2;
+}

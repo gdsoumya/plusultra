@@ -1,0 +1,6 @@
+# Reference syntax: Bench Press / 3x10+ 50kg / progress: sum(30, 2.5kg)
+#              Row / 3x10+ 50kg / progress: sum(35, 2.5kg)
+program("sum_reps", weeks=2)
+day(1, 1, "Upper", weeks="1-2")
+ex("Bench Press", warmup=[], sets=[s(3, 10, kg(50), amrap=True)], progress=sum_reps(kg(2.5), 30))
+ex("Row", warmup=[], sets=[s(3, 10, kg(50), amrap=True)], progress=sum_reps(kg(2.5), 35))

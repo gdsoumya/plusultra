@@ -1,0 +1,13 @@
+.git
+.superpowers
+app/node_modules
+app/android
+app/ios
+app/dist
+app/.expo
+app/e2e/artifacts
+bin
+docs
+e2e
+internal/web/dist
+.env

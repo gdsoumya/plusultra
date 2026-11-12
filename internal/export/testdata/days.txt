@@ -1,0 +1,16 @@
+2026-11-11 / status: done / weight: 82.4kg / notes: "slept badly"
+workout: "16-Week Strength" week 1 day 2 "Tue Upper A bench" / 58min
+  Bench Press / 4x5 75kg (Work) ✓✓✓✓ / 2x5 62.5kg (Backoff) ✓✓ / warmup done
+  heavy: Lat Pulldown / 4x6 70kg -> 6,6,6,5
+meals: target 2600kcal 180p 300c 70f / actual 2510kcal 176p 288c 66f
+  Lunch / Chicken breast raw 200g / Basmati rice raw 80g
+  Snack (ad hoc) / Banana 120g
+
+2026-11-12 / status: partial / weight: 82kg
+workout: "Upper volume" week 2 day 1 "Pull and press" / 52min
+  Pull Up / 3x8 92kg -> 8,7,-
+  Bench Press / 3x8-12 60kg -> 11,10,9 / warmup done
+  Overhead Press / 3x5 47.5kg @8 ✓✓✓
+  Bent Over Row, Dumbbell / 3x10 ? -> 10@30kg,10@30kg,9@30kg
+meals: target 2400kcal 180p 250c 70f / actual 1890kcal 150p 200c 55f
+  Breakfast / Oats 80g / Egg, whole 3 egg / Banana 0g

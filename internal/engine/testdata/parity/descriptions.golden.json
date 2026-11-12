@@ -1,0 +1,721 @@
+{
+  "Program": {
+    "Name": "Descriptions",
+    "Notes": "",
+    "Weeks": 2,
+    "Units": "kg",
+    "Loop": true,
+    "WeekDesc": {
+      "1": "Intro week",
+      "2": "Heavier"
+    }
+  },
+  "Weeks": [
+    {
+      "Week": 1,
+      "Day": 1,
+      "Name": "Lower",
+      "Desc": "Legs first",
+      "Kind": "training",
+      "Exercises": [
+        {
+          "Name": "Squat",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Squat"
+          ],
+          "Current": 1,
+          "Desc": "Pause two seconds at the bottom",
+          "Superset": "",
+          "Sets": [
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 100,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 100,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 100,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        },
+        {
+          "Name": "Deadlift",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Deadlift"
+          ],
+          "Current": 1,
+          "Desc": "Use straps if grip fails",
+          "Superset": "",
+          "Progression": "Custom (next_desc)",
+          "Sets": [
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 140,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        },
+        {
+          "Name": "Leg Press",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Leg Press"
+          ],
+          "Current": 1,
+          "Desc": "Feet high",
+          "Superset": "",
+          "Sets": [
+            {
+              "Reps": 10,
+              "MinReps": 10,
+              "Weight": {
+                "Value": 120,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 10,
+              "MinReps": 10,
+              "Weight": {
+                "Value": 120,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 10,
+              "MinReps": 10,
+              "Weight": {
+                "Value": 120,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Week": 2,
+      "Day": 1,
+      "Name": "Lower",
+      "Desc": "Legs first",
+      "Kind": "training",
+      "Exercises": [
+        {
+          "Name": "Squat",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Squat"
+          ],
+          "Current": 1,
+          "Desc": "Pause two seconds at the bottom",
+          "Superset": "",
+          "Sets": [
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 105,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 105,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 105,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        },
+        {
+          "Name": "Deadlift",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Deadlift"
+          ],
+          "Current": 1,
+          "Desc": "Use straps if grip fails",
+          "Superset": "",
+          "Progression": "Custom (next_desc)",
+          "Sets": [
+            {
+              "Reps": 5,
+              "MinReps": 5,
+              "Weight": {
+                "Value": 140,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        },
+        {
+          "Name": "Leg Press",
+          "Equipment": "",
+          "Label": "",
+          "Alternates": [
+            "Leg Press"
+          ],
+          "Current": 1,
+          "Desc": "",
+          "Superset": "",
+          "Sets": [
+            {
+              "Reps": 10,
+              "MinReps": 10,
+              "Weight": {
+                "Value": 120,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 10,
+              "MinReps": 10,
+              "Weight": {
+                "Value": 120,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            },
+            {
+              "Reps": 10,
+              "MinReps": 10,
+              "Weight": {
+                "Value": 120,
+                "Unit": "kg"
+              },
+              "RPE": 0,
+              "Rest": 0,
+              "Work": 0,
+              "Amrap": false,
+              "Ask": false,
+              "LogRPE": false,
+              "Auto": false,
+              "CountUp": false,
+              "Warmup": false,
+              "Label": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "Progress": {
+    "Print": null,
+    "State": {},
+    "Weeks": [
+      {
+        "Week": 1,
+        "Day": 1,
+        "Name": "Lower",
+        "Desc": "Legs first",
+        "Kind": "training",
+        "Exercises": [
+          {
+            "Name": "Squat",
+            "Equipment": "",
+            "Label": "",
+            "Alternates": [
+              "Squat"
+            ],
+            "Current": 1,
+            "Desc": "Pause two seconds at the bottom",
+            "Superset": "",
+            "Sets": [
+              {
+                "Reps": 5,
+                "MinReps": 5,
+                "Weight": {
+                  "Value": 100,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 5,
+                "MinReps": 5,
+                "Weight": {
+                  "Value": 100,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 5,
+                "MinReps": 5,
+                "Weight": {
+                  "Value": 100,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              }
+            ]
+          },
+          {
+            "Name": "Deadlift",
+            "Equipment": "",
+            "Label": "",
+            "Alternates": [
+              "Deadlift"
+            ],
+            "Current": 1,
+            "Desc": "No straps from now on",
+            "Superset": "",
+            "Progression": "Custom (next_desc)",
+            "Sets": [
+              {
+                "Reps": 5,
+                "MinReps": 5,
+                "Weight": {
+                  "Value": 140,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              }
+            ]
+          },
+          {
+            "Name": "Leg Press",
+            "Equipment": "",
+            "Label": "",
+            "Alternates": [
+              "Leg Press"
+            ],
+            "Current": 1,
+            "Desc": "Feet high",
+            "Superset": "",
+            "Sets": [
+              {
+                "Reps": 10,
+                "MinReps": 10,
+                "Weight": {
+                  "Value": 120,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 10,
+                "MinReps": 10,
+                "Weight": {
+                  "Value": 120,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 10,
+                "MinReps": 10,
+                "Weight": {
+                  "Value": 120,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "Week": 2,
+        "Day": 1,
+        "Name": "Lower",
+        "Desc": "Legs first",
+        "Kind": "training",
+        "Exercises": [
+          {
+            "Name": "Squat",
+            "Equipment": "",
+            "Label": "",
+            "Alternates": [
+              "Squat"
+            ],
+            "Current": 1,
+            "Desc": "Pause two seconds at the bottom",
+            "Superset": "",
+            "Sets": [
+              {
+                "Reps": 5,
+                "MinReps": 5,
+                "Weight": {
+                  "Value": 105,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 5,
+                "MinReps": 5,
+                "Weight": {
+                  "Value": 105,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 5,
+                "MinReps": 5,
+                "Weight": {
+                  "Value": 105,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              }
+            ]
+          },
+          {
+            "Name": "Deadlift",
+            "Equipment": "",
+            "Label": "",
+            "Alternates": [
+              "Deadlift"
+            ],
+            "Current": 1,
+            "Desc": "No straps from now on",
+            "Superset": "",
+            "Progression": "Custom (next_desc)",
+            "Sets": [
+              {
+                "Reps": 5,
+                "MinReps": 5,
+                "Weight": {
+                  "Value": 140,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              }
+            ]
+          },
+          {
+            "Name": "Leg Press",
+            "Equipment": "",
+            "Label": "",
+            "Alternates": [
+              "Leg Press"
+            ],
+            "Current": 1,
+            "Desc": "",
+            "Superset": "",
+            "Sets": [
+              {
+                "Reps": 10,
+                "MinReps": 10,
+                "Weight": {
+                  "Value": 120,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 10,
+                "MinReps": 10,
+                "Weight": {
+                  "Value": 120,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              },
+              {
+                "Reps": 10,
+                "MinReps": 10,
+                "Weight": {
+                  "Value": 120,
+                  "Unit": "kg"
+                },
+                "RPE": 0,
+                "Rest": 0,
+                "Work": 0,
+                "Amrap": false,
+                "Ask": false,
+                "LogRPE": false,
+                "Auto": false,
+                "CountUp": false,
+                "Warmup": false,
+                "Label": ""
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

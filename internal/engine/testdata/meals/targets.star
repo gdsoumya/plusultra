@@ -1,0 +1,8 @@
+meal_program("Targets", weeks=1)
+rice = food("Rice", per100g={"kcal": 130, "carbs": 28})
+chicken = food("Chicken", per100g={"kcal": 120, "protein": 23})
+day(1, 1)
+meal("Lunch", rice(200), chicken(150))
+meal("Dinner", rice(100))
+day(1, 2, target=target(kcal=2200, protein=180, water_ml=3000))
+meal("Lunch", rice(200))
