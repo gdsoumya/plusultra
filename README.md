@@ -228,6 +228,11 @@ builds them for amd64 and arm64 (`PUSH=1` publishes). `make generate` and
 `make web` need Node 22 or newer. Buf fetches the proto dependencies from the BSR, which rate-limits anonymous
 clients; set `BUF_TOKEN` if the retries are not enough.
 
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the setup and the checks to run before a pull request,
+and [SECURITY.md](SECURITY.md) for reporting a vulnerability.
+
 ## License
 
 [PolyForm Noncommercial 1.0.0](LICENSE): free for personal and other noncommercial use, including

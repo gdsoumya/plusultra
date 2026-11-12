@@ -50,7 +50,7 @@ func TestMessagesRoundTripProtoJSON(t *testing.T) {
 	}}}
 
 	msgs := []proto.Message{
-		&pb.RegisterResponse{User: &pb.User{Username: "soumya", Units: pb.Unit_UNIT_KG, CreatedAt: now}, Token: "t"},
+		&pb.RegisterResponse{User: &pb.User{Username: "alice", Units: pb.Unit_UNIT_KG, CreatedAt: now}, Token: "t"},
 		&pb.CreateApiKeyResponse{Key: "lsk_abcd1234_secret", ApiKey: &pb.ApiKey{Name: "claude", Scopes: []pb.ApiKeyScope{pb.ApiKeyScope_API_KEY_SCOPE_READ}, ExpiresAt: now}},
 		&pb.Program{Kind: pb.ProgramKind_PROGRAM_KIND_WORKOUT, Status: pb.ProgramStatus_PROGRAM_STATUS_ACTIVE, Script: "program(...)",
 			Structure: &pb.ProgramStructure{Weeks: 16, Days: []*pb.StructureDay{{Week: 1, Day: 2, Name: "Upper A"}}},
@@ -101,9 +101,9 @@ func TestValidationRules(t *testing.T) {
 		msg  proto.Message
 		rule string // expected violated rule id; empty means valid
 	}{
-		{"good register", &pb.RegisterRequest{Username: "soumya_1", Password: "correct horse"}, ""},
-		{"bad username", &pb.RegisterRequest{Username: "Soumya!", Password: "correct horse"}, "string.pattern"},
-		{"short password", &pb.RegisterRequest{Username: "soumya", Password: "short"}, "string.min_len"},
+		{"good register", &pb.RegisterRequest{Username: "alice_1", Password: "correct horse"}, ""},
+		{"bad username", &pb.RegisterRequest{Username: "Alice!", Password: "correct horse"}, "string.pattern"},
+		{"short password", &pb.RegisterRequest{Username: "alice", Password: "short"}, "string.min_len"},
 		{"api key without expiry", &pb.CreateApiKeyRequest{Name: "k", Scopes: []pb.ApiKeyScope{pb.ApiKeyScope_API_KEY_SCOPE_READ}}, "required"},
 		{"api key expiring in two years", &pb.CreateApiKeyRequest{Name: "k", Scopes: []pb.ApiKeyScope{pb.ApiKeyScope_API_KEY_SCOPE_READ},
 			ExpiresAt: timestamppb.New(time.Now().Add(2 * 365 * 24 * time.Hour))}, "timestamp.within"},

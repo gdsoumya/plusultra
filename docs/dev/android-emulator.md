@@ -32,7 +32,7 @@ setsid nohup npx expo start --port 8081 > /tmp/metro.log 2>&1 < /dev/null &
 # drive it
 agent-device open <package.id> --platform android --foreground   # or --relaunch
 agent-device snapshot -i          # lists only interactive nodes; static Text is not listed
-agent-device fill 'id="name-input"' "Soumya" --settle
+agent-device fill 'id="name-input"' "Alice" --settle
 agent-device press '@e2~s592551' --settle   # use the EXACT ref printed by the latest snapshot/diff
 agent-device wait text "count=1"            # no --timeout flag exists
 agent-device get text 'id="greeting"'
