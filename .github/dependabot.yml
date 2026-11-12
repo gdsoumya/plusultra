@@ -27,3 +27,6 @@ updates:
       # eslint-config-expo bundles an eslint-plugin-react that breaks on ESLint 10.
       - dependency-name: eslint
         update-types: ["version-update:semver-major"]
+      # TypeScript 7 breaks the typecheck tooling; revisit once Expo and typescript-eslint support it.
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
