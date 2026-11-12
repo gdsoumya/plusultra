@@ -139,7 +139,10 @@ the `Dockerfile` pins each file by URL and SHA-256.
 ## Backups
 
 Everything is under `DATA_ROOT`: `.postgres/` holds the database and `exercises/` the catalog
-images, which a reseed recreates. Dump the database rather than copying its files:
+images, which a reseed recreates. Keep the same Postgres image flavour for the life of `.postgres/`:
+moving an existing database between `postgres:17` (glibc) and `postgres:17-alpine` (musl) changes
+the text collation and silently corrupts its indexes, so unique lookups miss rows until you
+`REINDEX DATABASE plusultra`. Dump the database rather than copying its files:
 
 ```sh
 docker compose exec postgres pg_dump -U plusultra plusultra | gzip > plusultra.sql.gz
