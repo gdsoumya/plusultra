@@ -407,7 +407,7 @@ describe("DayScreen", () => {
       dirty: false,
     });
     await renderDay("2026-01-05");
-    expect(screen.getByText("Weight on Sat 3 Jan")).toBeOnTheScreen();
+    expect(screen.getByText("Last weighed Sat 3 Jan, not today")).toBeOnTheScreen();
   });
 
   it("sets a past day's status through the repository", async () => {

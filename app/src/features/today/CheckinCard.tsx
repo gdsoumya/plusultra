@@ -61,7 +61,7 @@ export function CheckinCard({ checkins, today, unit, onSave }: Props) {
         {latest
           ? latest.date === today
             ? "Weight today"
-            : `Weight on ${weekdayDate(latest.date)}`
+            : `Last weighed ${weekdayDate(latest.date)}, not today`
           : "Weight"}
       </Text>
       {latest && (
