@@ -231,10 +231,10 @@ export function SetRow(p: Props) {
                   ? "stop-circle"
                   : timed
                     ? "play-circle"
-                    : "ellipse-outline"
+                    : "checkmark-circle-outline"
             }
             size={iconSize.lg}
-            color={set.completed ? "success" : active || running ? "accent" : "textMuted"}
+            color={set.completed ? "success" : "accent"}
           />,
           "checkbox",
           "done",

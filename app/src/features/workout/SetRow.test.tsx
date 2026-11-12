@@ -103,7 +103,7 @@ describe("SetRow", () => {
   });
 
   it.each([
-    ["a done circle on a rep set", 0, "ellipse-outline"],
+    ["an outlined tick on a rep set", 0, "checkmark-circle-outline"],
     ["play on a timed set", 45, "play-circle"],
   ] as const)("offers %s", async (_, work, name) => {
     await row(set({ work }));
