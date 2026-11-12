@@ -1,0 +1,113 @@
+name: Release
+
+# A `vX.Y.Z` tag publishes the Docker image (`gdsoumya/plusultra:X.Y.Z` and `:latest`), builds the
+# signed Android APK and creates the GitHub release with the APK attached.
+#
+# Repository secrets: DOCKERHUB_USERNAME, DOCKERHUB_TOKEN, ANDROID_KEYSTORE_BASE64,
+# KEYSTORE_STORE_PASSWORD, KEYSTORE_KEY_ALIAS, KEYSTORE_KEY_PASSWORD.
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          build-args: VERSION=${{ env.VERSION }}
+          tags: |
+            gdsoumya/plusultra:latest
+            gdsoumya/plusultra:${{ env.VERSION }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v6
+      - run: npm ci --no-audit --no-fund
+        working-directory: app
+      # versionCode is derived from the tag so it always grows: 0.1.0 -> 100, 1.2.3 -> 10203.
+      - name: Set the version from the tag
+        working-directory: app
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          node -e '
+            const fs = require("fs");
+            const [v] = process.argv.slice(1);
+            const [a, b, c] = v.split(".").map(Number);
+            const app = JSON.parse(fs.readFileSync("app.json"));
+            app.expo.version = v;
+            app.expo.android.versionCode = a * 10000 + b * 100 + c;
+            fs.writeFileSync("app.json", JSON.stringify(app, null, 2) + "\n");
+          ' "$VERSION"
+      - name: Restore the signing keystore
+        working-directory: app
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 -d > release.keystore
+          {
+            echo "storeFile=release.keystore"
+            echo "storePassword=${STORE_PASSWORD}"
+            echo "keyAlias=${KEY_ALIAS}"
+            echo "keyPassword=${KEY_PASSWORD}"
+          } > keystore.properties
+      - run: npx expo prebuild --platform android --clean
+        working-directory: app
+        env:
+          CI: "1"
+          EXPO_NO_TELEMETRY: "1"
+      - run: ./gradlew assembleRelease --no-daemon
+        working-directory: app/android
+      - run: cp app/android/app/build/outputs/apk/release/app-release.apk "plusultra-${GITHUB_REF_NAME#v}.apk"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apk
+          path: plusultra-*.apk
+          if-no-files-found: error
+
+  release:
+    needs: [image, apk]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v4
+        with:
+          name: apk
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          gh release create "$GITHUB_REF_NAME" plusultra-*.apk --verify-tag --title "$GITHUB_REF_NAME" \
+            --generate-notes --notes "Docker image: \`gdsoumya/plusultra:${VERSION}\` (linux/amd64, linux/arm64). Android: download the APK below and sideload it."

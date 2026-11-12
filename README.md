@@ -1,9 +1,57 @@
-# plusultra
+<div align="center">
 
-A self-hosted training and nutrition server. Programs are Starlark scripts that the server
-resolves into daily workouts and meals; the app and any MCP client (Claude, Cursor, and so on)
-talk to the same Connect RPC API. One Go binary plus Postgres: the binary serves the web app at `/`
-and the API under `/api/v1`.
+<img src="app/assets/icon.png" alt="PlusUltra icon" width="110" />
+
+# PlusUltra
+
+**Self-hosted training and nutrition: programs as scripts, one Go binary, your own data**
+
+[![CI](https://github.com/gdsoumya/plusultra/actions/workflows/ci.yml/badge.svg)](https://github.com/gdsoumya/plusultra/actions/workflows/ci.yml)
+[![Release](https://github.com/gdsoumya/plusultra/actions/workflows/release.yml/badge.svg)](https://github.com/gdsoumya/plusultra/actions/workflows/release.yml)
+[![Latest release](https://img.shields.io/github/v/release/gdsoumya/plusultra?sort=semver&label=release&color=B4F23C)](https://github.com/gdsoumya/plusultra/releases/latest)
+[![Docker pulls](https://img.shields.io/docker/pulls/gdsoumya/plusultra?logo=docker&logoColor=white)](https://hub.docker.com/r/gdsoumya/plusultra)
+[![License: PolyForm Noncommercial](https://img.shields.io/badge/license-PolyForm%20Noncommercial-blue.svg)](LICENSE)
+[![Platforms](https://img.shields.io/badge/platforms-Android%20%C2%B7%20Web%20%C2%B7%20MCP-3ddc84?logo=android&logoColor=white)](https://github.com/gdsoumya/plusultra/releases/latest)
+
+<img src="docs/screenshots/today.png" alt="Today" width="24%" /> <img src="docs/screenshots/workout.png" alt="Workout" width="24%" /> <img src="docs/screenshots/exercise.png" alt="Exercise details" width="24%" /> <img src="docs/screenshots/meals.png" alt="Meals" width="24%" />
+
+<img src="docs/screenshots/program.png" alt="Program" width="24%" /> <img src="docs/screenshots/progress.png" alt="Weight trend" width="24%" /> <img src="docs/screenshots/progress-lifts.png" alt="Estimated 1RM" width="24%" /> <img src="docs/screenshots/calendar.png" alt="Calendar" width="24%" />
+
+</div>
+
+PlusUltra runs on your own server and keeps every workout, meal and check-in in your own Postgres.
+Programs are Starlark scripts that the server resolves into daily workouts and meals, with
+progression, alternates, supersets and warmups written as code instead of clicked through forms.
+The Android app, the web app served by the server and any MCP client (Claude, Cursor, and so on)
+talk to the same Connect RPC API, so an assistant can write your program, read your history and
+log for you with the same rights you grant it.
+
+## Features
+
+- **Programs as code**: workout and meal programs are short Starlark scripts the server resolves
+  into each day's plan; validate, simulate weeks ahead and activate them from the app or over MCP.
+- **Workout logging**: tick sets as you go, edit reps and weight inline, switch alternates, add
+  ad hoc exercises, and see what you did last time for every exercise. Rest and timed sets count
+  down with a get-ready countdown, beeps and notifications; 1RM percentages round to your plates.
+- **Nutrition**: meal plans and meal logs against a food catalog (USDA SR Legacy, IFCT 2017 staples,
+  your own foods) with barcode lookup through Open Food Facts and per-item macro edits.
+- **Check-ins and progress**: weight and photos, lift history, weight trend, adherence and a
+  weekly summary, all from the same data an MCP client can query.
+- **Exercise catalog**: muscles, equipment, instructions and images from free-exercise-db, plus
+  custom exercises and per-exercise equipment settings.
+- **Offline-first app**: the Android and web app keep a local store and sync in both directions;
+  a workout logged without signal lands on the server later.
+- **MCP built in**: every annotated RPC is a tool at `/mcp`, with `/llms.txt` and the reference
+  pages so an assistant learns the program language on its own. API keys are scoped and revocable.
+- **Yours to run**: one container plus Postgres, invite-only registration by default, per-user
+  export of everything as a zip, no telemetry and no accounts anywhere else.
+
+## Get the app
+
+- **Android**: download the APK from the [latest release](https://github.com/gdsoumya/plusultra/releases/latest)
+  and sideload it. Enter your server address on first start.
+- **Web**: the server serves the same app at its root URL, so a browser on any device works too.
+- **MCP**: add `PUBLIC_URL/mcp` to Claude or Cursor with an API key (see API keys and MCP).
 
 ## Deploy
 
@@ -165,6 +213,12 @@ the image instead (the committed `docker-compose.override.yaml` adds the build a
 port for development; a deployment uses `docker-compose.yaml` alone).
 
 ## Development
+
+CI (`.github/workflows/ci.yml`) runs the Go lint and tests against Postgres, the app's typecheck,
+lint and Jest suite, and a Docker build on every push and pull request. Pushing a `vX.Y.Z` tag runs
+the release workflow: it publishes `gdsoumya/plusultra:X.Y.Z` and `:latest` for amd64 and arm64,
+builds the signed Android APK (`docs/dev/release-android.md`) and creates the GitHub release with
+the APK attached.
 
 See `CLAUDE.md` for the make targets. `make db-up` starts Postgres for tests, `make check` runs
 lint and tests, `make web` exports the web app into `internal/web/dist` for `make build` to embed

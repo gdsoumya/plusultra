@@ -32,5 +32,8 @@ Release builds run Hermes, R8 minification and resource shrinking (`expo-build-p
 
 ## Versions
 
-Bump both in `app/app.json` for every release: `expo.version` (shown to users, semver) and
-`expo.android.versionCode` (integer, must increase on every upload or Android refuses the update).
+`expo.version` and `expo.android.versionCode` in `app/app.json` are what local builds carry. A release
+comes from a tag: pushing `vX.Y.Z` runs `.github/workflows/release.yml`, which sets the version from
+the tag (versionCode `X*10000 + Y*100 + Z`, so it always grows), builds the signed APK with the keystore
+stored in the repository secrets, publishes the Docker image and attaches the APK to the GitHub release.
+Bump `app.json` to the same version in the release commit so dev builds match.
