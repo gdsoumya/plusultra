@@ -14,6 +14,7 @@ import {
   nextMonday,
   shortDate,
   weekday,
+  weekdayDate,
   weekdayName,
 } from "./dates";
 
@@ -67,6 +68,7 @@ describe("months", () => {
   it("labels a month and a date for display", () => {
     expect(monthLabel("2026-11")).toBe("November 2026");
     expect(dateLabel("2026-11-11")).toBe("Wednesday 11 November");
+    expect(weekdayDate("2026-11-10")).toBe("Tue 10 Nov");
   });
 });
 

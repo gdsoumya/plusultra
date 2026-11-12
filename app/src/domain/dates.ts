@@ -75,5 +75,14 @@ export const formatDateTime = (d: Date, timeZone?: string) =>
 export const shortDate = (date: string) =>
   parse(date).toLocaleDateString(undefined, { day: "numeric", month: "short", timeZone: "UTC" });
 
+// Weekday, day and short month, e.g. "Tue 10 Nov".
+export const weekdayDate = (date: string) =>
+  new Intl.DateTimeFormat("en-GB", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    timeZone: "UTC",
+  }).format(parse(date));
+
 // Seconds as m:ss, for timers.
 export const clock = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;

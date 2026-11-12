@@ -16,19 +16,25 @@ export const targetLabel = (s: ResolvedSet) =>
 // skipped, the weight left out for bodyweight work, the rest shown once when every set shares it.
 export function setsSummary(sets: ResolvedSet[], unit: Unit): string {
   const work = sets.filter((s) => !s.warmup);
-  const runs: { text: string; n: number }[] = [];
-  for (const s of work) {
-    const text = s.weight.value
-      ? `${targetLabel(s)} ${formatWeight(s.weight, unit)}`
-      : targetLabel(s);
-    const last = runs[runs.length - 1];
-    if (last?.text === text) last.n++;
-    else runs.push({ text, n: 1 });
-  }
-  const parts = runs.map((r) => `${r.n}x${r.text}`);
+  const parts = runs(
+    work.map((s) =>
+      s.weight.value ? `${targetLabel(s)} ${formatWeight(s.weight, unit)}` : targetLabel(s),
+    ),
+  );
   const rest = work[0]?.rest;
   if (rest && work.every((s) => s.rest === rest)) parts.push(`rest ${clock(rest)}`);
   return parts.join(" · ");
+}
+
+// Consecutive equal sets collapsed to "3x5 75 kg".
+export function runs(texts: string[]): string[] {
+  const out: { text: string; n: number }[] = [];
+  for (const text of texts) {
+    const last = out[out.length - 1];
+    if (last?.text === text) last.n++;
+    else out.push({ text, n: 1 });
+  }
+  return out.map((r) => `${r.n}x${r.text}`);
 }
 
 // How an exercise went against its plan: met when every set (warmups too, P2-R32) is done at the
