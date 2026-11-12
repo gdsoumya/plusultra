@@ -273,6 +273,7 @@ export default function WorkoutScreen({ id, unit }: { id: string; unit: Unit }) 
               <ExercisePane
                 key={shown}
                 entry={entry}
+                record={record}
                 index={shown}
                 count={count}
                 unit={unit}

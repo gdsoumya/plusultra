@@ -30,6 +30,7 @@ jest.mock("expo-notifications", () => ({
 const mockRouter = { back: jest.fn(), replace: jest.fn(), canGoBack: () => true, push: jest.fn() };
 jest.mock("expo-router", () => ({
   useRouter: () => mockRouter,
+  useSegments: () => [],
   useFocusEffect: (effect: () => void) =>
     jest.requireActual<typeof import("react")>("react").useEffect(effect, [effect]),
 }));

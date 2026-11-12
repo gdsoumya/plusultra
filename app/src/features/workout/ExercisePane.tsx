@@ -3,16 +3,19 @@ import { View } from "react-native";
 
 import { useExerciseInfo } from "../../data/exerciseInfo";
 import { exerciseTarget } from "../../domain/sets";
-import type { ExerciseEntry, Unit } from "../../domain/types";
+import type { ExerciseEntry, Unit, WorkoutRecord } from "../../domain/types";
 import { round1 } from "../../domain/units";
 import { Badge, Button, Card, IconButton, Text, Thumbnail, control, space } from "../../ui";
 import { ExerciseSheet } from "./ExerciseSheet";
+import { LastTimeRow } from "./LastTimeRow";
 import type { Values } from "./SetEditor";
 import { SetList } from "./SetList";
 import { exerciseModified } from "./workoutEdits";
 
 type Props = {
   entry: ExerciseEntry;
+  /** The record the entry belongs to; "Last time" looks for earlier ones. */
+  record: Pick<WorkoutRecord, "id" | "date">;
   index: number;
   count: number;
   unit: Unit;
@@ -84,6 +87,7 @@ export function ExercisePane(p: Props) {
           testID={`exercise-${index}-menu`}
         />
       </View>
+      <LastTimeRow entry={entry} record={p.record} unit={unit} index={index} />
       {entry.desc ? (
         <Card style={{ padding: space[3] }}>
           <Text color="textMuted" selectable>
