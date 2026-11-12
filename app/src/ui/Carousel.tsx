@@ -43,6 +43,7 @@ export function Carousel<T>({ items, renderItem, testID }: Props<T>) {
             showsHorizontalScrollIndicator={false}
             scrollEventThrottle={16}
             onScroll={(e) => onScroll(e.nativeEvent)}
+            onMomentumScrollEnd={(e) => onScroll(e.nativeEvent)}
             style={{ borderRadius: radius.control, backgroundColor: colors.surfaceRaised }}
           >
             {items.map((item, i) => (

@@ -377,11 +377,12 @@ describe("WorkoutScreen", () => {
     );
     for (const i of all.keys()) await fireEvent.press(screen.getByTestId(`set-1-${i}-done`));
     expect(screen.getByTestId("exercise-1-summary")).toHaveTextContent(
-      `On target · ${reps} / ${reps} reps · ${kg} / ${kg} kg`,
+      `${reps} / ${reps} reps · ${kg} / ${kg} kg`,
     );
+    expect(screen.getByTestId("exercise-1-on-target")).toBeOnTheScreen();
     expect(screen.getByText(`1 of ${entries.length} exercises on target`)).toBeOnTheScreen();
     await fireEvent.press(screen.getByTestId("set-1-0-done"));
-    expect(screen.getByTestId("exercise-1-summary")).not.toHaveTextContent(/On target/);
+    expect(screen.queryByTestId("exercise-1-on-target")).toBeNull();
     expect(screen.getByText(`0 of ${entries.length} exercises on target`)).toBeOnTheScreen();
   });
 

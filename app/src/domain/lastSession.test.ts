@@ -98,6 +98,12 @@ describe("setLine and doneSummary", () => {
     expect(setLine(done(8, 20, { repsLeft: 7 }), "kg", true)).toBe("20 kg x L 7 R 8");
   });
 
+  it("shows a timed set as its time, logged or planned", () => {
+    const timed = (workTime?: number) =>
+      done(1, 0, { workTime, planned: { ...sets(1, 1, 0)[0], work: 45 } });
+    expect(doneSummary([timed(50), timed(50), timed()], false, "kg")).toBe("2x0:50 · 1x0:45");
+  });
+
   it("collapses equal sets like the plan summary", () => {
     const all = [done(5, 80), done(5, 80), done(5, 65), done(10, 0)];
     expect(doneSummary(all, false, "kg")).toBe("2x5 80 kg · 1x5 65 kg · 1x10");

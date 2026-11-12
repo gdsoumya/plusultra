@@ -5,7 +5,6 @@ import { useExerciseInfo } from "../../data/exerciseInfo";
 import { clock } from "../../domain/dates";
 import { exerciseTarget } from "../../domain/sets";
 import type { ExerciseEntry, Unit, WorkoutRecord } from "../../domain/types";
-import { round1 } from "../../domain/units";
 import {
   Badge,
   Button,
@@ -49,22 +48,21 @@ type Props = {
   onNext: () => void;
 };
 
-// "On target · 15 / 15 reps · 1500 / 1500 kg": done against planned over every set, tonnage in the
-// user's unit; an ad hoc exercise has no plan to compare with, so just "10 reps · 200 kg". A
-// bodyweight exercise moves no logged weight, so it gets no tonnage. A timed exercise counts sets
-// and time instead: "1 / 3 sets · 0:50 / 3:00".
+// "15 / 15 reps · 1500 / 1500 kg": done against planned over every set, tonnage in whole units
+// so the line fits a phone; an ad hoc exercise has no plan to compare with, so just "10 reps ·
+// 200 kg". A bodyweight exercise moves no logged weight, so it gets no tonnage. A timed exercise
+// counts sets and time instead: "1 / 3 sets · 0:50 / 3:00". Meeting the plan is a badge.
 function summary(entry: ExerciseEntry, unit: Unit) {
   const t = exerciseTarget(entry.sets, entry.unilateral, unit);
-  const met = t.met ? "On target · " : "";
   if (t.plannedWork) {
     const done = entry.sets.filter((s) => s.completed).length;
-    return `${met}${done} / ${entry.sets.length} sets · ${clock(t.work)} / ${clock(t.plannedWork)}`;
+    return `${done} / ${entry.sets.length} sets · ${clock(t.work)} / ${clock(t.plannedWork)}`;
   }
-  const [load, planned] = [round1(t.load), round1(t.plannedLoad)];
+  const [load, planned] = [Math.round(t.load), Math.round(t.plannedLoad)];
   const weighed = load > 0 || planned > 0;
   if (!t.plannedReps) return `${t.reps} reps${weighed ? ` · ${load} ${unit}` : ""}`;
   const tonnage = weighed ? ` · ${load} / ${planned} ${unit}` : "";
-  return `${met}${t.reps} / ${t.plannedReps} reps${tonnage}`;
+  return `${t.reps} / ${t.plannedReps} reps${tonnage}`;
 }
 
 // shortcut: a note is "long" by its length, not its laid-out lines, since the web has no
@@ -105,6 +103,9 @@ export function ExercisePane(p: Props) {
               {summary(entry, unit)}
             </Text>
             <View style={{ flexDirection: "row", gap: space[2] }}>
+              {exerciseTarget(entry.sets, entry.unilateral, unit).met && (
+                <Badge label="On target" icon="checkmark" testID={`exercise-${index}-on-target`} />
+              )}
               {entry.superset ? (
                 <Badge label={`Superset ${entry.superset}`} icon="link-outline" />
               ) : null}
