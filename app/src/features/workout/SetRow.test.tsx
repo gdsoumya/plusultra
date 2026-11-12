@@ -116,6 +116,14 @@ describe("SetRow", () => {
     expect(screen.getByTestId("set-0-0-values")).toHaveTextContent(/^12\+$/);
   });
 
+  it("keeps reps and weight on a timed set that has them, with play to start it", async () => {
+    await row(set({ work: 60, reps: 5, weight: { value: 80, unit: "kg" } }));
+    expect(screen.getByTestId("set-0-0-reps")).toHaveTextContent(/^5$/);
+    expect(screen.getByTestId("set-0-0-weight")).toHaveTextContent("80 kg");
+    expect(screen.getByTestId("set-0-0-done")).toHaveTextContent(glyph("play-circle"));
+    expect(screen.getByText(/work 1:00/)).toBeOnTheScreen();
+  });
+
   it("shows a timed set by its time", async () => {
     await row(set({ work: 60, reps: 1, weight: { value: 0, unit: "kg" } }));
     expect(screen.getByTestId("set-0-0-reps")).toHaveTextContent(/^1:00$/);

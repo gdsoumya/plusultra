@@ -2,9 +2,13 @@ import { clock } from "./dates";
 import type { ResolvedSet, SetEntry, Unit, Weight } from "./types";
 import { formatWeight, inUnit, toKg } from "./units";
 
-// What a set asks for: "8-12" or "5+" reps, or "0:45" (count up: "0:30+") for a timed set.
+// A timed set with no reps to count, like a plank (weighted or not) or a round of jump rope: its
+// time stands in for reps. Reps done against a clock (work for time) keep their reps.
+export const isHold = (s: ResolvedSet) => s.work > 0 && s.reps <= 1;
+
+// What a set asks for: "8-12" or "5+" reps, or "0:45" (count up: "0:30+") for a hold.
 export const targetLabel = (s: ResolvedSet) =>
-  s.work
+  isHold(s)
     ? `${clock(s.work)}${s.countUp ? "+" : ""}`
     : s.amrap
       ? `${s.reps}+`

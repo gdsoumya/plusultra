@@ -3,7 +3,7 @@ import { Pressable, View } from "react-native";
 
 import { useExerciseInfo } from "../../data/exerciseInfo";
 import { clock } from "../../domain/dates";
-import { exerciseTarget } from "../../domain/sets";
+import { exerciseTarget, isHold } from "../../domain/sets";
 import type { ExerciseEntry, Unit, WorkoutRecord } from "../../domain/types";
 import {
   Badge,
@@ -54,7 +54,7 @@ type Props = {
 // counts sets and time instead: "1 / 3 sets · 0:50 / 3:00". Meeting the plan is a badge.
 function summary(entry: ExerciseEntry, unit: Unit) {
   const t = exerciseTarget(entry.sets, entry.unilateral, unit);
-  if (t.plannedWork) {
+  if (t.plannedWork && entry.sets.every((s) => isHold(s.planned))) {
     const done = entry.sets.filter((s) => s.completed).length;
     return `${done} / ${entry.sets.length} sets · ${clock(t.work)} / ${clock(t.plannedWork)}`;
   }
@@ -125,7 +125,12 @@ export function ExercisePane(p: Props) {
       <LastTimeRow entry={entry} record={p.record} unit={unit} index={index} />
       {entry.desc ? (
         <Card style={{ padding: space[3], gap: space[2] }}>
-          <Text color="textMuted" selectable numberOfLines={folded ? noteLines : undefined}>
+          {/* Android keeps a selectable Text at its full height even when numberOfLines clips it. */}
+          <Text
+            color="textMuted"
+            selectable={!folded}
+            numberOfLines={folded ? noteLines : undefined}
+          >
             {entry.desc}
           </Text>
           {longNote(entry.desc) && (

@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { Pressable, View, type ViewStyle } from "react-native";
 
 import { clock } from "../../domain/dates";
-import { targetLabel } from "../../domain/sets";
+import { isHold, targetLabel } from "../../domain/sets";
 import type { SetEntry, Unit } from "../../domain/types";
 import { formatWeight } from "../../domain/units";
 import {
@@ -57,7 +57,7 @@ function labels(set: SetEntry, unit: Unit, unilateral: boolean) {
   const { reps, repsLeft, weight } = shown(set, unilateral);
   const time = fromPlan ? targetLabel(set.planned) : clock(set.workTime ?? set.planned.work);
   return {
-    reps: isTimed(set) ? time : fromPlan ? plannedReps(set) : `${reps}`,
+    reps: isHold(set.planned) ? time : fromPlan ? plannedReps(set) : `${reps}`,
     repsLeft: fromPlan ? plannedReps(set) : `${repsLeft}`,
     weight: fromPlan && set.planned.ask ? "?" : weight.value ? formatWeight(weight, unit) : "",
   };
@@ -98,7 +98,7 @@ export function SetRow(p: Props) {
   const timed = isTimed(set);
   const names = {
     repsLeft: "Left reps",
-    reps: timed ? "Time" : unilateral ? "Right reps" : "Reps",
+    reps: isHold(set.planned) ? "Time" : unilateral ? "Right reps" : "Reps",
     weight: "Weight",
   };
   const sides = { repsLeft: "L ", reps: unilateral ? "R " : "", weight: "" };

@@ -102,6 +102,8 @@ describe("setLine and doneSummary", () => {
     const timed = (workTime?: number) =>
       done(1, 0, { workTime, planned: { ...sets(1, 1, 0)[0], work: 45 } });
     expect(doneSummary([timed(50), timed(50), timed()], false, "kg")).toBe("2x0:50 · 1x0:45");
+    const forTime = done(5, 80, { workTime: 55, planned: { ...sets(1, 5, 80)[0], work: 60 } });
+    expect(doneSummary([forTime], false, "kg")).toBe("1x5 80 kg");
   });
 
   it("collapses equal sets like the plan summary", () => {

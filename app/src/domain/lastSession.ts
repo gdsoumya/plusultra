@@ -1,5 +1,5 @@
 import { clock } from "./dates";
-import { runs } from "./sets";
+import { isHold, runs } from "./sets";
 import type { ExerciseEntry, ResolvedSet, SetEntry, Unit, Weight, WorkoutRecord } from "./types";
 import { formatWeight, inUnit, round1, toKg } from "./units";
 
@@ -67,9 +67,9 @@ export const setLine = (s: Lifted, unit: Unit, unilateral = false) =>
       : `${s.reps} reps`;
 
 // "2x5 80 kg · 1x5 65 kg", like setsSummary for the plan.
-// A timed set is its time ("0:45"), a lifted one its reps.
+// A hold is its time ("0:45"), any other set its reps.
 const effort = (s: SetEntry, unilateral: boolean) =>
-  s.workTime || s.planned.work ? clock(s.workTime ?? s.planned.work) : reps(s, unilateral, "");
+  isHold(s.planned) ? clock(s.workTime ?? s.planned.work) : reps(s, unilateral, "");
 
 export const doneSummary = (sets: SetEntry[], unilateral: boolean, unit: Unit) =>
   runs(
