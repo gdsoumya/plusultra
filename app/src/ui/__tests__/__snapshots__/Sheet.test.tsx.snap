@@ -200,6 +200,7 @@ exports[`Sheet matches snapshot (1 x) 1`] = `
                 1,
               ]
             }
+            moduleId={-1}
             onGestureHandlerEvent={[Function]}
             onGestureHandlerStateChange={[Function]}
             onGestureHandlerTouchEvent={[Function]}
@@ -499,6 +500,7 @@ exports[`Sheet matches snapshot (1.3 x) 1`] = `
                 2,
               ]
             }
+            moduleId={-1}
             onGestureHandlerEvent={[Function]}
             onGestureHandlerStateChange={[Function]}
             onGestureHandlerTouchEvent={[Function]}
@@ -798,6 +800,7 @@ exports[`Sheet matches snapshot (2 x) 1`] = `
                 3,
               ]
             }
+            moduleId={-1}
             onGestureHandlerEvent={[Function]}
             onGestureHandlerStateChange={[Function]}
             onGestureHandlerTouchEvent={[Function]}
