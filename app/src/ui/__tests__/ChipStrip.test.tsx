@@ -27,8 +27,14 @@ describe("ChipStrip", () => {
     expect(screen.queryByLabelText(/^Page /)).toBeNull();
     await sized(400, 900);
     expect(screen.getByLabelText("Page 1 of 3")).toBeOnTheScreen();
-    await fireEvent.scroll(strip(), { nativeEvent: { contentOffset: { x: 500 } } });
+    await fireEvent.scroll(strip(), { nativeEvent: { contentOffset: { x: 250 } } });
     expect(screen.getByLabelText("Page 2 of 3")).toBeOnTheScreen();
+    await fireEvent.scroll(strip(), { nativeEvent: { contentOffset: { x: 500 } } });
+    expect(screen.getByLabelText("Page 3 of 3")).toBeOnTheScreen();
+    // A strip only a little wider than the viewport reaches its last dot at the end of the scroll.
+    await sized(400, 560);
+    await fireEvent.scroll(strip(), { nativeEvent: { contentOffset: { x: 160 } } });
+    expect(screen.getByLabelText("Page 2 of 2")).toBeOnTheScreen();
   });
 
   it("brings a chip into view with a gutter, only when it is outside", () => {

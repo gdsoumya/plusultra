@@ -68,7 +68,11 @@ export function ChipStrip({ children, selected, testID }: Props) {
           ),
         )}
       </ScrollView>
-      <Dots count={pages} current={Math.min(pages - 1, Math.round(x / (viewport || 1)))} />
+      {/* By the scrolled fraction, since the last page is usually narrower than the viewport. */}
+      <Dots
+        count={pages}
+        current={Math.round((x / Math.max(1, content - viewport)) * (pages - 1))}
+      />
     </View>
   );
 }
