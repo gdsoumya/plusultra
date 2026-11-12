@@ -141,7 +141,7 @@ describe("LastTimeRow", () => {
     expect(shown).toHaveTextContent(/Last time · Wed 28 Oct/);
     expect(shown).toHaveTextContent(/Best 75 kg x 6/);
     await fireEvent.press(shown);
-    expect(screen.getByTestId("exercise-0-last-best")).toHaveTextContent(/e1RM\ 90\ kg/);
+    expect(screen.getByTestId("exercise-0-last-best")).toHaveTextContent(/e1RM 90 kg/);
     expect(screen.queryByText("Open session")).toBeNull();
     expect(screen.queryByTestId("exercise-0-last-set-0")).toBeNull();
 

@@ -41,7 +41,7 @@ export function LastTimeRow({ entry, record, unit, index }: Props) {
   if (!last) return null;
 
   const unilateral = !!entry.unilateral;
-  const best = `${formatWeight(last.best.weight, unit)} x ${last.best.reps}`;
+  const best = setLine(last.best, unit);
   const summary = last.sets.length ? doneSummary(last.sets, unilateral, unit) : `Best ${best}`;
   const planned = entry.sets.filter((s) => !s.planned.warmup);
   const id = `exercise-${index}-last`;
@@ -88,7 +88,7 @@ export function LastTimeRow({ entry, record, unit, index }: Props) {
                   {`Set ${i + 1}`}
                 </Text>
                 <Text variant="label" style={[tabular, { flex: 1 }]}>
-                  {setLine(s, unilateral, unit)}
+                  {setLine(s, unit, unilateral)}
                 </Text>
                 {delta && (
                   <Text variant="caption" color={delta.tone} style={tabular}>

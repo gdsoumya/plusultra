@@ -92,10 +92,10 @@ describe("bestSet", () => {
 
 describe("setLine and doneSummary", () => {
   it("shows weight x reps, reps alone for bodyweight and both sides of a unilateral set", () => {
-    expect(setLine(done(5, 80), false, "kg")).toBe("80 kg x 5");
-    expect(setLine(done(5, 80), false, "lb")).toBe("176.4 lb x 5");
-    expect(setLine(done(12, 0), false, "kg")).toBe("12 reps");
-    expect(setLine(done(8, 20, { repsLeft: 7 }), true, "kg")).toBe("20 kg x L 7 R 8");
+    expect(setLine(done(5, 80), "kg")).toBe("80 kg x 5");
+    expect(setLine(done(5, 80), "lb")).toBe("176.4 lb x 5");
+    expect(setLine(done(12, 0), "kg")).toBe("12 reps");
+    expect(setLine(done(8, 20, { repsLeft: 7 }), "kg", true)).toBe("20 kg x L 7 R 8");
   });
 
   it("collapses equal sets like the plan summary", () => {

@@ -52,11 +52,13 @@ export function findLastSession(
   return undefined;
 }
 
-const reps = (s: SetEntry, unilateral: boolean, sep: string) =>
+type Lifted = Pick<SetEntry, "reps" | "repsLeft" | "weight">;
+
+const reps = (s: Lifted, unilateral: boolean, sep: string) =>
   unilateral ? `L${sep}${s.repsLeft ?? 0} R${sep}${s.reps}` : `${s.reps}`;
 
 // "80 kg x 5", "12 reps", or "20 kg x L 7 R 8" for a unilateral set.
-export const setLine = (s: SetEntry, unilateral: boolean, unit: Unit) =>
+export const setLine = (s: Lifted, unit: Unit, unilateral = false) =>
   s.weight.value
     ? `${formatWeight(s.weight, unit)} x ${reps(s, unilateral, " ")}`
     : unilateral

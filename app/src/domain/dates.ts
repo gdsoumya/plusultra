@@ -75,14 +75,16 @@ export const formatDateTime = (d: Date, timeZone?: string) =>
 export const shortDate = (date: string) =>
   parse(date).toLocaleDateString(undefined, { day: "numeric", month: "short", timeZone: "UTC" });
 
-// Weekday, day and short month, e.g. "Tue 10 Nov".
+// Weekday, day and short month, e.g. "Tue 10 Nov"; Android's ICU adds a comma after the weekday.
 export const weekdayDate = (date: string) =>
   new Intl.DateTimeFormat("en-GB", {
     weekday: "short",
     day: "numeric",
     month: "short",
     timeZone: "UTC",
-  }).format(parse(date));
+  })
+    .format(parse(date))
+    .replace(",", "");
 
 // Seconds as m:ss, for timers.
 export const clock = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
