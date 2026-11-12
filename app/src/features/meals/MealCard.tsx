@@ -63,7 +63,7 @@ export function MealCard({
         {planned && (
           <Chip
             label={enabled ? "Eaten" : "Mark eaten"}
-            icon={enabled ? "checkmark-circle" : "ellipse-outline"}
+            icon={enabled ? "checkmark-circle" : "checkmark-circle-outline"}
             selected={enabled}
             onPress={onToggle}
             testID={`meal-${index}-eaten`}
