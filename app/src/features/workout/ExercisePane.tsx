@@ -78,7 +78,8 @@ export function ExercisePane(p: Props) {
   const [menu, setMenu] = useState(false);
   const [details, setDetails] = useState(false);
   const [noteOpen, setNoteOpen] = useState(false);
-  const folded = longNote(entry.desc) && !noteOpen;
+  const desc = entry.desc.trim();
+  const folded = longNote(desc) && !noteOpen;
   const last = index === count - 1;
   return (
     <View style={{ gap: space[4] }} testID={`exercise-${index}`}>
@@ -123,7 +124,7 @@ export function ExercisePane(p: Props) {
         />
       </View>
       <LastTimeRow entry={entry} record={p.record} unit={unit} index={index} />
-      {entry.desc ? (
+      {desc ? (
         <Card style={{ padding: space[3], gap: space[2] }}>
           {/* Android keeps a selectable Text at its full height even when numberOfLines clips it. */}
           <Text
@@ -131,15 +132,14 @@ export function ExercisePane(p: Props) {
             selectable={!folded}
             numberOfLines={folded ? noteLines : undefined}
           >
-            {entry.desc}
+            {desc}
           </Text>
-          {longNote(entry.desc) && (
+          {longNote(desc) && (
             <Button
               title={noteOpen ? "Less" : "More"}
               variant="ghost"
-              compact
               onPress={() => setNoteOpen(!noteOpen)}
-              style={{ alignSelf: "flex-start" }}
+              style={{ alignSelf: "flex-start", paddingHorizontal: 0 }}
             />
           )}
         </Card>

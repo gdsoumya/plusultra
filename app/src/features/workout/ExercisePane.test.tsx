@@ -79,11 +79,11 @@ describe("ExercisePane", () => {
     expect(screen.getByTestId("exercise-0-summary").props.numberOfLines).toBe(2);
   });
 
-  it("folds a long coach note to three lines behind More", async () => {
+  it("folds a long coach note to three lines behind a visible More", async () => {
     const desc = "Keep the elbows tucked. ".repeat(12).trim();
-    await render(entry({ desc }));
+    await render(entry({ desc: `${desc}\n` }));
     expect(screen.getByText(desc).props.numberOfLines).toBe(3);
-    await fireEvent.press(screen.getByRole("button", { name: "More" }));
+    await fireEvent.press(screen.getByText("More"));
     expect(screen.getByText(desc).props.numberOfLines).toBeUndefined();
     await fireEvent.press(screen.getByRole("button", { name: "Less" }));
     expect(screen.getByText(desc).props.numberOfLines).toBe(3);
