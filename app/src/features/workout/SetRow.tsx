@@ -50,6 +50,9 @@ const isRange = ({ planned: p }: SetEntry) => p.minReps > 0 && p.minReps !== p.r
 
 const isTimed = ({ planned: p }: SetEntry) => p.work > 0;
 
+// A planned hold stays one until the user logs reps against it.
+const hold = (set: SetEntry) => isHold({ ...set.planned, reps: shown(set).reps });
+
 // The plan's words (AMRAP, ask) until the user edits or completes the set. A timed set shows its
 // time in place of reps; bodyweight work has no weight to show.
 function labels(set: SetEntry, unit: Unit, unilateral: boolean) {
@@ -57,7 +60,7 @@ function labels(set: SetEntry, unit: Unit, unilateral: boolean) {
   const { reps, repsLeft, weight } = shown(set, unilateral);
   const time = fromPlan ? targetLabel(set.planned) : clock(set.workTime ?? set.planned.work);
   return {
-    reps: isHold(set.planned) ? time : fromPlan ? plannedReps(set) : `${reps}`,
+    reps: hold(set) ? time : fromPlan ? plannedReps(set) : `${reps}`,
     repsLeft: fromPlan ? plannedReps(set) : `${repsLeft}`,
     weight: fromPlan && set.planned.ask ? "?" : weight.value ? formatWeight(weight, unit) : "",
   };
@@ -98,7 +101,7 @@ export function SetRow(p: Props) {
   const timed = isTimed(set);
   const names = {
     repsLeft: "Left reps",
-    reps: isHold(set.planned) ? "Time" : unilateral ? "Right reps" : "Reps",
+    reps: hold(set) ? "Time" : unilateral ? "Right reps" : "Reps",
     weight: "Weight",
   };
   const sides = { repsLeft: "L ", reps: unilateral ? "R " : "", weight: "" };

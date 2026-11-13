@@ -130,6 +130,14 @@ describe("SetRow", () => {
     expect(screen.getByLabelText("Time 1:00")).toBeOnTheScreen();
   });
 
+  it("shows the reps a hold was edited to count", async () => {
+    await row(
+      set({ work: 60, reps: 1 }, { edited: true, reps: 2, weight: { value: 10, unit: "kg" } }),
+    );
+    expect(screen.getByTestId("set-0-0-reps")).toHaveTextContent(/^2$/);
+    expect(screen.getByLabelText("Reps 2")).toBeOnTheScreen();
+  });
+
   it("shows the logged time of a done timed set", async () => {
     await row(set({ work: 60, reps: 1 }, { completed: true, reps: 1, workTime: 50 }));
     expect(screen.getByTestId("set-0-0-reps")).toHaveTextContent(/^0:50$/);
