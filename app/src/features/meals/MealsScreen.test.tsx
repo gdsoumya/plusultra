@@ -48,7 +48,12 @@ const today = "2026-11-11";
 // log: "planned" saves every planned meal as eaten, "fixture" the mock's log, "adhoc" an empty log
 // made without the plan (Today's "Ad hoc meals"), "none" nothing.
 // serverPlan: the plan's items unmarked, as the server resolves them (the fixtures mark them).
-async function setup({ online = true, log = "planned", serverPlan = false } = {}) {
+async function setup({
+  online = true,
+  log = "planned",
+  serverPlan = false,
+  viewedOn = today,
+} = {}) {
   const store: Store = createMemoryStore();
   const mock = createMockTransport({ today });
   const api = createClients(mock.transport);
@@ -80,7 +85,13 @@ async function setup({ online = true, log = "planned", serverPlan = false } = {}
   const tree = () => (
     <ThemeProvider>
       <GestureHandlerRootView>
-        <MealsScreen date={today} store={store} api={online ? api : undefined} userId="user-1" />
+        <MealsScreen
+          date={today}
+          today={viewedOn}
+          store={store}
+          api={online ? api : undefined}
+          userId="user-1"
+        />
       </GestureHandlerRootView>
     </ThemeProvider>
   );
@@ -203,6 +214,17 @@ describe("meals screen", () => {
     const label = onTarget(dayTotals(plan.meals), plan.target) ? "On target" : "Off target";
     expect(screen.getByLabelText(label)).toBeOnTheScreen();
     expect(screen.queryByRole("button", { name: "Enable all" })).toBeNull();
+  });
+
+  it("reports the day once its last planned meal is eaten, skipped meals aside", async () => {
+    const { plan } = await setup({ log: "none" });
+    await fireEvent.press(screen.getByTestId(`meal-${plan.meals.length - 1}-eaten`));
+    expect(screen.getByLabelText(/(On|Off) target/)).toBeOnTheScreen();
+  });
+
+  it("reports a past day whatever was skipped", async () => {
+    await setup({ log: "none", viewedOn: "2026-11-12" });
+    expect(screen.getByLabelText(/(On|Off) target/)).toBeOnTheScreen();
   });
 
   it("deletes a meal after confirming", async () => {

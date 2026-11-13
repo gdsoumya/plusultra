@@ -7,7 +7,7 @@ import { plannedMealDay } from "../../data/plans";
 import { mealLogsRepo } from "../../data/repositories/mealLogs";
 import type { Store } from "../../data/store";
 import { useRefresh } from "../../data/useRefresh";
-import { dateLabel } from "../../domain/dates";
+import { dateLabel, today as todayLocal } from "../../domain/dates";
 import { moveItem } from "../../domain/order";
 import {
   dayTotals,
@@ -45,6 +45,7 @@ import { MealNameSheet } from "./MealNameSheet";
 
 type Props = {
   date: string;
+  today?: string;
   store: Store;
   // Unset while offline; the log is edited locally either way.
   api?: Api;
@@ -54,7 +55,13 @@ type Props = {
 // The meal log for one date, from the local store. Without a log the plan's meals show disabled
 // (every item at qty 0, R44); the first change creates the log. Every edit is saved through the
 // repository, so sync picks it up.
-export default function MealsScreen({ date, store, api, userId = "" }: Props) {
+export default function MealsScreen({
+  date,
+  today = todayLocal(),
+  store,
+  api,
+  userId = "",
+}: Props) {
   const repo = useMemo(() => mealLogsRepo(store), [store]);
   const planRow = useMemo(() => plannedMealDay(store, date), [store, date]);
   // Read on every render, which a finished sync causes, so an edit lands on the row the sync
@@ -88,10 +95,11 @@ export default function MealsScreen({ date, store, api, userId = "" }: Props) {
   // The plan's meal for one that has the plan's items; any other meal is eaten as entered (P2-R42).
   const plannedMeal = (meal: Meal) =>
     meal.items.some((i) => i.planned) ? plan?.meals.find((m) => m.name === meal.name) : undefined;
-  // A verdict on the day waits until every planned meal is eaten; a disabled one may still be coming.
-  const onTargetNow = meals.every((m) => !plannedMeal(m) || mealEnabled(m))
-    ? onTarget(totals, target)
-    : undefined;
+  // A verdict on the day waits for its last planned meal, or for the day to pass: an earlier
+  // meal still disabled by then was skipped.
+  const lastPlanned = meals.findLast(plannedMeal);
+  const dayDone = date < today || !lastPlanned || mealEnabled(lastPlanned);
+  const onTargetNow = dayDone ? onTarget(totals, target) : undefined;
   const edited = editing && meals[editing.meal];
   const editedItem = edited?.items[editing!.item];
 
