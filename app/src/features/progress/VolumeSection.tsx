@@ -4,10 +4,8 @@ import { muscleGroups, muscleRegions } from "../../domain/muscles";
 import { Card, EmptyState, Text } from "../../ui";
 import { BarChart } from "../../ui/charts/BarChart";
 import { CachedView } from "./CachedView";
-import type { SectionProps } from "./shared";
+import { capitalize, type SectionProps } from "./shared";
 import { useCached } from "./useCached";
-
-const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 export function VolumeSection({
   insights,

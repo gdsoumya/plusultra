@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-import { daysBetween, shortDate } from "../../domain/dates";
+import { addDays, daysBetween, shortDate } from "../../domain/dates";
 import { fromKg } from "../../domain/units";
 import { Card, EmptyState, Text } from "../../ui";
 import { LineChart } from "../../ui/charts/LineChart";
@@ -15,7 +15,7 @@ export function WeightSection({ insights, store, range, unit, width }: SectionPr
     () => insights.weightTrend({ dates: { from, to } }),
     [insights, from, to],
   );
-  const state = useCached(store, `progress.weight.${range.days}`, fetch);
+  const state = useCached(store, `progress.weight.${from}.${to}`, fetch);
   const fmt = (v: number) => v.toFixed(1);
 
   return (
@@ -52,6 +52,7 @@ export function WeightSection({ insights, store, range, unit, width }: SectionPr
                 trend={points.map((p) => ({ x: at(p.date), y: inUnit(p.movingAverage, unit) }))}
                 xDomain={[0, range.days]}
                 xLabels={[shortDate(from), shortDate(to)]}
+                xLabel={(x) => shortDate(addDays(from, x))}
                 format={fmt}
                 minSpan={fromKg(2, unit)}
                 legend={["Weigh-ins", "7-day average"]}

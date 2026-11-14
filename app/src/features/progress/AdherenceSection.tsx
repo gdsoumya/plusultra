@@ -16,7 +16,7 @@ export function AdherenceSection({
     () => insights.adherence({ dates: { from, to } }),
     [insights, from, to],
   );
-  const state = useCached(store, `progress.adherence.${range.days}`, fetch);
+  const state = useCached(store, `progress.adherence.${from}.${to}`, fetch);
 
   return (
     <Card testID="progress-adherence">

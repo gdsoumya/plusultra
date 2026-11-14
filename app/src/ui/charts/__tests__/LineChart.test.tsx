@@ -46,5 +46,37 @@ describe("LineChart", () => {
     expect(screen.getByLabelText("3 weigh-ins, trending down")).toBeOnTheScreen();
   });
 
+  it("marks the nearest point on a tap and captions it", async () => {
+    const onOpen = jest.fn();
+    await renderThemed(
+      <LineChart
+        width={320}
+        points={points}
+        xDomain={[0, 7]}
+        xLabels={["Nov 1", "Nov 8"]}
+        format={(v) => v.toFixed(1)}
+        xLabel={(x) => `Day ${x}`}
+        onOpen={onOpen}
+        summary="3 weigh-ins"
+        table={{ columns: ["Date", "kg"], rows: [] }}
+        testID="chart"
+      />,
+    );
+    expect(screen.queryByTestId("marker")).toBeNull();
+    // The plot runs from x=40 to x=312; 150 is nearest the middle point.
+    await fireEvent.press(screen.getByTestId("chart-plot"), { nativeEvent: { locationX: 150 } });
+    expect(screen.getByTestId("marker")).toBeOnTheScreen();
+    expect(screen.getByText("Day 3 · 84.0")).toBeOnTheScreen();
+    await fireEvent.press(screen.getByRole("button", { name: "Open workout" }));
+    expect(onOpen).toHaveBeenCalledWith(1);
+    // Tapping the same point again clears it; so does the caption's close.
+    await fireEvent.press(screen.getByTestId("chart-plot"), { nativeEvent: { locationX: 150 } });
+    expect(screen.queryByTestId("marker")).toBeNull();
+    await fireEvent.press(screen.getByTestId("chart-plot"), { nativeEvent: { locationX: 0 } });
+    expect(screen.getByText("Day 0 · 84.4")).toBeOnTheScreen();
+    await fireEvent.press(screen.getByRole("button", { name: "Clear selection" }));
+    expect(screen.queryByTestId("marker")).toBeNull();
+  });
+
   snapshots(() => chart);
 });

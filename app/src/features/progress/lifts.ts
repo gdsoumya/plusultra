@@ -3,8 +3,8 @@ import type { Range } from "./shared";
 
 type Lift = { slug: string; name: string };
 
-// Exercises with completed loaded sets in the range, most often trained first.
-export function loadedLifts(store: Store, { from, to }: Range): Lift[] {
+// Exercises with completed loaded sets in the range (all time without one), most often trained first.
+export function loadedLifts(store: Store, { from, to }: Partial<Range> = {}): Lift[] {
   const seen = new Map<string, { name: string; count: number }>();
   for (const record of store.list("workoutRecords", { dateFrom: from, dateTo: to })) {
     for (const e of record.entries) {

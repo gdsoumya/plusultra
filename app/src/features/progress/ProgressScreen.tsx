@@ -1,16 +1,20 @@
 import { Fragment, useMemo, useReducer, useState } from "react";
-import { useWindowDimensions, View } from "react-native";
+import { useWindowDimensions } from "react-native";
 
 import type { Api } from "../../api/clients";
 import type { Store } from "../../data/store";
 import { useRefresh } from "../../data/useRefresh";
-import { addDays, mondayOf } from "../../domain/dates";
+import { mondayOf } from "../../domain/dates";
 import type { Unit } from "../../domain/types";
-import { Chip, maxWidth, Screen, space } from "../../ui";
+import { maxWidth, Screen, space } from "../../ui";
 import { SyncBadge } from "../sync/SyncBadge";
 import { AdherenceSection } from "./AdherenceSection";
 import { LiftSection } from "./LiftSection";
-import type { Range } from "./shared";
+import { MuscleTrendSection } from "./MuscleTrendSection";
+import { NutritionSection } from "./NutritionSection";
+import { rangeFor, RangePicker, type RangeChoice } from "./RangePicker";
+import { TrainingSection } from "./TrainingSection";
+import { useWeeklyTrend } from "./useWeeklyTrend";
 import { VolumeSection } from "./VolumeSection";
 import { WeightSection } from "./WeightSection";
 
@@ -21,41 +25,39 @@ export type ProgressScreenProps = {
   unit: Unit;
 };
 
-const ranges = [
-  { label: "4 weeks", days: 28 },
-  { label: "3 months", days: 91 },
-  { label: "1 year", days: 365 },
-];
+// The last range picked, kept across sessions.
+const RANGE_KEY = "progress.range";
 
 export default function ProgressScreen({ insights, store, today, unit }: ProgressScreenProps) {
-  const [days, setDays] = useState(ranges[0].days);
-  const range = useMemo<Range>(
-    () => ({ from: addDays(today, -days), to: today, days }),
-    [today, days],
+  const [choice, setChoice] = useState<RangeChoice>(
+    () => store.getKv<RangeChoice>(RANGE_KEY) ?? { days: 28 },
   );
+  const pickRange = (next: RangeChoice) => {
+    store.setKv(RANGE_KEY, next);
+    setChoice(next);
+  };
+  const range = useMemo(() => rangeFor(choice, today), [choice, today]);
   // The chart fills a card in the screen column, which stops growing at maxWidth.wide.
   const width = Math.min(useWindowDimensions().width - 2 * space[4], maxWidth.wide) - 2 * space[4];
-  const section = { insights, store, range, unit, width };
+  const section = { insights, store, range, unit, today, width };
+  const trend = useWeeklyTrend(store, insights, range);
   // The insights are the server's; remounting the sections fetches them again after the sync.
   const [generation, reload] = useReducer((n: number) => n + 1, 0);
-  const refresh = useRefresh(reload);
+  const refresh = useRefresh(() => {
+    reload();
+    trend.retry();
+  });
 
   return (
     <Screen title="Progress" testID="progress-screen" right={<SyncBadge />} refresh={refresh} wide>
-      <View style={{ flexDirection: "row", gap: space[2] }}>
-        {ranges.map((r) => (
-          <Chip
-            key={r.days}
-            label={r.label}
-            selected={r.days === days}
-            onPress={() => setDays(r.days)}
-          />
-        ))}
-      </View>
+      <RangePicker range={range} choice={choice} onChange={pickRange} />
       <Fragment key={generation}>
         <WeightSection {...section} />
+        <NutritionSection {...section} trend={trend} />
         <LiftSection {...section} />
         <VolumeSection insights={insights} store={store} weekStart={mondayOf(today)} />
+        <MuscleTrendSection {...section} trend={trend} />
+        <TrainingSection {...section} trend={trend} />
         <AdherenceSection {...section} />
       </Fragment>
     </Screen>
