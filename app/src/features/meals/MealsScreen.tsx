@@ -40,6 +40,7 @@ import { SyncBadge } from "../sync/SyncBadge";
 import { AddItemSheet } from "./AddItemSheet";
 import { ItemSheet } from "./ItemSheet";
 import { MacroBars } from "./MacroBars";
+import { MacroSheet } from "./MacroSheet";
 import { MealCard } from "./MealCard";
 import { MealNameSheet } from "./MealNameSheet";
 
@@ -74,6 +75,7 @@ export default function MealsScreen({
   const [adding, setAdding] = useState<number>();
   const [naming, setNaming] = useState(false);
   const [deleting, setDeleting] = useState<number>();
+  const [details, setDetails] = useState(false);
   // Why the last custom item was not saved to the user's foods.
   const [notice, setNotice] = useState<string>();
 
@@ -127,10 +129,11 @@ export default function MealsScreen({
                   label={onTargetNow ? "On target" : "Off target"}
                   icon={onTargetNow ? "checkmark-circle" : "alert-circle"}
                   tone={onTargetNow ? "accent" : "warning"}
+                  onPress={() => setDetails(true)}
                 />
               )}
             </View>
-            <MacroBars totals={totals} target={target} />
+            <MacroBars totals={totals} target={target} onPress={() => setDetails(true)} />
             {meals.some((m) => plannedMeal(m) && !mealEnabled(m)) && (
               <Button
                 title="Enable all"
@@ -223,6 +226,14 @@ export default function MealsScreen({
           onClose={() => setNaming(false)}
         />
       )}
+      <MacroSheet
+        open={details}
+        title="Day total"
+        totals={totals}
+        target={target}
+        onTarget={onTargetNow}
+        onClose={() => setDetails(false)}
+      />
       <ConfirmSheet
         open={deleting !== undefined}
         title="Delete meal"

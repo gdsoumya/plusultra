@@ -227,6 +227,22 @@ describe("meals screen", () => {
     expect(screen.getByLabelText(/(On|Off) target/)).toBeOnTheScreen();
   });
 
+  it("opens the day's full figures from the badge", async () => {
+    const { plan } = await setup({ viewedOn: "2026-11-12" });
+    await fireEvent.press(screen.getByLabelText(/(On|Off) target/));
+    const sheet = within(screen.getByTestId("macro-sheet"));
+    expect(sheet.getByText("Day total")).toBeOnTheScreen();
+    expect(sheet.getByText(`Target ${Math.round(plan.target!.kcal)} kcal`)).toBeOnTheScreen();
+  });
+
+  it("opens a meal's full figures from its bars", async () => {
+    const { plan } = await setup();
+    await fireEvent.press(screen.getAllByLabelText("Macro details")[1]);
+    const sheet = within(screen.getByTestId("macro-sheet"));
+    expect(sheet.getByText(plan.meals[0].name)).toBeOnTheScreen();
+    expect(sheet.getByText("Calories")).toBeOnTheScreen();
+  });
+
   it("deletes a meal after confirming", async () => {
     const { logged } = await setup({ log: "none", serverPlan: true });
     await menu(1, "Delete meal");

@@ -17,6 +17,7 @@ import {
 } from "../../ui";
 import { itemLine } from "./format";
 import { MacroBars } from "./MacroBars";
+import { MacroSheet } from "./MacroSheet";
 import { MealSheet } from "./MealSheet";
 
 type Props = {
@@ -50,6 +51,7 @@ export function MealCard({
   onDelete,
 }: Props) {
   const [menu, setMenu] = useState(false);
+  const [details, setDetails] = useState(false);
   const enabled = !planned || mealEnabled(meal);
   return (
     <Card>
@@ -86,7 +88,11 @@ export function MealCard({
         </Pressable>
       </View>
       <View style={{ gap: space[3], opacity: enabled ? 1 : disabledOpacity }}>
-        <MacroBars totals={mealTotals(meal)} target={planned && mealTotals(planned)} />
+        <MacroBars
+          totals={mealTotals(meal)}
+          target={planned && mealTotals(planned)}
+          onPress={() => setDetails(true)}
+        />
         <View style={{ marginHorizontal: -space[4] }}>
           {meal.items.map((item, i) => (
             <ListRow
@@ -109,6 +115,13 @@ export function MealCard({
         </View>
       </View>
       {enabled && <Button title="Add item" icon="add" variant="ghost" onPress={onAdd} />}
+      <MacroSheet
+        open={details}
+        title={meal.name}
+        totals={mealTotals(meal)}
+        target={planned && mealTotals(planned)}
+        onClose={() => setDetails(false)}
+      />
       <MealSheet
         open={menu}
         meal={meal}

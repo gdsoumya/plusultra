@@ -1,8 +1,8 @@
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 
 import { fractionOf, type MacroKey } from "../../domain/totals";
 import type { Macros } from "../../domain/types";
-import { Progress, space, tabular, Text } from "../../ui";
+import { pressedOpacity, Progress, space, tabular, Text } from "../../ui";
 
 const shown: { key: MacroKey; label: string }[] = [
   { key: "kcal", label: "kcal" },
@@ -15,12 +15,24 @@ type Props = {
   totals: Macros;
   // Bars are hidden without a target; the numbers still show.
   target?: Macros;
+  /** Opens the full figures; the row is a button. */
+  onPress?: () => void;
 };
 
 // kcal, protein, carbs and fat eaten against the target, one column each.
-export function MacroBars({ totals, target }: Props) {
+export function MacroBars({ totals, target, onPress }: Props) {
   return (
-    <View style={{ flexDirection: "row", gap: space[2] }}>
+    <Pressable
+      accessibilityRole={onPress && "button"}
+      accessibilityLabel={onPress && "Macro details"}
+      disabled={!onPress}
+      onPress={onPress}
+      style={({ pressed }) => ({
+        flexDirection: "row",
+        gap: space[2],
+        opacity: pressed ? pressedOpacity : 1,
+      })}
+    >
       {shown.map(({ key, label }) => (
         <View key={key} style={{ flex: 1, gap: space[1] }}>
           <Text variant="caption">{label}</Text>
@@ -33,6 +45,6 @@ export function MacroBars({ totals, target }: Props) {
           {target?.[key] ? <Progress value={fractionOf(totals, target, key)} /> : null}
         </View>
       ))}
-    </View>
+    </Pressable>
   );
 }
