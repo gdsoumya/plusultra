@@ -2,7 +2,7 @@ import { View } from "react-native";
 
 import { KCAL_TOLERANCE, PROTEIN_TOLERANCE_G } from "../../domain/totals";
 import type { Macros } from "../../domain/types";
-import { Badge, ListCard, ListRow, Sheet, space, Text } from "../../ui";
+import { Badge, EmptyState, ListCard, ListRow, Sheet, space, Text } from "../../ui";
 
 const shown: { key: keyof Macros; label: string; unit: string }[] = [
   { key: "kcal", label: "Calories", unit: "kcal" },
@@ -32,6 +32,7 @@ const gap = (value: number, goal: number, unit: string) => {
 
 // Every macro eaten against its target in full, with how far off each is, for a meal or the day.
 export function MacroSheet({ open, title, totals, target, onTarget, onClose }: Props) {
+  const rows = shown.filter(({ key }) => totals[key] || target?.[key]);
   return (
     <Sheet open={open} onClose={onClose} title={title} snapPoints={[0.6, 0.9]} testID="macro-sheet">
       {onTarget !== undefined && (
@@ -47,10 +48,9 @@ export function MacroSheet({ open, title, totals, target, onTarget, onClose }: P
           </Text>
         </View>
       )}
-      <ListCard>
-        {shown
-          .filter(({ key }) => totals[key] || target?.[key])
-          .map(({ key, label, unit }) => {
+      {rows.length ? (
+        <ListCard>
+          {rows.map(({ key, label, unit }) => {
             const value = Math.round(totals[key]);
             const goal = target?.[key] ? Math.round(target[key]) : undefined;
             return (
@@ -62,7 +62,14 @@ export function MacroSheet({ open, title, totals, target, onTarget, onClose }: P
               />
             );
           })}
-      </ListCard>
+        </ListCard>
+      ) : (
+        <EmptyState
+          icon="nutrition-outline"
+          title="No macros"
+          message="Nothing here has calories, protein, carbs or fat."
+        />
+      )}
     </Sheet>
   );
 }

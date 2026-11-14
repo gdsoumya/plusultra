@@ -34,6 +34,15 @@ describe("MacroSheet", () => {
     expect(screen.queryByText("Fiber")).toBeNull();
   });
 
+  it("says so when nothing has macros", async () => {
+    const zero = { kcal: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, waterMl: 0 };
+    await renderThemed(
+      <MacroSheet open title="Wake" totals={zero} target={zero} onClose={jest.fn()} />,
+    );
+    expect(screen.getByText("No macros")).toBeOnTheScreen();
+    expect(screen.queryByText("Calories")).toBeNull();
+  });
+
   it("shows plain amounts without a target", async () => {
     await renderThemed(
       <MacroSheet open title="Lunch" totals={macros(800, 40)} onClose={jest.fn()} />,
