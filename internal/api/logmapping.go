@@ -235,7 +235,7 @@ func plannedPB(p model.RecordPlanned) *pb.ResolvedSet {
 func entryPB(e model.RecordEntry) *pb.ExerciseEntry {
 	out := &pb.ExerciseEntry{Name: e.Name, Equipment: e.Equipment, Label: e.Label, Alternates: e.Alternates, Current: i32(e.Current),
 		PromptValues: e.PromptValues, Slug: e.Slug, Desc: e.Desc, Superset: e.Superset, Variation: i32(e.Variation),
-		Unilateral: e.Unilateral, Sets: make([]*pb.SetEntry, len(e.Sets))}
+		Unilateral: e.Unilateral, Notes: e.Notes, Sets: make([]*pb.SetEntry, len(e.Sets))}
 	for i, s := range e.Sets {
 		set := &pb.SetEntry{Planned: plannedPB(s.Planned), Completed: s.Completed, Reps: i32(s.Reps), Rpe: s.RPE,
 			WorkTime: i32(s.WorkTime), RepsLeft: i32(s.RepsLeft), Edited: s.Edited}
@@ -252,7 +252,7 @@ func entriesDB(es []*pb.ExerciseEntry, unit model.Unit) []model.RecordEntry {
 	for i, e := range es {
 		out[i] = model.RecordEntry{Name: e.GetName(), Slug: e.GetSlug(), Equipment: e.GetEquipment(), Label: e.GetLabel(), Alternates: e.GetAlternates(),
 			Current: int(e.GetCurrent()), Desc: e.GetDesc(), Superset: e.GetSuperset(), Variation: int(e.GetVariation()), PromptValues: e.GetPromptValues(),
-			Unilateral: e.GetUnilateral(), Sets: make([]model.RecordSet, len(e.GetSets()))}
+			Unilateral: e.GetUnilateral(), Notes: e.GetNotes(), Sets: make([]model.RecordSet, len(e.GetSets()))}
 		for j, s := range e.GetSets() {
 			planned := resolvedSetDB(s.GetPlanned(), unit)
 			out[i].Sets[j] = model.RecordSet{Planned: model.PlanSet(planned), Completed: s.GetCompleted(), Reps: int(s.GetReps()),

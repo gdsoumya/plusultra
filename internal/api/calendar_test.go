@@ -224,15 +224,16 @@ func TestCalendarAndWorkoutsOverAPI(t *testing.T) {
 
 	adHoc, err := c.wo.CreateWorkoutRecord(ctx, as(c.tok, &pb.CreateWorkoutRecordRequest{Id: uuid.NewString(), Date: day(today.AddDate(0, 0, 2)),
 		Source: &pb.CreateWorkoutRecordRequest_AdHoc{AdHoc: &pb.AdHoc{DayName: "Hotel gym", Entries: []*pb.ExerciseEntry{{
-			Name: "Push Up", Sets: []*pb.SetEntry{{Planned: &pb.ResolvedSet{Reps: 20}, Completed: true}}}}}}}))
+			Name: "Push Up", Notes: "shoulder clicked", Sets: []*pb.SetEntry{{Planned: &pb.ResolvedSet{Reps: 20}, Completed: true}}}}}}}))
 	if err != nil {
 		t.Fatal(err)
 	}
 	if r := adHoc.Msg.GetRecord(); r.GetProgramId() != "" || r.GetDayName() != "Hotel gym" || r.GetEntries()[0].GetSets()[0].GetCompleted() {
 		t.Fatalf("ad hoc record %v", r)
 	}
-	if _, err := c.wo.FinalizeWorkoutRecord(ctx, as(c.tok, &pb.FinalizeWorkoutRecordRequest{Id: adHoc.Msg.GetRecord().GetId()})); err != nil {
-		t.Fatal(err)
+	fin, err = c.wo.FinalizeWorkoutRecord(ctx, as(c.tok, &pb.FinalizeWorkoutRecordRequest{Id: adHoc.Msg.GetRecord().GetId()}))
+	if err != nil || fin.Msg.GetRecord().GetEntries()[0].GetNotes() != "shoulder clicked" || fin.Msg.GetRecord().GetModified() {
+		t.Fatalf("finalized ad hoc record %v, %v", fin.Msg, err)
 	}
 
 	_, err = c.cal.GetDay(ctx, as(c.tok, &pb.GetDayRequest{Date: "2026-13-01"}))

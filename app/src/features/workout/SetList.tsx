@@ -1,10 +1,12 @@
+import { useState } from "react";
 import { View } from "react-native";
 
 import type { ExerciseEntry, Unit } from "../../domain/types";
-import { Button, space } from "../../ui";
+import { Button, Card, Text, space } from "../../ui";
+import { NoteSheet } from "./NoteSheet";
 import type { Values } from "./SetEditor";
 import { SetRow } from "./SetRow";
-import { addSet } from "./workoutEdits";
+import { addSet, setNotes } from "./workoutEdits";
 
 type Props = {
   entry: ExerciseEntry;
@@ -23,9 +25,12 @@ type Props = {
   onChange: (edit: (e: ExerciseEntry) => ExerciseEntry) => void;
 };
 
-// Every set of the exercise, warmups first, numbered within their group, then Add set.
+// Every set of the exercise, warmups first, numbered within their group, then the lifter's note
+// with Add set and Add note.
 export function SetList(p: Props) {
   const { entry, index, unit } = p;
+  const [noting, setNoting] = useState(false);
+  const notes = entry.notes ?? "";
   let warmups = 0;
   let work = 0;
   return (
@@ -47,13 +52,32 @@ export function SetList(p: Props) {
           testID={`set-${index}-${i}`}
         />
       ))}
-      <Button
-        title="Add set"
-        variant="ghost"
-        icon="add"
-        style={{ alignSelf: "flex-start" }}
-        onPress={() => p.onChange(addSet)}
-      />
+      {notes ? (
+        <Card style={{ padding: space[3] }}>
+          <Text color="textMuted" selectable testID={`exercise-${index}-note`}>
+            {notes}
+          </Text>
+        </Card>
+      ) : null}
+      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: space[2] }}>
+        <Button title="Add set" variant="ghost" icon="add" onPress={() => p.onChange(addSet)} />
+        <Button
+          title={notes ? "Edit note" : "Add note"}
+          variant="ghost"
+          icon="create-outline"
+          onPress={() => setNoting(true)}
+        />
+      </View>
+      {noting && (
+        <NoteSheet
+          notes={notes}
+          onSave={(text) => {
+            p.onChange((e) => setNotes(e, text));
+            setNoting(false);
+          }}
+          onClose={() => setNoting(false)}
+        />
+      )}
     </View>
   );
 }

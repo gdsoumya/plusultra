@@ -258,10 +258,15 @@ const entry = ({ $typeName: _, sets, promptValues, ...e }: ExerciseEntry): D.Exe
   ...e,
   fromProgram: deviation(e).fromProgram ?? true,
   unilateral: e.unilateral || undefined,
+  notes: e.notes || undefined,
   promptValues: { ...promptValues },
   sets: sets.map(setEntry),
 });
-const entryOut = (e: D.ExerciseEntry) => ({ ...e, sets: e.sets.map(setEntryOut) });
+const entryOut = (e: D.ExerciseEntry) => ({
+  ...e,
+  notes: e.notes ?? "",
+  sets: e.sets.map(setEntryOut),
+});
 
 const workoutRecord = (r: WorkoutRecord, userId: string): ServerRow<D.WorkoutRecord> => ({
   ...meta(r, userId),

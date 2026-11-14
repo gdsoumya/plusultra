@@ -63,6 +63,7 @@ type RecordEntry struct {
 	Variation    int                `json:"variation,omitempty"`
 	PromptValues map[string]float64 `json:"prompt_values,omitempty"`
 	Unilateral   bool               `json:"unilateral,omitempty"` // reps is the right side, reps_left the left
+	Notes        string             `json:"notes,omitempty"`
 	Sets         []RecordSet        `json:"sets"`
 }
 

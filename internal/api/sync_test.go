@@ -87,7 +87,7 @@ func recordRow(date string) *pb.WorkoutRecord {
 	return &pb.WorkoutRecord{
 		Id: uuid.NewString(), Date: date, Week: 1, Day: 2, DayName: "Upper A", Kind: "training", StartedAt: timestamppb.Now(),
 		Entries: []*pb.ExerciseEntry{{
-			Name: "Bench Press", Alternates: []string{"Bench Press"}, Current: 1, PromptValues: map[string]float64{"rir": 2},
+			Name: "Bench Press", Alternates: []string{"Bench Press"}, Current: 1, PromptValues: map[string]float64{"rir": 2}, Notes: "felt heavy",
 			Sets: []*pb.SetEntry{{Planned: &pb.ResolvedSet{Reps: 5, Weight: kgPB(80), Amrap: true}, Completed: true, Reps: 6, Weight: kgPB(80), Rpe: 8}},
 		}},
 	}
@@ -135,7 +135,7 @@ func TestSyncPullPages(t *testing.T) {
 	r := got.GetWorkoutRecords()[0]
 	set := r.GetEntries()[0].GetSets()[0]
 	if r.GetWeek() != 1 || r.GetDay() != 2 || r.GetDayName() != "Upper A" || r.GetKind() != "training" || r.GetStartedAt() == nil ||
-		r.GetEntries()[0].GetPromptValues()["rir"] != 2 || !set.GetPlanned().GetAmrap() || set.GetReps() != 6 || set.GetWeight().GetValue() != 80 || r.GetFinalized() {
+		r.GetEntries()[0].GetPromptValues()["rir"] != 2 || r.GetEntries()[0].GetNotes() != "felt heavy" || !set.GetPlanned().GetAmrap() || set.GetReps() != 6 || set.GetWeight().GetValue() != 80 || r.GetFinalized() {
 		t.Fatalf("record = %v", r)
 	}
 	m := got.GetMealLogs()[0]

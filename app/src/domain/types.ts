@@ -165,6 +165,8 @@ export interface ExerciseEntry {
   desc: string;
   superset: string;
   unilateral?: boolean;
+  /** The lifter's note on the exercise for this workout. */
+  notes?: string;
   variation: number;
   sets: SetEntry[];
   promptValues: Record<string, number>;

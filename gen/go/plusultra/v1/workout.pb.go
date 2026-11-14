@@ -161,7 +161,9 @@ type ExerciseEntry struct {
 	// Set by the server: true when the exercise is one the planned day had; false for an exercise the user added, which runs no hooks or progression.
 	FromProgram bool `protobuf:"varint,12,opt,name=from_program,json=fromProgram,proto3" json:"from_program,omitempty"`
 	// True when the exercise was done one side at a time, so reps is the right side and reps_left the left; a snapshot the client writes.
-	Unilateral    bool `protobuf:"varint,13,opt,name=unilateral,proto3" json:"unilateral,omitempty"`
+	Unilateral bool `protobuf:"varint,13,opt,name=unilateral,proto3" json:"unilateral,omitempty"`
+	// Lifter's note on the exercise for this workout.
+	Notes         string `protobuf:"bytes,14,opt,name=notes,proto3" json:"notes,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -285,6 +287,13 @@ func (x *ExerciseEntry) GetUnilateral() bool {
 		return x.Unilateral
 	}
 	return false
+}
+
+func (x *ExerciseEntry) GetNotes() string {
+	if x != nil {
+		return x.Notes
+	}
+	return ""
 }
 
 // WorkoutRecord is one workout on one date.
@@ -1267,7 +1276,7 @@ const file_plusultra_v1_workout_proto_rawDesc = "" +
 	"\twork_time\x18\x06 \x01(\x05B\v\xbaH\b\x1a\x06\x18\x80\xa3\x05(\x00R\bworkTime\x12'\n" +
 	"\treps_left\x18\a \x01(\x05B\n" +
 	"\xbaH\a\x1a\x05\x18\xe8\a(\x00R\brepsLeft\x12\x16\n" +
-	"\x06edited\x18\b \x01(\bR\x06edited\"\xe0\x04\n" +
+	"\x06edited\x18\b \x01(\bR\x06edited\"\x80\x05\n" +
 	"\rExerciseEntry\x12\x1c\n" +
 	"\x04name\x18\x01 \x01(\tB\b\xbaH\x05r\x03\x18\xc8\x01R\x04name\x12%\n" +
 	"\tequipment\x18\x02 \x01(\tB\a\xbaH\x04r\x02\x18dR\tequipment\x12\x1d\n" +
@@ -1286,7 +1295,8 @@ const file_plusultra_v1_workout_proto_rawDesc = "" +
 	"\ffrom_program\x18\f \x01(\bR\vfromProgram\x12\x1e\n" +
 	"\n" +
 	"unilateral\x18\r \x01(\bR\n" +
-	"unilateral\x1a?\n" +
+	"unilateral\x12\x1e\n" +
+	"\x05notes\x18\x0e \x01(\tB\b\xbaH\x05r\x03\x18\x90NR\x05notes\x1a?\n" +
 	"\x11PromptValuesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\"\xbd\x05\n" +
