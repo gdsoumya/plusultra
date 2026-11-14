@@ -156,7 +156,7 @@ function LiftChart({
               points[0].recordId ? (i) => router.push(`/session/${points[i].recordId}`) : undefined
             }
             format={format}
-            minSpan={mode.reps ? 4 : 0}
+            minSpan={mode.integer ? 4 : 0}
             summary={`${name}: ${points.length} sessions, ${mode.label} ${show(ys[0])} to ${show(ys[ys.length - 1])}, best ${show(ys[best])} on ${shortDate(points[best].date)}.`}
             table={{
               columns: ["Date", mode.reps ? mode.label : `${mode.label} ${unit}`, "Best set"],

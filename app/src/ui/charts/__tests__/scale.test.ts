@@ -28,6 +28,10 @@ describe("niceTicks", () => {
     expect(niceTicks(86.3, 86.5, 4, 2)).toEqual([85, 85.5, 86, 86.5, 87, 87.5]);
   });
 
+  it("keeps whole steps for a single integer value given a span of four", () => {
+    expect(niceTicks(2250, 2250, 4, 4)).toEqual([2248, 2249, 2250, 2251, 2252]);
+  });
+
   it("widens a single value", () => {
     expect(niceTicks(100, 100)).toEqual([99, 99.5, 100, 100.5, 101]);
   });
