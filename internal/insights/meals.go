@@ -37,7 +37,9 @@ type mealDay struct {
 }
 
 // mealDays merges the meal logs of each date, oldest first. When a date has
-// several logs the last non-empty target wins and eaten macros add up.
+// several logs the last non-empty target wins and eaten macros add up. A planned
+// item not eaten is stored at quantity 0 with zero macros, so every item's macros
+// count and a day is eaten once any item has some.
 func (s *Service) mealDays(ctx context.Context, userID uuid.UUID, from, to time.Time) ([]mealDay, error) {
 	logs, err := s.q.ListMealLogsByDate(ctx, sqlc.ListMealLogsByDateParams{UserID: userID, FromDate: from, ToDate: to})
 	if err != nil {
@@ -63,12 +65,11 @@ func (s *Service) mealDays(ctx context.Context, userID uuid.UUID, from, to time.
 		d.planned = d.planned || target.Kcal > 0
 		for _, m := range meals {
 			for _, it := range m.Items {
-				if it.Planned {
-					d.planned = true
-					continue
+				d.planned = d.planned || it.Planned
+				if model.Macros(it.Macros) != (model.Macros{}) {
+					d.eaten = true
+					d.actual = d.actual.Add(model.Macros(it.Macros))
 				}
-				d.eaten = true
-				d.actual = d.actual.Add(model.Macros(it.Macros))
 			}
 		}
 	}

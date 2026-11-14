@@ -272,7 +272,8 @@ func TestAdherenceRange(t *testing.T) {
 	f.record("2026-11-01", false)
 	f.record("2026-11-04", true)
 	f.meals("2026-11-02", `{"kcal":2000}`, `[{"items":[{"macros":{"kcal":500},"planned":false}]}]`)
-	f.meals("2026-11-03", `{"kcal":2000}`, `[{"items":[{"macros":{"kcal":500},"planned":true}]}]`)
+	// Nov 3's planned item was not eaten: quantity 0, no macros.
+	f.meals("2026-11-03", `{"kcal":2000}`, `[{"items":[{"macros":{},"planned":true}]}]`)
 	f.meals("2026-11-06", `{"kcal":2000}`, `[]`)
 
 	// Today is Nov 5: unlogged Nov 5 and Nov 6 are pending, unlogged Nov 3 meals are skipped.
@@ -302,8 +303,9 @@ func TestWeeklyMacrosAndWeight(t *testing.T) {
 	}
 	near(t, "target kcal", s.Macros.TargetAvg.Kcal, 1500)
 	near(t, "target protein", s.Macros.TargetAvg.Protein, 75)
-	near(t, "actual kcal", s.Macros.ActualAvg.Kcal, 650)
-	near(t, "actual protein", s.Macros.ActualAvg.Protein, 45)
+	// The eaten planned item (900 kcal, 60 g) counts: (1500 + 700) / 2 and (100 + 50) / 2.
+	near(t, "actual kcal", s.Macros.ActualAvg.Kcal, 1100)
+	near(t, "actual protein", s.Macros.ActualAvg.Protein, 75)
 	if s.Weight.Start == nil || s.Weight.End == nil || s.Weight.Avg7 == nil {
 		t.Fatalf("weight = %+v", s.Weight)
 	}
