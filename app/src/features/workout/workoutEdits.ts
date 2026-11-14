@@ -26,7 +26,8 @@ const done = (s: SetEntry, unilateral?: boolean, workTime?: number): SetEntry =>
   completed: true,
   workTime: workTime ?? s.workTime,
 });
-const pending = (s: SetEntry): SetEntry => ({ ...s, completed: false, reps: 0 });
+// The logged values stay, so an edited set shows them again when it is un-done.
+const pending = (s: SetEntry): SetEntry => ({ ...s, completed: false });
 
 // Completes with the shown values; workTime is the seconds a timed set ran.
 export const completeSet = (e: ExerciseEntry, i: number, workTime?: number) =>
@@ -46,6 +47,11 @@ export const switchAlternate = (e: ExerciseEntry, name: string): ExerciseEntry =
   name,
   slug: "",
   current: e.alternates.indexOf(name) + 1,
+});
+
+export const setNotes = (e: ExerciseEntry, notes: string): ExerciseEntry => ({
+  ...e,
+  notes: notes || undefined,
 });
 
 const emptyWeight: Weight = { value: 0, unit: "kg" };

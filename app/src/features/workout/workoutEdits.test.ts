@@ -10,6 +10,7 @@ import {
   markModified,
   nextPending,
   removeExercise,
+  setNotes,
   removeSet,
   setValues,
   shown,
@@ -60,7 +61,15 @@ describe("workout edits", () => {
     expect(done.sets[1]).toMatchObject({ completed: true, reps: 5, weight: { value: 80 } });
     expect(done.sets[1].edited).toBeFalsy();
     expect(done.sets[2].completed).toBe(false);
-    expect(tapDone(done, 1).sets[1]).toMatchObject({ completed: false, reps: 0 });
+    expect(tapDone(done, 1).sets[1]).toMatchObject({ completed: false, reps: 5 });
+  });
+
+  it("keeps an edited set's reps when it is un-done", () => {
+    const edited = tapDone(setValues(bench(), 1, { reps: 8 }), 1);
+    expect(edited.sets[1]).toMatchObject({ completed: true, reps: 8 });
+    const undone = tapDone(edited, 1);
+    expect(undone.sets[1]).toMatchObject({ completed: false, reps: 8, edited: true });
+    expect(shown(undone.sets[1]).reps).toBe(8);
   });
 
   it("completes a set with its work time", () => {
@@ -121,6 +130,13 @@ describe("workout edits", () => {
     });
     expect(exerciseModified(added)).toBe(true);
     expect(exerciseModified(bench())).toBe(false);
+  });
+
+  it("a note is not a deviation from the plan, and an empty one is dropped", () => {
+    const noted = setNotes(bench(), "Felt heavy");
+    expect(noted.notes).toBe("Felt heavy");
+    expect(exerciseModified(noted)).toBe(false);
+    expect(setNotes(noted, "").notes).toBeUndefined();
   });
 
   it("removes a set or an exercise and marks the day modified", () => {
