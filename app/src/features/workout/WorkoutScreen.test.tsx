@@ -511,11 +511,12 @@ describe("WorkoutScreen", () => {
       "Reorder",
       "Finish",
     ]);
-    // Add exercise and Reorder are the same width; Finish keeps its own, so it stays on screen.
-    for (const id of ["add-exercise-button", "reorder-button"]) {
-      expect(screen.getByTestId(id)).toHaveStyle({ flex: 1, flexBasis: 0 });
+    // With a large system font only "Add exercise" gives way, wrapping between its words, so
+    // Finish stays on screen and no word breaks.
+    expect(screen.getByTestId("add-exercise-button")).toHaveStyle({ flexGrow: 1, flexShrink: 1 });
+    for (const id of ["reorder-button", "finish-workout"]) {
+      expect(screen.getByTestId(id)).toHaveStyle({ flexGrow: 1, flexShrink: 0 });
     }
-    expect(screen.getByTestId("finish-workout")).toHaveStyle({ flexShrink: 0 });
     await fireEvent.press(screen.getByTestId("reorder-button"));
     expect(within(screen.getByTestId("exercises-sheet")).getByText("Reorder")).toBeOnTheScreen();
   });
@@ -1056,6 +1057,9 @@ describe("WorkoutScreen", () => {
       screen.getByText(/^Finished 11 Nov 2026, .*\. Edits update the program's next sessions\.$/),
     ).toBeOnTheScreen();
     expect(screen.queryByTestId("finish-workout")).toBeNull();
+    for (const id of ["add-exercise-button", "reorder-button"]) {
+      expect(screen.getByTestId(id)).toHaveStyle({ flex: 1, flexBasis: 0 });
+    }
     expect(screen.getByTestId("add-exercise-button")).toBeOnTheScreen();
     expect(screen.getByTestId("reorder-button")).toBeOnTheScreen();
 
