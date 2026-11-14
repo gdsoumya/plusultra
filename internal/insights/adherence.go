@@ -25,7 +25,9 @@ func (s *Service) Adherence(ctx context.Context, userID uuid.UUID, from, to, tod
 }
 
 // workoutCounts treats a day as planned when a program resolved a workout onto
-// it or the user logged it with a workout status, so unplanned sessions count too.
+// it, the user logged it with a workout status, or a workout record exists, so
+// unplanned sessions count too. The log is the user's word on a day; without
+// one a record counts as done once finalized, else as partial, like the calendar.
 func (s *Service) workoutCounts(ctx context.Context, userID uuid.UUID, from, to, today time.Time) (Counts, error) {
 	planned, err := s.q.ListPlannedWorkoutDates(ctx, sqlc.ListPlannedWorkoutDatesParams{UserID: userID, FromDate: &from, ToDate: &to})
 	if err != nil {
@@ -56,6 +58,22 @@ func (s *Service) workoutCounts(ctx context.Context, userID uuid.UUID, from, to,
 			continue
 		}
 		days[k] = l.Date
+	}
+	records, err := s.q.ListWorkoutRecordsByDate(ctx, sqlc.ListWorkoutRecordsByDateParams{UserID: userID, FromDate: from, ToDate: to})
+	if err != nil {
+		return Counts{}, err
+	}
+	for _, r := range records {
+		k := r.Date.Format(time.DateOnly)
+		if _, logged := results[k]; logged {
+			continue
+		}
+		if r.Finalized {
+			results[k] = outDone
+		} else {
+			results[k] = outPartial
+		}
+		days[k] = r.Date
 	}
 	var c Counts
 	for k, d := range days {

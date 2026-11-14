@@ -268,6 +268,9 @@ func TestAdherenceRange(t *testing.T) {
 	f.dayLog("2026-11-02", "done")
 	f.dayLog("2026-11-03", "partial")
 	f.dayLog("2026-11-04", "skipped")
+	// An unplanned, unfinished record is a partial day; a record under a log defers to the log.
+	f.record("2026-11-01", false)
+	f.record("2026-11-04", true)
 	f.meals("2026-11-02", `{"kcal":2000}`, `[{"items":[{"macros":{"kcal":500},"planned":false}]}]`)
 	f.meals("2026-11-03", `{"kcal":2000}`, `[{"items":[{"macros":{"kcal":500},"planned":true}]}]`)
 	f.meals("2026-11-06", `{"kcal":2000}`, `[]`)
@@ -275,7 +278,7 @@ func TestAdherenceRange(t *testing.T) {
 	// Today is Nov 5: unlogged Nov 5 and Nov 6 are pending, unlogged Nov 3 meals are skipped.
 	a, err := f.svc.Adherence(f.ctx, f.user, day("2026-11-01"), day("2026-11-07"), day("2026-11-05"))
 	must(t, err)
-	if got, want := a.Workouts, (Counts{Planned: 4, Done: 1, Partial: 1, Skipped: 1, Pending: 1, Ratio: 1.0 / 3}); got != want {
+	if got, want := a.Workouts, (Counts{Planned: 5, Done: 1, Partial: 2, Skipped: 1, Pending: 1, Ratio: 1.0 / 4}); got != want {
 		t.Errorf("workouts = %+v, want %+v", got, want)
 	}
 	if got, want := a.Meals, (Counts{Planned: 3, Done: 1, Skipped: 1, Pending: 1, Ratio: 0.5}); got != want {
@@ -336,7 +339,8 @@ func TestWeeklyTrendBuckets(t *testing.T) {
 	if weeks[0].Adherence.Done != 1 || weeks[0].SetsPerMuscle["quadriceps"] != 2 {
 		t.Errorf("week 0 = %+v", weeks[0])
 	}
-	if weeks[1].Adherence.Skipped != 1 || weeks[1].SetsPerMuscle["quadriceps"] != 1 {
+	// Nov 11 has no log, but its finalized record makes it done rather than skipped.
+	if weeks[1].Adherence.Done != 1 || weeks[1].Adherence.Skipped != 0 || weeks[1].SetsPerMuscle["quadriceps"] != 1 {
 		t.Errorf("week 1 = %+v", weeks[1])
 	}
 	if len(weeks[2].SetsPerMuscle) != 0 || weeks[2].Weight.End == nil || weeks[2].Weight.End.Value != 80 {
