@@ -19,6 +19,8 @@ export type LineChartProps = {
   xDomain: [number, number];
   xLabels: [string, string];
   format: (y: number) => string;
+  // Least range of the y axis, so a flat series is drawn flat rather than blown up to the plot.
+  minSpan?: number;
   // Names of the points and the trend; shown as the legend when both are drawn.
   legend?: [string, string];
   summary: string;
@@ -40,6 +42,7 @@ export function LineChart({
   xDomain,
   xLabels,
   format,
+  minSpan = 0,
   legend,
   summary,
   table,
@@ -50,7 +53,7 @@ export function LineChart({
   // The band above the plot holds the end value, clear of the last points.
   const top = fontSize + space[2];
   const ys = [...points, ...(trend ?? [])].map((p) => p.y);
-  const ticks = niceTicks(Math.min(...ys), Math.max(...ys));
+  const ticks = niceTicks(Math.min(...ys), Math.max(...ys), 4, minSpan);
   const x = linear(xDomain, [gutter, width - space[2]]);
   const y = linear([ticks[0], ticks[ticks.length - 1]], [top + height, top]);
   const place = (p: Point) => ({ x: x(p.x), y: y(p.y) });

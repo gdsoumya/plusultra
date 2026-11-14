@@ -24,6 +24,10 @@ describe("niceTicks", () => {
     expect(niceTicks(0.1, 0.9)).toEqual([0, 0.2, 0.4, 0.6, 0.8, 1]);
   });
 
+  it("widens a narrow range to minSpan around its middle", () => {
+    expect(niceTicks(86.3, 86.5, 4, 2)).toEqual([85, 85.5, 86, 86.5, 87, 87.5]);
+  });
+
   it("widens a single value", () => {
     expect(niceTicks(100, 100)).toEqual([99, 99.5, 100, 100.5, 101]);
   });

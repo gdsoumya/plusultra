@@ -7,7 +7,10 @@ export const linear =
     d1 === d0 ? (r0 + r1) / 2 : r0 + ((v - d0) / (d1 - d0)) * (r1 - r0);
 
 // Round tick values covering [min, max] in about `count` steps of 1, 2 or 5 times a power of ten.
-export function niceTicks(min: number, max: number, count = 4): number[] {
+// The range is widened around its middle to at least minSpan, so noise in a flat series stays small.
+export function niceTicks(min: number, max: number, count = 4, minSpan = 0): number[] {
+  const pad = Math.max(0, (minSpan - (max - min)) / 2);
+  [min, max] = [min - pad, max + pad];
   if (min === max) [min, max] = [min - 1, max + 1];
   const magnitude = 10 ** Math.floor(Math.log10((max - min) / count));
   const step = [1, 2, 5, 10].map((m) => m * magnitude).find((s) => s >= (max - min) / count)!;

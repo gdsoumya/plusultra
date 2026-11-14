@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 
 import { daysBetween, shortDate } from "../../domain/dates";
+import { fromKg } from "../../domain/units";
 import { Card, EmptyState, Text } from "../../ui";
 import { LineChart } from "../../ui/charts/LineChart";
 import { StatTiles } from "../../ui/charts/StatTiles";
@@ -52,6 +53,7 @@ export function WeightSection({ insights, store, range, unit, width }: SectionPr
                 xDomain={[0, range.days]}
                 xLabels={[shortDate(from), shortDate(to)]}
                 format={fmt}
+                minSpan={fromKg(2, unit)}
                 legend={["Weigh-ins", "7-day average"]}
                 summary={`${points.length} weigh-ins from ${shortDate(points[0].date)} to ${shortDate(last.date)}. Latest ${showWeight(last.weight, unit)}, 7-day average ${showWeight(last.movingAverage, unit)}, ${rate} ${unit} a week.`}
                 table={{
