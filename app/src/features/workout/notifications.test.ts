@@ -12,6 +12,7 @@ import {
 jest.mock("expo-notifications", () => ({
   setNotificationHandler: jest.fn(),
   setNotificationChannelAsync: jest.fn().mockResolvedValue(null),
+  deleteNotificationChannelAsync: jest.fn().mockResolvedValue(undefined),
   requestPermissionsAsync: jest.fn().mockResolvedValue({ granted: true }),
   getPermissionsAsync: jest.fn().mockResolvedValue({ granted: true }),
   scheduleNotificationAsync: jest.fn().mockResolvedValue("n1"),
@@ -40,11 +41,12 @@ describe("timer notifications", () => {
     expect(ask).toHaveBeenCalledTimes(1);
   });
 
-  it("ships the end beep as the notification sound", () => {
+  it("ships the end beep as the notification sound and keeps it through shrinking", () => {
     expect(config.expo.plugins).toContainEqual([
       "expo-notifications",
       expect.objectContaining({ sounds: ["./assets/sounds/end.wav"] }),
     ]);
+    expect(config.expo.plugins).toContain("./plugins/withKeepNotificationSound");
   });
 
   it("schedules on a loud channel with the beep, and a DND-bypassing one when asked", async () => {
@@ -52,13 +54,18 @@ describe("timer notifications", () => {
     const schedule = jest.mocked(Notifications.scheduleNotificationAsync);
     const notice = { title: "Rest over", body: "Next set" };
     expect(await scheduleTimerEnd(Date.now() + 60_000, notice)).toBe("n1");
+    // The channels of builds that shipped without the sound resource go, since Android would
+    // keep their system sound.
+    for (const old of ["timers", "timers-priority"]) {
+      expect(Notifications.deleteNotificationChannelAsync).toHaveBeenCalledWith(old);
+    }
     expect(channel).toHaveBeenCalledWith(
-      "timers",
+      "timers-2",
       expect.objectContaining({ sound: TIMER_SOUND, bypassDnd: false }),
     );
     expect(schedule).toHaveBeenCalledWith({
       content: { ...notice, sound: TIMER_SOUND },
-      trigger: expect.objectContaining({ channelId: "timers" }),
+      trigger: expect.objectContaining({ channelId: "timers-2" }),
     });
     // The channel is made once, not per timer.
     await scheduleTimerEnd(Date.now() + 60_000, notice);
@@ -67,12 +74,12 @@ describe("timer notifications", () => {
     setAlertInDnd(true);
     await scheduleTimerEnd(Date.now() + 60_000, notice);
     expect(channel).toHaveBeenLastCalledWith(
-      "timers-priority",
+      "timers-priority-2",
       expect.objectContaining({ bypassDnd: true }),
     );
     expect(schedule).toHaveBeenLastCalledWith(
       expect.objectContaining({
-        trigger: expect.objectContaining({ channelId: "timers-priority" }),
+        trigger: expect.objectContaining({ channelId: "timers-priority-2" }),
       }),
     );
     setAlertInDnd(false);

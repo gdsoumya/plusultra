@@ -140,6 +140,23 @@ describe("useTimer", () => {
     expect(onEnd).toHaveBeenCalledWith("short", startedAt + 15_000);
   });
 
+  it("keeps a keyed timer across unmount and remount, with its notification", async () => {
+    const onEnd = jest.fn();
+    const first = await renderHook(() => useTimer<string>(onEnd, "record-1"));
+    await act(() => first.result.current.start("rest", 60, notice));
+    await act(() => first.unmount());
+    expect(Notifications.cancelScheduledNotificationAsync).not.toHaveBeenCalled();
+    await tick(5000);
+    const again = await renderHook(() => useTimer<string>(onEnd, "record-1"));
+    expect(again.result.current).toMatchObject({ running: "rest", remaining: 55 });
+    const other = await renderHook(() => useTimer<string>(onEnd, "record-2"));
+    expect(other.result.current.running).toBeUndefined();
+    await act(() => again.result.current.stop());
+    expect(Notifications.cancelScheduledNotificationAsync).toHaveBeenCalledTimes(1);
+    const after = await renderHook(() => useTimer<string>(onEnd, "record-1"));
+    expect(after.result.current.running).toBeUndefined();
+  });
+
   it("schedules the rest after a set with it, keeps it for that rest and cancels it on an early stop", async () => {
     const scheduled = jest.mocked(Notifications.scheduleNotificationAsync);
     const cancelled = jest.mocked(Notifications.cancelScheduledNotificationAsync);

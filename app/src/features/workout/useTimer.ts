@@ -12,18 +12,27 @@ const cancel = (id?: Scheduled) =>
     if (n) void cancelTimerEnd(n);
   });
 
+type Saved = { timer?: Running<unknown>; notification?: Scheduled; queued?: Queued };
+type Queued = { endsAt: number; id?: Scheduled };
+// A tab switch unmounts the workout screen; its timer waits here, by key, for the next mount.
+const saved = new Map<string, Saved>();
+/** Tests only: forgets every kept timer. */
+export const forgetTimers = () => saved.clear();
+
 // One timer at a time (rest or a timed set). Keeps the end time, not a tick count, so the
 // countdown is right after backgrounding. Without `seconds` it counts up until stopped.
 // No interval runs in the background, so onEnd gets the time the timer really ended and the next
 // timer can start from it; the next one's notification is scheduled up front for the same reason.
-export function useTimer<M>(onEnd: (meta: M, endedAt: number) => void) {
-  const [timer, setTimer] = useState<Running<M>>();
+export function useTimer<M>(onEnd: (meta: M, endedAt: number) => void, key?: string) {
+  const kept = key ? saved.get(key) : undefined;
+  const [timer, setTimer] = useState<Running<M> | undefined>(kept?.timer as Running<M>);
   const [now, setNow] = useState(() => Date.now());
-  const notification = useRef<Scheduled>(undefined);
-  const queued = useRef<{ endsAt: number; id?: Scheduled }>(undefined);
+  const notification = useRef<Scheduled>(kept?.notification);
+  const queued = useRef<Queued>(kept?.queued);
   const ended = useRef(onEnd);
   useEffect(() => {
     ended.current = onEnd;
+    if (key) saved.set(key, { timer, notification: notification.current, queued: queued.current });
   });
 
   useEffect(() => {

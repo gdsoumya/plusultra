@@ -65,6 +65,7 @@
         }
       ],
       "./plugins/withFontScaleConfigChange",
+      "./plugins/withKeepNotificationSound",
       "./plugins/withReleaseSigning",
       [
         "expo-splash-screen",

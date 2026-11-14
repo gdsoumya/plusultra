@@ -28,13 +28,22 @@ let alertInDnd = false;
 export const setAlertInDnd = (on: boolean) => {
   alertInDnd = on;
 };
+// Builds before 0.1.2 shipped without the sound resource, and Android keeps a channel's sound for
+// good, so those channel ids are retired and deleted.
+const RETIRED_CHANNELS = ["timers", "timers-priority"];
 const channels = new Map<string, Promise<unknown>>();
 function timerChannel() {
-  const id = alertInDnd ? "timers-priority" : "timers";
+  const id = alertInDnd ? "timers-priority-2" : "timers-2";
   if (!channels.has(id))
     channels.set(
       id,
       Promise.resolve()
+        .then(() =>
+          Promise.all(
+            RETIRED_CHANNELS.map((old) => Notifications.deleteNotificationChannelAsync(old)),
+          ),
+        )
+        .catch(() => {})
         .then(() =>
           Notifications.setNotificationChannelAsync(id, {
             name: alertInDnd ? "Timers (in Do Not Disturb)" : "Timers",
