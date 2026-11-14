@@ -30,6 +30,11 @@ export function MealsCard({ plan, log, onLog, onOpen, menu }: Props) {
         </View>
         <CardMenu title="Meals" items={menu} />
       </View>
+      {!plan && !log && (
+        <Text variant="caption" color="textMuted">
+          Nothing logged yet. Open meals to add what you ate.
+        </Text>
+      )}
       {meals.length > 0 && (
         <View style={{ gap: space[2] }}>
           {meals.map((m, i) => (

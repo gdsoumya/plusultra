@@ -434,6 +434,14 @@ describe("meals screen", () => {
     expect(item("Breakfast", "Banana, raw")).toMatchObject({ qty: 1, unit: "banana" });
   });
 
+  it("says when no food matches the search", async () => {
+    await setup();
+    await press("Add item", 0);
+    await fireEvent.changeText(sheet().getByLabelText("Search foods"), "zzz");
+    expect(await sheet().findByText('No foods match "zzz"')).toBeOnTheScreen();
+    expect(sheet().getByText("Try another name, or add a custom item.")).toBeOnTheScreen();
+  });
+
   it("adds recent foods while offline", async () => {
     const { store, item } = await setup({ online: false });
     store.setKv(RECENT_FOODS, [paneer]);
@@ -553,6 +561,7 @@ describe("meals screen", () => {
     await press("Add meal");
     await fireEvent.changeText(screen.getByLabelText("Meal name"), "Second breakfast");
     await press("Add");
+    expect(screen.getByText("No items yet. Add what you ate.")).toBeOnTheScreen();
     expect(names(logged().meals)).toEqual([
       "Breakfast",
       "Lunch",

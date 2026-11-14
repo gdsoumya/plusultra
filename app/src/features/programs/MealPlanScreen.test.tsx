@@ -47,6 +47,14 @@ describe("MealPlanScreen", () => {
     ).toBeOnTheScreen();
   });
 
+  it("says when the meal has no items", async () => {
+    const { mealDays } = await h.api.programs.getResolvedDays({ programId: id, week: 2 });
+    const plan = mealDays.map((d) => fromProto.mealDay(d).payload).find((d) => d.kind === "rest")!;
+    rememberMealDays(h.store, id, [{ ...plan, meals: [{ ...plan.meals[0], items: [] }] }]);
+    await renderWith(h, <MealPlanScreen programId={id} week={2} day="rest" n={1} />);
+    expect(await screen.findByText("No items in this meal")).toBeOnTheScreen();
+  });
+
   it("says when the day is not cached", async () => {
     await renderWith(h, <MealPlanScreen programId={id} week={9} day="9" n={1} />);
     expect(await screen.findByText("Plan not available")).toBeOnTheScreen();

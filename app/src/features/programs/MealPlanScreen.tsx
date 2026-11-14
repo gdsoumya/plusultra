@@ -37,16 +37,24 @@ export default function MealPlanScreen({ programId, week, day, n }: Props) {
         {meal.desc ? <Text>{meal.desc}</Text> : null}
         <MacroStats totals={mealTotals(meal)} />
       </Card>
-      <ListCard>
-        {meal.items.map((item, i) => (
-          <ListRow
-            key={`${item.foodName}-${i}`}
-            title={item.foodName}
-            subtitle={[macroLine(item.macros), item.note].filter(Boolean).join(" · ")}
-            value={`${Math.round(item.qty * 10) / 10} ${item.unit}`}
-          />
-        ))}
-      </ListCard>
+      {meal.items.length === 0 ? (
+        <Card>
+          <Text variant="caption" color="textMuted">
+            No items in this meal
+          </Text>
+        </Card>
+      ) : (
+        <ListCard>
+          {meal.items.map((item, i) => (
+            <ListRow
+              key={`${item.foodName}-${i}`}
+              title={item.foodName}
+              subtitle={[macroLine(item.macros), item.note].filter(Boolean).join(" · ")}
+              value={`${Math.round(item.qty * 10) / 10} ${item.unit}`}
+            />
+          ))}
+        </ListCard>
+      )}
       <Card>
         <Text variant="heading">Day vs target</Text>
         <MacroStats totals={dayTotals(planned.meals)} target={planned.target} />

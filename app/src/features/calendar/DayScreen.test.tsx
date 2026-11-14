@@ -68,14 +68,14 @@ const mealDay = {
   ],
 };
 
-const putMealDay = (date: string) =>
+const putMealDay = (date: string, meals = mealDay.meals) =>
   store.put("mealDays", {
     id: `meals:${date}`,
     programId: "program-meals",
     week: 3,
     day: 0,
     date,
-    payload: mealDay,
+    payload: { ...mealDay, meals },
   });
 
 // A past planned training day the fixture user skipped: a plan, a skipped log, no record.
@@ -150,6 +150,15 @@ describe("DayScreen", () => {
     expect(screen.getByText("Target 2500 kcal")).toBeOnTheScreen();
     expect(screen.getByText("300 kcal")).toBeOnTheScreen();
     expect(screen.queryByRole("checkbox", { name: "Skipped" })).toBeNull();
+  });
+
+  it("says when a future day's meal plan has no meals", async () => {
+    const plan = resolvedDaysRepo(store)
+      .range("2026-11-12", "2026-11-30")
+      .find((d) => d.payload.kind === "training")!;
+    putMealDay(plan.date!, []);
+    await renderDay(plan.date!);
+    expect(screen.getByText("No meals planned")).toBeOnTheScreen();
   });
 
   it("shows an empty state for a future date with nothing on it", async () => {

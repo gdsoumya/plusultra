@@ -1,5 +1,6 @@
 import { fireEvent, screen } from "@testing-library/react-native";
 
+import { sets } from "../../api/fixtures/build";
 import type { ExerciseEntry } from "../../domain/types";
 import { renderThemed } from "../../ui/test-utils";
 import { SetList } from "./SetList";
@@ -38,6 +39,23 @@ const render = async (e: ExerciseEntry, onChange = jest.fn()) => {
 // The entry the last onChange edit produces.
 const edited = (onChange: jest.Mock, e: ExerciseEntry) =>
   (onChange.mock.lastCall?.[0] as (e: ExerciseEntry) => ExerciseEntry)(e);
+
+describe("SetList sets", () => {
+  const empty = "No sets. Add one to log this exercise.";
+
+  it("says there are no sets once every set is gone", async () => {
+    await render(entry({}));
+    expect(screen.getByText(empty)).toBeOnTheScreen();
+  });
+
+  it("says nothing while there are sets", async () => {
+    const [planned] = sets(1, 5, 60);
+    await render(
+      entry({ sets: [{ planned, completed: false, reps: 0, weight: planned.weight, rpe: 0 }] }),
+    );
+    expect(screen.queryByText(empty)).toBeNull();
+  });
+});
 
 describe("SetList note", () => {
   it("offers Add note while there is none", async () => {

@@ -46,4 +46,20 @@ describe("ExercisesSheet", () => {
     await fireEvent.press(scroll.getByLabelText("Remove Exercise 15"));
     expect(onRemove).toHaveBeenCalledWith(14);
   });
+
+  it("says there is nothing to reorder without exercises", async () => {
+    await renderThemed(
+      <GestureHandlerRootView>
+        <ExercisesSheet
+          open
+          entries={[]}
+          onMove={jest.fn()}
+          onRemove={jest.fn()}
+          onClose={jest.fn()}
+        />
+      </GestureHandlerRootView>,
+    );
+    expect(screen.getByText("Nothing to reorder")).toBeOnTheScreen();
+    expect(screen.queryByText("Hold a row and drag to reorder.")).toBeNull();
+  });
 });

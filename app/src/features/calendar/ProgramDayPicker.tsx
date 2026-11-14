@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ScrollView } from "react-native";
 
+import { errorMessage } from "../../api/errors";
 import type { ProgramSummary } from "../../domain/types";
 import {
   Button,
@@ -13,6 +14,7 @@ import {
   Sheet,
   SheetFooter,
   space,
+  Text,
 } from "../../ui";
 import { statusLabel } from "../programs/summary";
 
@@ -33,6 +35,8 @@ type Props = {
   onClose(): void;
   title: string;
   programs: ProgramSummary[];
+  /** No draft or active program of the kind, though finished ones exist. */
+  finishedOnly?: boolean;
   loadDays(program: ProgramSummary): Promise<PickDay[]>;
   // The calendar's own day for the date: preselected, never applied by itself.
   planned?: Planned;
@@ -59,9 +63,16 @@ export function ProgramDayPicker({ open, onClose, title, ...body }: Props) {
   );
 }
 
-function Body({ programs, loadDays, planned, onClose }: Omit<Props, "open" | "title">) {
+function Body({
+  programs,
+  finishedOnly,
+  loadDays,
+  planned,
+  onClose,
+}: Omit<Props, "open" | "title">) {
   const [program, setProgram] = useState(() => programs.find((p) => p.id === planned?.programId));
   const [days, setDays] = useState<PickDay[]>();
+  const [error, setError] = useState<string>();
   const [week, setWeek] = useState(planned?.week ?? 1);
   const [selected, setSelected] = useState(planned && dayKey(planned));
   const load = useRef(loadDays);
@@ -77,7 +88,11 @@ function Body({ programs, loadDays, planned, onClose }: Omit<Props, "open" | "ti
         const seen = new Set<string>();
         if (!stale) setDays(all.filter((d) => !seen.has(dayKey(d)) && !!seen.add(dayKey(d))));
       },
-      () => !stale && setDays([]),
+      (e) => {
+        if (stale) return;
+        setError(errorMessage(e));
+        setDays([]);
+      },
     );
     return () => {
       stale = true;
@@ -87,6 +102,7 @@ function Body({ programs, loadDays, planned, onClose }: Omit<Props, "open" | "ti
   const choose = (p?: ProgramSummary) => {
     setProgram(p);
     setDays(undefined);
+    setError(undefined);
     setWeek(1);
     setSelected(undefined);
   };
@@ -96,7 +112,19 @@ function Body({ programs, loadDays, planned, onClose }: Omit<Props, "open" | "ti
     return (
       <ScrollView contentContainerStyle={content}>
         {programs.length === 0 ? (
-          <EmptyState icon="barbell-outline" title="No programs" message="Write a program first." />
+          finishedOnly ? (
+            <EmptyState
+              icon="barbell-outline"
+              title="No active programs"
+              message="Activate a program to pick a day."
+            />
+          ) : (
+            <EmptyState
+              icon="barbell-outline"
+              title="No programs"
+              message="Write a program first."
+            />
+          )
         ) : (
           <ListCard>
             {programs.map((p) => (
@@ -121,6 +149,7 @@ function Body({ programs, loadDays, planned, onClose }: Omit<Props, "open" | "ti
   const isPlanned = (d: PickDay) =>
     planned && program.id === planned.programId && dayKey(d) === dayKey(planned);
   const picked = days?.find((d) => dayKey(d) === selected);
+  const inWeek = days?.filter((d) => d.week === week) ?? [];
   return (
     <>
       <ScrollView contentContainerStyle={content}>
@@ -132,6 +161,8 @@ function Body({ programs, loadDays, planned, onClose }: Omit<Props, "open" | "ti
         />
         {!days ? (
           <Loading />
+        ) : error ? (
+          <EmptyState icon="alert-circle-outline" title="Plan not available" message={error} />
         ) : days.length === 0 ? (
           <EmptyState
             icon="cloud-offline-outline"
@@ -152,10 +183,13 @@ function Body({ programs, loadDays, planned, onClose }: Omit<Props, "open" | "ti
                 ))}
               </ChipStrip>
             )}
-            <ListCard>
-              {days
-                .filter((d) => d.week === week)
-                .map((d) => (
+            {inWeek.length === 0 ? (
+              <Text variant="caption" color="textMuted">
+                No days in week {week}
+              </Text>
+            ) : (
+              <ListCard>
+                {inWeek.map((d) => (
                   <ListRow
                     key={dayKey(d)}
                     icon={dayKey(d) === selected ? "radio-button-on" : "radio-button-off"}
@@ -167,7 +201,8 @@ function Body({ programs, loadDays, planned, onClose }: Omit<Props, "open" | "ti
                     onPress={() => setSelected(dayKey(d))}
                   />
                 ))}
-            </ListCard>
+              </ListCard>
+            )}
           </>
         )}
       </ScrollView>

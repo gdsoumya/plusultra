@@ -70,6 +70,16 @@ describe("PlanScreen", () => {
     expect(await screen.findAllByText("0:45")).toHaveLength(2);
   });
 
+  it("says when no sets are planned", async () => {
+    const day = await trainingDay();
+    rememberDays(h.store, strength, [{ ...day, exercises: [{ ...day.exercises[0], sets: [] }] }]);
+    await renderWith(
+      h,
+      <PlanScreen programId={strength} week={day.week} day={day.day} n={1} unit="kg" />,
+    );
+    expect(await screen.findByText("No sets planned")).toBeOnTheScreen();
+  });
+
   it("says when the day is not cached", async () => {
     await renderWith(h, <PlanScreen programId={strength} week={9} day={9} n={1} unit="kg" />);
     expect(await screen.findByText("Plan not available")).toBeOnTheScreen();

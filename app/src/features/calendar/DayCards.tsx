@@ -138,6 +138,11 @@ export function MealsCard({
       {plan.meals.map((m) => (
         <ListRow key={m.name} title={m.name} value={kcal(mealKcal(m))} />
       ))}
+      {!plan.meals.length && (
+        <Text variant="caption" color="textMuted">
+          No meals planned
+        </Text>
+      )}
     </Card>
   );
 }

@@ -150,7 +150,7 @@ export default function TodayScreen({
         <Card>
           <EmptyState
             icon="barbell-outline"
-            title="No program"
+            title="No workout program"
             message="Pick a program to see your plan here."
             action={{ title: "Browse programs", onPress: () => router.push("/programs") }}
           />

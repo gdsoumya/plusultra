@@ -37,6 +37,8 @@ export default function MaxesScreen() {
   const { data: items = [], setData, loading, busy, error, call } = useRemote(load);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Exercise[]>([]);
+  // The query the results answer; an empty list means "no matches" only once they do.
+  const [searched, setSearched] = useState<string>();
   const [target, setTarget] = useState<{ slug: string; name: string }>();
   const [open, setOpen] = useState(false);
   const [opened, setOpened] = useState(0);
@@ -46,6 +48,7 @@ export default function MaxesScreen() {
       call(async () => {
         const r = await api.exercises.searchExercises({ query: q, limit: 10 });
         setResults(r.exercises);
+        setSearched(q);
       }),
     [api, call],
   );
@@ -75,6 +78,13 @@ export default function MaxesScreen() {
         onChangeText={setQuery}
         onSubmitEditing={() => search(query)}
       />
+      {query.trim() && searched === query && results.length === 0 && (
+        <EmptyState
+          icon="search-outline"
+          title={`No exercises match "${query.trim()}"`}
+          message="Try another name."
+        />
+      )}
       {results.length > 0 && (
         <ListCard>
           {results.map((e) => (

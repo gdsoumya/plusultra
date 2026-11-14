@@ -58,6 +58,16 @@ describe("CatalogScreen", () => {
     expect(screen.queryByRole("button", { name: "Delete" })).toBeNull();
   });
 
+  it("says when nothing matches", async () => {
+    await renderSettings(<CatalogScreen />);
+    await search("zzz");
+    expect(await screen.findByText('No exercises match "zzz"')).toBeOnTheScreen();
+    expect(screen.getByText("Check the spelling, or add it with New exercise.")).toBeOnTheScreen();
+    await fireEvent.press(screen.getByRole("checkbox", { name: "Foods" }));
+    expect(await screen.findByText('No foods match "zzz"')).toBeOnTheScreen();
+    expect(screen.getByText("Check the spelling, or add it with New food.")).toBeOnTheScreen();
+  });
+
   it("creates a custom exercise", async () => {
     const spy = jest.spyOn(mockApi.exercises, "createCustomExercise");
     await renderSettings(<CatalogScreen />);

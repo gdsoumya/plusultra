@@ -155,17 +155,38 @@ describe("Today", () => {
 
   it("hides quick fill on a rest day", async () => {
     clearToday();
-    store.delete("resolvedDays", todaysPlan().id);
+    const row = todaysPlan();
+    store.put("resolvedDays", { ...row, payload: { ...row.payload, kind: "rest", exercises: [] } });
     await renderToday();
     expect(screen.getByText("Rest day")).toBeOnTheScreen();
+    expect(screen.getByText("Nothing planned. Recover well.")).toBeOnTheScreen();
     noButton("Start workout");
     noButton("Done as planned");
+  });
+
+  it("says the program has no day for today when none is planned", async () => {
+    clearToday();
+    store.delete("resolvedDays", todaysPlan().id);
+    await renderToday();
+    expect(screen.getByText("No workout today")).toBeOnTheScreen();
+    expect(screen.getByText("Your program has no day for this date.")).toBeOnTheScreen();
+    expect(screen.queryByText("Ad hoc")).toBeNull();
+    expect(screen.queryByText("Rest day")).toBeNull();
+    noButton("Start workout");
+  });
+
+  it("says nothing is logged without a meal plan or log", async () => {
+    store = createMemoryStore();
+    await renderToday();
+    expect(
+      screen.getByText("Nothing logged yet. Open meals to add what you ate."),
+    ).toBeOnTheScreen();
   });
 
   it("offers Programs when no program is active", async () => {
     store = createMemoryStore();
     await renderToday();
-    expect(screen.getByText("No program")).toBeOnTheScreen();
+    expect(screen.getByText("No workout program")).toBeOnTheScreen();
     noButton("Start workout");
     noButton("Done as planned");
     noButton("Log as planned");
@@ -212,11 +233,11 @@ describe("Today", () => {
     noButton("Start workout");
   });
 
-  it("adds an ad hoc workout from the menu, even on a rest day", async () => {
+  it("adds an ad hoc workout from the menu, even without a planned day", async () => {
     clearToday();
     store.delete("resolvedDays", todaysPlan().id);
     await renderToday();
-    expect(screen.getByText("Rest day")).toBeOnTheScreen();
+    expect(screen.getByText("No workout today")).toBeOnTheScreen();
     await fireEvent.press(button("Workout options"));
     await fireEvent.press(await screen.findByRole("button", { name: "Ad hoc workout" }));
     const record = todaysRecord();
@@ -224,6 +245,7 @@ describe("Today", () => {
     expect(record.programId).toBeUndefined();
     expect(mockPush).toHaveBeenCalledWith(`/workout/${record.id}`);
     expect(screen.getByText("Ad hoc")).toBeOnTheScreen();
+    expect(screen.getByText("No exercises yet. Continue to add some.")).toBeOnTheScreen();
     expect(button("Continue workout")).toBeOnTheScreen();
     noButton("Done as planned");
   });

@@ -73,16 +73,24 @@ export default function PlanScreen({ programId, week, day, n, unit }: Props) {
           )}
         </View>
       </Card>
-      <ListCard>
-        {e.sets.map((s, i) => (
-          <ListRow
-            key={i}
-            title={s.warmup ? `Warmup ${++warmups}` : `Set ${++work}`}
-            subtitle={details(s) || undefined}
-            value={target(s, unit)}
-          />
-        ))}
-      </ListCard>
+      {e.sets.length === 0 ? (
+        <Card>
+          <Text variant="caption" color="textMuted">
+            No sets planned
+          </Text>
+        </Card>
+      ) : (
+        <ListCard>
+          {e.sets.map((s, i) => (
+            <ListRow
+              key={i}
+              title={s.warmup ? `Warmup ${++warmups}` : `Set ${++work}`}
+              subtitle={details(s) || undefined}
+              value={target(s, unit)}
+            />
+          ))}
+        </ListCard>
+      )}
       {e.progression && (
         <Card>
           <Text variant="label">Progression</Text>

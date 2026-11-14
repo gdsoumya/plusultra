@@ -100,7 +100,7 @@ export default function WorkoutScreen({ id, unit }: { id: string; unit: Unit }) 
     if (!s) return;
     if (t.kind === "work") complete(t.exercise, t.set, s.planned.work, endedAt);
     else if (s.planned.auto) chain(t.exercise, endedAt);
-  });
+  }, id);
   // The record follows lastSyncedAt in useWorkoutRecord, so the sync's copy shows when it settles.
   const refresh = useRefresh();
   // Opens on the exercise with the next set to do.
@@ -270,9 +270,11 @@ export default function WorkoutScreen({ id, unit }: { id: string; unit: Unit }) 
           onFinish={finished ? undefined : finishWorkout}
         />
         <View style={{ flexDirection: "row", alignItems: "center", gap: space[2] }}>
-          <Text variant="caption" numberOfLines={1} style={{ flex: 1 }}>
-            {`${onTarget} of ${count} exercises on target`}
-          </Text>
+          {count > 0 && (
+            <Text variant="caption" numberOfLines={1} style={{ flex: 1 }}>
+              {`${onTarget} of ${count} exercises on target`}
+            </Text>
+          )}
           {record.modified && <Badge label="Modified" icon="pencil" testID="workout-modified" />}
         </View>
         {finished && (
@@ -285,7 +287,7 @@ export default function WorkoutScreen({ id, unit }: { id: string; unit: Unit }) 
             Finishing this past workout counts for the program.
           </Text>
         )}
-        {entry && (
+        {entry ? (
           <GestureDetector gesture={pan}>
             {/* A tap on the pane outside any control closes the inline editor. */}
             <Pressable
@@ -323,6 +325,13 @@ export default function WorkoutScreen({ id, unit }: { id: string; unit: Unit }) 
               />
             </Pressable>
           </GestureDetector>
+        ) : (
+          <EmptyState
+            icon="barbell-outline"
+            title="No exercises yet"
+            message="Add an exercise to build this workout."
+            action={{ title: "Add exercise", onPress: () => setAdding(true) }}
+          />
         )}
       </Screen>
       {running?.kind === "rest" && (

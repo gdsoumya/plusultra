@@ -13,6 +13,8 @@ const asPlanned = (row?: Row): Planned | undefined =>
 // Draft and active programs; finished ones belong to history.
 const offered = (programs: ProgramSummary[], kind: ProgramSummary["kind"]) =>
   programs.filter((p) => p.kind === kind && (p.status === "draft" || p.status === "active"));
+const finishedOnly = (programs: ProgramSummary[], kind: ProgramSummary["kind"]) =>
+  offered(programs, kind).length === 0 && programs.some((p) => p.kind === kind);
 
 // What the day picker offers for workouts, each day summarised by its exercises; create builds
 // the record from the chosen day.
@@ -26,6 +28,7 @@ export const workoutPicker = (
 ) => ({
   title: "Workout from a program",
   programs: offered(programs, "workout"),
+  finishedOnly: finishedOnly(programs, "workout"),
   planned: asPlanned(planned),
   loadDays: (p: ProgramSummary) =>
     workoutDays(api, store, p).then((days) =>
@@ -46,6 +49,7 @@ export const mealPicker = (
 ) => ({
   title: "Meals from a program",
   programs: offered(programs, "meal"),
+  finishedOnly: finishedOnly(programs, "meal"),
   planned: asPlanned(planned),
   loadDays: (p: ProgramSummary) =>
     mealDays(api, store, p).then((days) =>

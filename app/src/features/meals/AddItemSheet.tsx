@@ -6,7 +6,7 @@ import { errorMessage } from "../../api/errors";
 import type { Store } from "../../data/store";
 import type { Item } from "../../domain/types";
 import type { Food } from "../../gen/plusultra/v1/food_pb";
-import { Button, ErrorLine, Field, ListRow, Sheet, space, Text } from "../../ui";
+import { Button, EmptyState, ErrorLine, Field, ListRow, Sheet, space, Text } from "../../ui";
 import { BarcodeScanner } from "./BarcodeScanner";
 import { CustomItemStep } from "./CustomItemStep";
 import { mealFlags } from "./flags";
@@ -30,6 +30,8 @@ const message = (what: string, e: unknown) => `${what} failed: ${errorMessage(e)
 export function AddItemSheet({ meal, store, api, onAdd, onClose }: Props) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Food[]>([]);
+  // The query the results answer; an empty list means "no matches" only once they do.
+  const [searched, setSearched] = useState<string>();
   const [error, setError] = useState<string>();
   const [picked, setPicked] = useState<{ item: Item; food?: Food }>();
   const [scanning, setScanning] = useState(false);
@@ -41,7 +43,11 @@ export function AddItemSheet({ meal, store, api, onAdd, onClose }: Props) {
     let stale = false;
     const timer = setTimeout(() => {
       api.foods.searchFoods({ query: q, limit: 20 }).then(
-        ({ foods }) => !stale && setResults(foods),
+        ({ foods }) => {
+          if (stale) return;
+          setResults(foods);
+          setSearched(q);
+        },
         (e: unknown) => !stale && setError(message("Search", e)),
       );
     }, 250);
@@ -134,6 +140,13 @@ export function AddItemSheet({ meal, store, api, onAdd, onClose }: Props) {
             onPress={() => setCustom(true)}
           />
           <ErrorLine message={error} />
+          {q && searched === q && results.length === 0 && (
+            <EmptyState
+              icon="search-outline"
+              title={`No foods match "${q}"`}
+              message="Try another name, or add a custom item."
+            />
+          )}
           {q &&
             results.map((food) => (
               <ListRow

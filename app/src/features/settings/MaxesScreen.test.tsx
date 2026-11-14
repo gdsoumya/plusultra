@@ -80,6 +80,16 @@ describe("MaxesScreen", () => {
     expect(spy.mock.calls[0][0].data?.rm1).toBeUndefined();
   });
 
+  it("says when no exercise matches", async () => {
+    await renderSettings(<MaxesScreen />);
+    jest.useFakeTimers();
+    await fireEvent.changeText(screen.getByLabelText("Find an exercise"), "zzz");
+    await act(() => jest.advanceTimersByTime(250));
+    expect(await screen.findByText('No exercises match "zzz"')).toBeOnTheScreen();
+    expect(screen.getByText("Try another name.")).toBeOnTheScreen();
+    jest.useRealTimers();
+  });
+
   it("finds an exercise and works in the user's unit", async () => {
     const store = createMemoryStore();
     store.setKv(SETTINGS_KEY, { displayName: "Demo", units: "lb", measurementUnit: "cm" });

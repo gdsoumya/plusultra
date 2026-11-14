@@ -1,9 +1,14 @@
-import { fireEvent, screen } from "@testing-library/react-native";
+import { create } from "@bufbuild/protobuf";
+import { act, fireEvent, screen } from "@testing-library/react-native";
 
 import { createClients } from "../../api/clients";
 import { sets } from "../../api/fixtures/build";
 import { createMockTransport } from "../../api/mockTransport";
 import type { ExerciseEntry } from "../../domain/types";
+import {
+  SearchExercisesResponseSchema,
+  type SearchExercisesResponse,
+} from "../../gen/plusultra/v1/exercise_pb";
 import { renderThemed } from "../../ui/test-utils";
 import { ExercisePane } from "./ExercisePane";
 
@@ -93,5 +98,26 @@ describe("ExercisePane", () => {
     await render(entry({ desc: "Elbows tucked." }));
     expect(screen.getByText("Elbows tucked.").props.numberOfLines).toBeUndefined();
     expect(screen.queryByRole("button", { name: "More" })).toBeNull();
+  });
+
+  it("says in the menu when an exercise without equipment is not in the catalog", async () => {
+    await render(entry({ name: "Made Up Move", alternates: ["Made Up Move"] }));
+    await fireEvent.press(screen.getByRole("button", { name: "Made Up Move options" }));
+    expect(await screen.findByText("Not in the catalog")).toBeOnTheScreen();
+  });
+
+  it("shows the details sheet loading until the catalog answers", async () => {
+    let answer!: (r: SearchExercisesResponse) => void;
+    const spy = jest
+      .spyOn(mockApi.exercises, "searchExercises")
+      .mockReturnValueOnce(new Promise((r) => (answer = r)));
+    await render(entry({ name: "Slow Move", alternates: ["Slow Move"] }));
+    await fireEvent.press(screen.getByRole("button", { name: "Slow Move details" }));
+    expect(screen.getByLabelText("Loading")).toBeOnTheScreen();
+    expect(screen.queryByText("This exercise is not in the catalog.")).toBeNull();
+    await act(async () => answer(create(SearchExercisesResponseSchema, {})));
+    expect(await screen.findByText("This exercise is not in the catalog.")).toBeOnTheScreen();
+    expect(screen.queryByLabelText("Loading")).toBeNull();
+    spy.mockRestore();
   });
 });

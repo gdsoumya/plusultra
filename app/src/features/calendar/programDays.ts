@@ -1,5 +1,6 @@
 import type { Api } from "../../api/clients";
 import { fromProto } from "../../api/convert";
+import { isOffline } from "../../api/errors";
 import { withKnownFlags } from "../../data/exerciseData";
 import type { Store } from "../../data/store";
 import type { MealDay, ProgramSummary, ResolvedDay } from "../../domain/types";
@@ -11,7 +12,8 @@ import {
 } from "../programs/programStore";
 
 // Every day of a program for the picker: resolved for an active one, simulated for any other.
-// Offline the detail screen's cache stands in.
+// Offline the detail screen's cache stands in; any other failure (a script that does not
+// simulate) is the caller's to show.
 async function load(api: Api, p: ProgramSummary) {
   if (p.status === "active") return api.programs.getResolvedDays({ programId: p.id });
   const { program } = await api.programs.getProgram({ id: p.id });
@@ -29,7 +31,8 @@ export async function workoutDays(
     );
     rememberDays(store, p.id, days);
     return days;
-  } catch {
+  } catch (e) {
+    if (!isOffline(e)) throw e;
     return cachedDays(store, p.id);
   }
 }
@@ -39,7 +42,8 @@ export async function mealDays(api: Api, store: Store, p: ProgramSummary): Promi
     const days = (await load(api, p)).mealDays.map((d) => fromProto.mealDay(d).payload);
     rememberMealDays(store, p.id, days);
     return days;
-  } catch {
+  } catch (e) {
+    if (!isOffline(e)) throw e;
     return cachedMealDays(store, p.id);
   }
 }

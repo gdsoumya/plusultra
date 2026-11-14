@@ -11,6 +11,7 @@ import {
   Card,
   EmptyState,
   IconButton,
+  Loading,
   Sheet,
   Text,
   Thumbnail,
@@ -74,7 +75,7 @@ const longNote = (desc: string) => desc.length > 200 || desc.split("\n").length 
 // set, and the way on to the next exercise.
 export function ExercisePane(p: Props) {
   const { entry, index, count, unit } = p;
-  const { info } = useExerciseInfo({ slug: entry.slug, name: entry.name });
+  const { info, loading } = useExerciseInfo({ slug: entry.slug, name: entry.name });
   const [menu, setMenu] = useState(false);
   const [details, setDetails] = useState(false);
   const [noteOpen, setNoteOpen] = useState(false);
@@ -175,6 +176,8 @@ export function ExercisePane(p: Props) {
       >
         {info ? (
           <ExerciseDetail exercise={info} />
+        ) : loading ? (
+          <Loading />
         ) : (
           <EmptyState
             icon="information-circle-outline"

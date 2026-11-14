@@ -7,6 +7,7 @@ import {
   Button,
   Chip,
   ChipStrip,
+  EmptyState,
   ErrorLine,
   Field,
   ListCard,
@@ -33,6 +34,8 @@ export default function CatalogScreen() {
   const [kind, setKind] = useState<Kind>("exercise");
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Entry[]>([]);
+  // The query the results answer; an empty list means "no matches" only once they do.
+  const [searched, setSearched] = useState<string>();
   const [detail, setDetail] = useState<Entry>();
   const [detailOpen, setDetailOpen] = useState(false);
   const [confirming, setConfirming] = useState(false);
@@ -50,6 +53,7 @@ export default function CatalogScreen() {
           const r = await api.foods.searchFoods({ query: q, limit: 50 });
           setResults(r.foods.map((item) => ({ kind, item })));
         }
+        setSearched(q);
       }),
     [api, call, kind],
   );
@@ -109,6 +113,7 @@ export default function CatalogScreen() {
             onPress={() => {
               setKind(k.kind);
               setResults([]);
+              setSearched(undefined);
             }}
           />
         ))}
@@ -122,6 +127,13 @@ export default function CatalogScreen() {
         onSubmitEditing={() => search(query)}
       />
       {!sheetOpen && <ErrorLine message={error} />}
+      {query.trim() && searched === query && results.length === 0 && (
+        <EmptyState
+          icon="search-outline"
+          title={`No ${current.label.toLowerCase()} match "${query.trim()}"`}
+          message={`Check the spelling, or add it with New ${current.single}.`}
+        />
+      )}
       {results.length > 0 && (
         <ListCard>
           {results.map((entry) => (

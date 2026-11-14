@@ -7,6 +7,7 @@ import type { Exercise } from "../../gen/plusultra/v1/exercise_pb";
 import type { WorkoutRecord } from "../../domain/types";
 import {
   Chip,
+  EmptyState,
   ErrorLine,
   Field,
   ListCard,
@@ -47,6 +48,8 @@ export function AddExerciseSheet({ open, recents, onPick, onClose }: Props) {
   const [results, setResults] = useState<Exercise[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
+  // The query the shown results answer; "no matches" waits for it to catch up with the field.
+  const [searched, setSearched] = useState<string>();
 
   const search = useCallback(
     async (q: string) => {
@@ -54,6 +57,7 @@ export function AddExerciseSheet({ open, recents, onPick, onClose }: Props) {
       setError(undefined);
       try {
         setResults((await api.exercises.searchExercises({ query: q, limit: 10 })).exercises);
+        setSearched(q);
       } catch (e) {
         setError(errorMessage(e));
       } finally {
@@ -63,6 +67,7 @@ export function AddExerciseSheet({ open, recents, onPick, onClose }: Props) {
     [api],
   );
   useDebouncedSearch(query, search);
+  const noMatches = !!query && searched === query && !busy && results.length === 0;
 
   return (
     <Sheet
@@ -83,6 +88,13 @@ export function AddExerciseSheet({ open, recents, onPick, onClose }: Props) {
       />
       <ErrorLine message={error} />
       {busy && <Loading />}
+      {noMatches && (
+        <EmptyState
+          icon="search-outline"
+          title={`No exercises match "${query}"`}
+          message="Try another name or a shorter word."
+        />
+      )}
       {results.length > 0 && (
         <ListCard>
           {results.map((e) => (

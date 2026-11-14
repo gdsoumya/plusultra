@@ -6,13 +6,14 @@ import { cachedExercise, rememberExercise } from "../../data/exerciseInfo";
 import type { Store } from "../../data/store";
 import { useStore } from "../../data/StoreProvider";
 import type { Exercise } from "../../gen/plusultra/v1/exercise_pb";
-import { ErrorLine, Field, ListCard, Loading, Sheet, Text } from "../../ui";
+import { EmptyState, ErrorLine, Field, ListCard, Loading, Sheet, Text } from "../../ui";
 import { ExerciseRow } from "./ExerciseRow";
 
 export const RECENTS_KEY = "recentExercisePicks";
 const RECENTS = 8;
 
-// The slugs picked here before, latest first; each is in the exercise cache, so recents show offline.
+// The slugs picked here before, latest first; each was put in the exercise cache, so recents show
+// offline.
 export const recentPicks = (store: Store) => store.getKv<string[]>(RECENTS_KEY) ?? [];
 
 function pick(store: Store, exercise: Exercise) {
@@ -35,13 +36,19 @@ export function ExerciseSearchSheet({ open, onPick, onClose }: Props) {
   const [results, setResults] = useState<Exercise[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
-  const recents = recentPicks(store);
+  // The query the shown results answer; "no matches" waits for it to catch up with the field.
+  const [searched, setSearched] = useState<string>();
+  // A pick whose cache entry is gone has nothing to show.
+  const recents = recentPicks(store).flatMap(
+    (slug) => cachedExercise(store, { slug })?.exercise ?? [],
+  );
 
   const search = async () => {
     setBusy(true);
     setError(undefined);
     try {
       setResults((await api.exercises.searchExercises({ query, limit: 10 })).exercises);
+      setSearched(query);
     } catch (e) {
       setError(errorMessage(e));
     } finally {
@@ -56,6 +63,7 @@ export function ExerciseSearchSheet({ open, onPick, onClose }: Props) {
     setResults([]);
     onPick(exercise);
   };
+  const noMatches = !!query && searched === query && !busy && results.length === 0;
 
   return (
     <Sheet
@@ -76,6 +84,13 @@ export function ExerciseSearchSheet({ open, onPick, onClose }: Props) {
       />
       <ErrorLine message={error} />
       {busy && <Loading />}
+      {noMatches && (
+        <EmptyState
+          icon="search-outline"
+          title={`No exercises match "${query}"`}
+          message="Try another name."
+        />
+      )}
       {results.length > 0 && (
         <ListCard>
           {results.map((e) => (
@@ -89,18 +104,12 @@ export function ExerciseSearchSheet({ open, onPick, onClose }: Props) {
             Recent
           </Text>
           <ListCard>
-            {recents.map((slug) => (
-              <RecentRow key={slug} slug={slug} onPick={choose} />
+            {recents.map((e) => (
+              <ExerciseRow key={e.slug} exercise={e} onPress={() => choose(e)} />
             ))}
           </ListCard>
         </>
       )}
     </Sheet>
   );
-}
-
-function RecentRow({ slug, onPick }: { slug: string; onPick: (e: Exercise) => void }) {
-  const store = useStore();
-  const cached = cachedExercise(store, { slug })?.exercise;
-  return cached ? <ExerciseRow exercise={cached} onPress={() => onPick(cached)} /> : null;
 }

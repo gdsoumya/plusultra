@@ -34,13 +34,13 @@ export function ExerciseSheet({
   onClose,
 }: Props) {
   const router = useRouter();
-  const { info } = useExerciseInfo({ slug: entry.slug, name: entry.name });
+  const { info, loading } = useExerciseInfo({ slug: entry.slug, name: entry.name });
   return (
     <Sheet open={open} onClose={onClose} title={entry.name} snapPoints={[0.6]}>
       <View style={{ flexDirection: "row", alignItems: "center", gap: space[3] }}>
         <Thumbnail uri={info?.images[0]} />
         <Text color="textMuted" numberOfLines={2} style={{ flex: 1 }}>
-          {infoLine(info) ?? entry.equipment}
+          {infoLine(info) ?? (entry.equipment || (loading ? "" : "Not in the catalog"))}
         </Text>
       </View>
       {entry.alternates.length > 1 && (

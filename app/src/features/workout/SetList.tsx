@@ -59,6 +59,11 @@ export function SetList(p: Props) {
           </Text>
         </Card>
       ) : null}
+      {entry.sets.length === 0 && (
+        <Text variant="caption" color="textMuted">
+          No sets. Add one to log this exercise.
+        </Text>
+      )}
       <View style={{ flexDirection: "row", flexWrap: "wrap", gap: space[2] }}>
         <Button title="Add set" variant="ghost" icon="add" onPress={() => p.onChange(addSet)} />
         <Button

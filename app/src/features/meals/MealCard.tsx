@@ -93,6 +93,11 @@ export function MealCard({
           target={planned && mealTotals(planned)}
           onPress={() => setDetails(true)}
         />
+        {meal.items.length === 0 && (
+          <Text variant="caption" color="textMuted">
+            No items yet. Add what you ate.
+          </Text>
+        )}
         <View style={{ marginHorizontal: -space[4] }}>
           {meal.items.map((item, i) => (
             <ListRow

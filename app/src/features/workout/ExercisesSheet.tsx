@@ -1,7 +1,7 @@
 import { ScrollView, View } from "react-native";
 
 import type { ExerciseEntry } from "../../domain/types";
-import { DraggableList, IconButton, Sheet, space, Text } from "../../ui";
+import { DraggableList, EmptyState, IconButton, Sheet, space, Text } from "../../ui";
 import { ExerciseThumb } from "../exercises/ExerciseRow";
 
 type Props = {
@@ -23,29 +23,39 @@ export function ExercisesSheet({ open, entries, onMove, onRemove, onClose }: Pro
       scroll={false}
       testID="exercises-sheet"
     >
-      <Text variant="caption">Hold a row and drag to reorder.</Text>
-      <ScrollView keyboardShouldPersistTaps="handled" testID="exercises-scroll">
-        <DraggableList
-          items={entries}
-          keyOf={(_, i) => String(i)}
-          testID="exercises"
-          onMove={onMove}
-          renderItem={(entry, i) => (
-            <View style={{ flexDirection: "row", alignItems: "center", gap: space[3] }}>
-              <ExerciseThumb exercise={{ slug: entry.slug, name: entry.name }} />
-              <Text numberOfLines={1} style={{ flex: 1 }}>
-                {entry.name}
-              </Text>
-              <IconButton
-                icon="close"
-                label={`Remove ${entry.name}`}
-                onPress={() => onRemove(i)}
-                testID={`exercise-${i}-remove`}
-              />
-            </View>
-          )}
+      {entries.length === 0 ? (
+        <EmptyState
+          icon="reorder-three-outline"
+          title="Nothing to reorder"
+          message="Add an exercise first."
         />
-      </ScrollView>
+      ) : (
+        <>
+          <Text variant="caption">Hold a row and drag to reorder.</Text>
+          <ScrollView keyboardShouldPersistTaps="handled" testID="exercises-scroll">
+            <DraggableList
+              items={entries}
+              keyOf={(_, i) => String(i)}
+              testID="exercises"
+              onMove={onMove}
+              renderItem={(entry, i) => (
+                <View style={{ flexDirection: "row", alignItems: "center", gap: space[3] }}>
+                  <ExerciseThumb exercise={{ slug: entry.slug, name: entry.name }} />
+                  <Text numberOfLines={1} style={{ flex: 1 }}>
+                    {entry.name}
+                  </Text>
+                  <IconButton
+                    icon="close"
+                    label={`Remove ${entry.name}`}
+                    onPress={() => onRemove(i)}
+                    testID={`exercise-${i}-remove`}
+                  />
+                </View>
+              )}
+            />
+          </ScrollView>
+        </>
+      )}
     </Sheet>
   );
 }

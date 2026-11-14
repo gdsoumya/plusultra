@@ -27,7 +27,7 @@ function statusOf(record?: WorkoutRecord, dayLog?: DayLog) {
 
 // The planned day with its exercises, while today's record (if any) is that day; any other record
 // (ad hoc, another program's day, or a floating day the cursor has moved past) lists its own; a
-// rest day with neither says so.
+// rest day with neither says so, and so does a program without a day for the date.
 export function WorkoutCard({ program, plan, record, dayLog, unit, onOpen, onDone, menu }: Props) {
   const ofPlan =
     !record ||
@@ -51,7 +51,7 @@ export function WorkoutCard({ program, plan, record, dayLog, unit, onOpen, onDon
     !plan || !ofPlan
       ? record?.week
         ? `Week ${record.week}, day ${record.day}`
-        : "Ad hoc"
+        : record && "Ad hoc"
       : program?.mode === "floating"
         ? `Next: week ${plan.week} day ${plan.day}`
         : `Week ${plan.week}, day ${plan.day}`;
@@ -59,9 +59,15 @@ export function WorkoutCard({ program, plan, record, dayLog, unit, onOpen, onDon
     <Card>
       <View style={{ flexDirection: "row", alignItems: "flex-start", gap: space[3] }}>
         <View style={{ flex: 1 }}>
-          <Text variant="caption">{caption}</Text>
+          {caption && <Text variant="caption">{caption}</Text>}
           <Text variant="heading">
-            {planned && plan ? plan.name : record ? record.dayName || "Workout" : "Rest day"}
+            {planned && plan
+              ? plan.name
+              : record
+                ? record.dayName || "Workout"
+                : plan
+                  ? "Rest day"
+                  : "No workout today"}
           </Text>
         </View>
         <CardMenu title="Workout" items={menu} />
@@ -82,7 +88,13 @@ export function WorkoutCard({ program, plan, record, dayLog, unit, onOpen, onDon
           ))}
         </View>
       ) : (
-        !record && <Text color="textMuted">Nothing planned. Recover well.</Text>
+        <Text variant="caption" color="textMuted">
+          {record
+            ? "No exercises yet. Continue to add some."
+            : plan
+              ? "Nothing planned. Recover well."
+              : "Your program has no day for this date."}
+        </Text>
       )}
       {status && <Text variant="label">{status}</Text>}
       {(planned || record) && (

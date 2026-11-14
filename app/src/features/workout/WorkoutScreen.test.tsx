@@ -17,6 +17,7 @@ import { SyncProvider } from "../../data/useSync";
 import type { Unit } from "../../domain/types";
 import { ThemeProvider } from "../../ui";
 import { pullToRefresh } from "../../ui/test-utils";
+import { forgetTimers } from "./useTimer";
 import WorkoutScreen from "./WorkoutScreen";
 
 jest.mock("../../data/uuid", () => ({ uuid: () => "device-1" }));
@@ -94,7 +95,10 @@ const [[timerNotices]] = jest.mocked(Notifications.setNotificationHandler).mock.
 const notifies = async () =>
   (await timerNotices!.handleNotification({} as Notifications.Notification)).shouldShowBanner;
 
-beforeEach(() => jest.clearAllMocks());
+beforeEach(() => {
+  jest.clearAllMocks();
+  forgetTimers();
+});
 
 describe("WorkoutScreen", () => {
   it("lists the exercises with their planned sets in the user's unit", async () => {
@@ -1287,6 +1291,25 @@ describe("WorkoutScreen", () => {
     await fireEvent.press(screen.getByTestId("set-0-0-done"));
     expect(store.get("workoutRecords", id)).toBeUndefined();
     expect(store.get("workoutRecords", "theirs")).toMatchObject({ version: 4, dirty: true });
+  });
+
+  it("shows an empty state with Add exercise when the workout has no exercises", async () => {
+    const store = await seed();
+    workoutRecordsRepo(store).upsertFromServer([{ ...saved(store), entries: [] }]);
+    await mount(store);
+    expect(screen.getByText("No exercises yet")).toBeOnTheScreen();
+    expect(screen.queryByText("0 of 0 exercises on target")).toBeNull();
+    expect(screen.getByTestId("session-actions")).toBeOnTheScreen();
+    await fireEvent.press(screen.getAllByRole("button", { name: "Add exercise" }).at(-1)!);
+    expect(screen.getByLabelText("Find an exercise")).toBeOnTheScreen();
+  });
+
+  it("says when no exercise matches the search", async () => {
+    await mount(await seed());
+    await fireEvent.press(screen.getByTestId("add-exercise-button"));
+    await fireEvent.changeText(screen.getByLabelText("Find an exercise"), "zzzz");
+    await fireEvent(screen.getByLabelText("Find an exercise"), "submitEditing");
+    expect(await screen.findByText('No exercises match "zzzz"')).toBeOnTheScreen();
   });
 
   it("explains when the record is missing", async () => {
