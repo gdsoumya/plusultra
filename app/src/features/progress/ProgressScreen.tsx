@@ -57,7 +57,7 @@ export default function ProgressScreen({ insights, store, today, unit }: Progres
         <LiftSection {...section} />
         <VolumeSection insights={insights} store={store} weekStart={mondayOf(today)} />
         <MuscleTrendSection {...section} trend={trend} />
-        <TrainingSection {...section} trend={trend} />
+        <TrainingSection {...section} />
         <AdherenceSection {...section} />
       </Fragment>
     </Screen>

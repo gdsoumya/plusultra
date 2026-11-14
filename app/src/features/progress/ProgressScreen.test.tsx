@@ -60,11 +60,11 @@ describe("ProgressScreen", () => {
   it("shows the weight trend with its 7-day average and weekly rate", async () => {
     const { api, store } = await setup();
     await mount(api.insights, store);
-    const summary = await screen.findByLabelText(/23 weigh-ins/);
-    expect(summary.props.accessibilityLabel).toMatch(/7-day average 83 kg, -0.4 kg a week/);
+    const summary = await screen.findByLabelText(/22 weigh-ins/);
+    expect(summary.props.accessibilityLabel).toMatch(/7-day average 83 kg, -0.5 kg a week/);
     const weight = card("progress-weight");
     expect(weight.getByText("83.0")).toBeOnTheScreen();
-    expect(weight.getByText("-0.4")).toBeOnTheScreen();
+    expect(weight.getByText("-0.5")).toBeOnTheScreen();
     await fireEvent.press(weight.getByRole("button", { name: "Show table" }));
     expect(weight.getAllByText("84.4").length).toBeGreaterThan(0);
   });
@@ -73,11 +73,11 @@ describe("ProgressScreen", () => {
     const { api, store } = await setup();
     const trend = jest.spyOn(api.insights, "weightTrend");
     await mount(api.insights, store);
-    await screen.findByLabelText(/23 weigh-ins/);
+    await screen.findByLabelText(/22 weigh-ins/);
     expect(trend).toHaveBeenCalledTimes(1);
     await pullToRefresh();
     expect(mockSync.syncNow).toHaveBeenCalledTimes(1);
-    await screen.findByLabelText(/23 weigh-ins/);
+    await screen.findByLabelText(/22 weigh-ins/);
     expect(trend).toHaveBeenCalledTimes(2);
   });
 
@@ -88,7 +88,7 @@ describe("ProgressScreen", () => {
     try {
       const { api, store } = await setup();
       await mount(api.insights, store);
-      await screen.findByLabelText(/23 weigh-ins/);
+      await screen.findByLabelText(/22 weigh-ins/);
       const dots = card("progress-weight").getAllByTestId("dot");
       const right = Math.max(...dots.map((d) => Number(d.props.cx)));
       // The column holds a card, whose padding holds the chart.
@@ -113,7 +113,7 @@ describe("ProgressScreen", () => {
     const { api, store } = await setup();
     await mount(api.insights, store);
     const nutrition = card("progress-nutrition");
-    const from = addDays(today, -28);
+    const from = addDays(today, -27);
     const logged = store.list("mealLogs", { dateFrom: from, dateTo: today });
     const weighIns = store.list("checkins", { dateFrom: from, dateTo: today });
     expect(logged.length).toBeGreaterThan(0);
@@ -178,7 +178,7 @@ describe("ProgressScreen", () => {
     const { api, store } = await setup();
     const trend = jest.spyOn(api.insights, "weeklyTrend");
     const first = await mount(api.insights, store);
-    await screen.findByLabelText(/23 weigh-ins/);
+    await screen.findByLabelText(/22 weigh-ins/);
     let sheet = await openRanges();
     await fireEvent.press(sheet.getByLabelText("Custom"));
     await fireEvent.press(sheet.getByRole("button", { name: "Previous month" }));
@@ -202,13 +202,14 @@ describe("ProgressScreen", () => {
     expect(sheet.getByLabelText("Custom")).toBeChecked();
     expect(sheet.getByRole("button", { name: "Thursday 15 October" })).toBeSelected();
     await fireEvent.press(sheet.getByLabelText("4 weeks"));
-    expect(trend).toHaveBeenLastCalledWith({ dates: { from: "2026-10-14", to: today } });
+    expect(trend).toHaveBeenLastCalledWith({ dates: { from: "2026-10-15", to: today } });
   });
 
   it("plots the lift's max weight, volume or reps instead of its e1RM", async () => {
     const { api, store } = await setup();
     await mount(api.insights, store);
     const lifts = card("progress-lifts");
+    await fireEvent.press(await lifts.findByLabelText("Deadlift"));
     expect(
       await lifts.findByLabelText(/^Deadlift: \d+ sessions, e1RM [\d.]+ kg/),
     ).toBeOnTheScreen();
@@ -226,17 +227,20 @@ describe("ProgressScreen", () => {
     const history = jest.spyOn(api.insights, "liftHistory");
     await mount(api.insights, store);
     const lifts = card("progress-lifts");
+    await fireEvent.press(await lifts.findByLabelText("Deadlift"));
     expect(
-      await lifts.findByLabelText(/^Best e1RM \(kg\) · \w+ \d+|^Best e1RM \(kg\) · \d+ \w+/),
+      await lifts.findByLabelText(
+        /^All-time e1RM \(kg\) · \w+ \d+|^All-time e1RM \(kg\) · \d+ \w+/,
+      ),
     ).toBeOnTheScreen();
-    expect(lifts.getByLabelText(/^Max weight \(kg\) · .*: [\d.]+ × \d+$/)).toBeOnTheScreen();
+    expect(lifts.getByLabelText(/^All-time max \(kg\) · .*: [\d.]+ × \d+$/)).toBeOnTheScreen();
     expect(history).toHaveBeenCalledWith({ slug: "deadlift-barbell" });
     await fireEvent.press(lifts.getByTestId("lift-chart-plot"), {
       nativeEvent: { locationX: 300 },
     });
     await fireEvent.press(lifts.getByRole("button", { name: "Open workout" }));
     expect(mockRouter.push).toHaveBeenCalledWith(
-      expect.stringMatching(/^\/workout\/workout-2026-\d\d-\d\d$/),
+      expect.stringMatching(/^\/session\/workout-2026-\d\d-\d\d$/),
     );
   });
 
@@ -244,8 +248,13 @@ describe("ProgressScreen", () => {
     const { api, store } = await setup();
     await mount(api.insights, store);
     const adherence = card("progress-adherence");
-    expect(await adherence.findByText("22")).toBeOnTheScreen();
-    for (const n of ["15", "4", "2"]) expect(adherence.getByText(n)).toBeOnTheScreen();
+    const { counts } = await api.insights.adherence({
+      dates: { from: addDays(today, -27), to: today },
+    });
+    expect(await adherence.findByText(String(counts!.planned))).toBeOnTheScreen();
+    for (const n of [counts!.done, counts!.partial, counts!.skipped]) {
+      expect(adherence.getAllByText(String(n)).length).toBeGreaterThan(0);
+    }
   });
 
   it("shows this week's sets per muscle, largest first", async () => {
@@ -262,14 +271,14 @@ describe("ProgressScreen", () => {
   it("keeps showing cached data with a note when the server is unreachable", async () => {
     const { mock, api, store } = await setup();
     const first = await mount(api.insights, store);
-    await screen.findByLabelText(/23 weigh-ins/);
+    await screen.findByLabelText(/22 weigh-ins/);
     await first.unmount();
 
     mock.failNext("insights.weightTrend", offline());
     await mount(api.insights, store);
     const weight = card("progress-weight");
     expect(await weight.findByText(/Offline · last updated/)).toBeOnTheScreen();
-    expect(weight.getByLabelText(/23 weigh-ins/)).toBeOnTheScreen();
+    expect(weight.getByLabelText(/22 weigh-ins/)).toBeOnTheScreen();
   });
 
   it("offers a retry when nothing is cached", async () => {
@@ -280,7 +289,7 @@ describe("ProgressScreen", () => {
     expect(await weight.findByText("Couldn't load")).toBeOnTheScreen();
     expect(weight.getByText(OFFLINE)).toBeOnTheScreen();
     await fireEvent.press(weight.getByRole("button", { name: "Retry" }));
-    expect(await weight.findByLabelText(/23 weigh-ins/)).toBeOnTheScreen();
+    expect(await weight.findByLabelText(/22 weigh-ins/)).toBeOnTheScreen();
   });
 
   describe("without data", () => {
@@ -319,7 +328,7 @@ describe("ProgressScreen", () => {
       await screen.findByText("No weigh-ins yet");
       const sheet = await openRanges();
       await fireEvent.press(sheet.getByLabelText("3 months"));
-      const dates = { from: "2026-08-12", to: today };
+      const dates = { from: "2026-08-13", to: today };
       expect(insights.weightTrend).toHaveBeenLastCalledWith({ dates });
       expect(insights.adherence).toHaveBeenLastCalledWith({ dates });
       expect(insights.weeklyTrend).toHaveBeenLastCalledWith({ dates });

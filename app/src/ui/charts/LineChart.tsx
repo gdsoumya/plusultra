@@ -34,8 +34,9 @@ export type LineChartProps = {
   testID?: string;
 };
 
-// Room for the y tick labels.
-const gutter = 40;
+// Room for the y tick labels: at least 40 px, more when the labels are wide ("2500").
+const gutterFor = (labels: string[], fontSize: number) =>
+  Math.max(40, Math.ceil(Math.max(...labels.map((l) => l.length)) * fontSize * 0.6) + space[2]);
 // Weigh-ins under a trend line are muted; the key dot matches.
 const dotColor = (colors: { accent: string; textMuted: string }, trend: boolean) =>
   trend ? colors.textMuted : colors.accent;
@@ -63,6 +64,7 @@ export function LineChart({
   const top = fontSize + space[2];
   const ys = [...points, ...(trend ?? [])].map((p) => p.y);
   const ticks = niceTicks(Math.min(...ys), Math.max(...ys), 4, minSpan);
+  const gutter = gutterFor(ticks.map(format), fontSize);
   const x = linear(xDomain, [gutter, width - space[2]]);
   const y = linear([ticks[0], ticks[ticks.length - 1]], [top + height, top]);
   const place = (p: Point) => ({ x: x(p.x), y: y(p.y) });

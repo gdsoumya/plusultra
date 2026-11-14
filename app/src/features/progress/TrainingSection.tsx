@@ -5,11 +5,9 @@ import type { Store } from "../../data/store";
 import { addDays, mondayOf, shortDate } from "../../domain/dates";
 import { Card, stroke, Text, typography, useTheme } from "../../ui";
 import { StatTiles } from "../../ui/charts/StatTiles";
-import { CachedView } from "./CachedView";
 import type { SectionProps } from "./shared";
-import type { Trend } from "./useWeeklyTrend";
 
-type Props = Pick<SectionProps, "store" | "range" | "today" | "width"> & { trend: Trend };
+type Props = Pick<SectionProps, "store" | "range" | "today" | "width">;
 
 const gap = 2;
 // Room for the weekday initials.
@@ -32,11 +30,13 @@ function weekStreak(store: Store, today: string) {
   return n;
 }
 
-export function TrainingSection({ store, range, today, width, trend }: Props) {
+export function TrainingSection({ store, range, today, width }: Props) {
   const { colors } = useTheme();
   const { from, to } = range;
   const trained = useMemo(() => new Set(finishedDates(store, from, to)), [store, from, to]);
   const streak = useMemo(() => weekStreak(store, today), [store, today]);
+  // Finished workouts in the range over its length in weeks; days counts the span, so add one.
+  const perWeek = trained.size / ((range.days + 1) / 7);
   const weeks: string[] = [];
   for (let w = mondayOf(from); w <= to; w = addDays(w, 7)) weeks.push(w);
   // Squares shrink so the weeks always fit one row; a year on a phone is about 4 px.
@@ -53,32 +53,18 @@ export function TrainingSection({ store, range, today, width, trend }: Props) {
       ? { borderWidth: stroke.control, borderColor: colors.border, opacity: 0.3 }
       : { backgroundColor: trained.has(date) ? colors.accent : colors.border }),
   });
-  const whole = (v: number) => (Number.isInteger(v) ? String(v) : v.toFixed(1));
 
   return (
     <Card testID="progress-training">
       <Text variant="heading" accessibilityRole="header">
         Training days
       </Text>
-      <CachedView state={trend}>
-        {({ weeks: summaries }) => {
-          const active = summaries.filter(
-            (w) => w.adherence && (w.adherence.planned || w.adherence.done),
-          );
-          const done = active.reduce((t, w) => t + w.adherence!.done, 0);
-          return (
-            <StatTiles
-              items={[
-                {
-                  label: "Workouts per week",
-                  value: active.length ? whole(done / active.length) : "–",
-                },
-                { label: "Week streak", value: streak },
-              ]}
-            />
-          );
-        }}
-      </CachedView>
+      <StatTiles
+        items={[
+          { label: "Workouts per week", value: String(Math.round(perWeek * 10) / 10) },
+          { label: "Week streak", value: streak },
+        ]}
+      />
       <View
         accessible
         accessibilityLabel={`${trained.size} training days from ${shortDate(from)} to ${shortDate(to)}.`}

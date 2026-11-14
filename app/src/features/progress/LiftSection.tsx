@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { ScrollView } from "react-native";
 
 import { addDays, daysBetween, shortDate } from "../../domain/dates";
 import type { Unit } from "../../domain/types";
@@ -13,13 +13,18 @@ import { loadedLifts } from "./lifts";
 import { inUnit, type SectionProps } from "./shared";
 import { useCached } from "./useCached";
 
-type Mode = { label: string; of: (p: LiftPoint, unit: Unit) => number; reps?: boolean };
+type Mode = {
+  label: string;
+  of: (p: LiftPoint, unit: Unit) => number;
+  reps?: boolean;
+  integer?: boolean;
+};
 
 const modes: Mode[] = [
   { label: "e1RM", of: (p, unit) => inUnit(p.e1rm, unit) },
   { label: "Max weight", of: (p, unit) => inUnit(p.bestWeight, unit) },
-  { label: "Volume", of: (p, unit) => inUnit(p.volume, unit) },
-  { label: "Max reps", of: (p) => p.bestReps, reps: true },
+  { label: "Volume", of: (p, unit) => inUnit(p.volume, unit), integer: true },
+  { label: "Max reps", of: (p) => p.bestReps, reps: true, integer: true },
 ];
 
 export function LiftSection(props: SectionProps) {
@@ -50,7 +55,11 @@ export function LiftSection(props: SectionProps) {
               />
             ))}
           </ScrollView>
-          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: space[2] }}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ gap: space[2] }}
+          >
             {modes.map((m) => (
               <Chip
                 key={m.label}
@@ -59,7 +68,7 @@ export function LiftSection(props: SectionProps) {
                 onPress={() => setMode(m)}
               />
             ))}
-          </View>
+          </ScrollView>
           <Records {...props} slug={slug} />
           <LiftChart {...props} slug={slug} mode={mode} />
         </>
@@ -95,11 +104,11 @@ function Records({ insights, store, unit, slug }: SectionProps & { slug: string 
     <StatTiles
       items={[
         {
-          label: `Best e1RM (${unit}) · ${shortDate(e1rm.date)}`,
+          label: `All-time e1RM (${unit}) · ${shortDate(e1rm.date)}`,
           value: fmt(inUnit(e1rm.e1rm, unit)),
         },
         {
-          label: `Max weight (${unit}) · ${shortDate(heavy.date)}`,
+          label: `All-time max (${unit}) · ${shortDate(heavy.date)}`,
           value: `${fmt(inUnit(heavy.bestWeight, unit))} × ${heavy.bestReps}`,
         },
       ]}
@@ -123,7 +132,7 @@ function LiftChart({
     [insights, slug, from, to],
   );
   const state = useCached(store, `progress.lift.${slug}.${from}.${to}`, fetch);
-  const format = mode.reps ? String : fmt;
+  const format = mode.integer ? (v: number) => String(Math.round(v)) : fmt;
   const show = (v: number) => `${format(v)} ${mode.reps ? "reps" : unit}`;
 
   return (
@@ -144,9 +153,10 @@ function LiftChart({
             xLabels={[shortDate(from), shortDate(to)]}
             xLabel={(x) => shortDate(addDays(from, x))}
             onOpen={
-              points[0].recordId ? (i) => router.push(`/workout/${points[i].recordId}`) : undefined
+              points[0].recordId ? (i) => router.push(`/session/${points[i].recordId}`) : undefined
             }
             format={format}
+            minSpan={mode.reps ? 4 : 0}
             summary={`${name}: ${points.length} sessions, ${mode.label} ${show(ys[0])} to ${show(ys[ys.length - 1])}, best ${show(ys[best])} on ${shortDate(points[best].date)}.`}
             table={{
               columns: ["Date", mode.reps ? mode.label : `${mode.label} ${unit}`, "Best set"],

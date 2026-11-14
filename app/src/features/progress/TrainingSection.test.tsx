@@ -1,25 +1,11 @@
-import { create } from "@bufbuild/protobuf";
 import { screen } from "@testing-library/react-native";
 
 import { createMemoryStore } from "../../data/memoryStore";
-import { WeeklyTrendResponseSchema } from "../../gen/plusultra/v1/insight_pb";
 import { renderThemed } from "../../ui/test-utils";
 import { rangeOf } from "./shared";
 import { TrainingSection } from "./TrainingSection";
-import type { Trend } from "./useWeeklyTrend";
 
 const today = "2026-11-11";
-
-const trend = (weeks: { weekStart: string; planned: number; done: number }[]): Trend => ({
-  data: create(WeeklyTrendResponseSchema, {
-    weeks: weeks.map(({ weekStart, planned, done }) => ({
-      weekStart,
-      adherence: { planned, done },
-    })),
-  }),
-  loading: false,
-  retry: () => {},
-});
 
 function storeWith(dates: string[]) {
   const store = createMemoryStore();
@@ -48,14 +34,7 @@ function storeWith(dates: string[]) {
 const mount = (
   store = storeWith(["2026-11-05", "2026-11-09"]),
   range = rangeOf("2026-11-04", today),
-  weeks = [
-    { weekStart: "2026-11-02", planned: 3, done: 3 },
-    { weekStart: "2026-11-09", planned: 2, done: 2 },
-  ],
-) =>
-  renderThemed(
-    <TrainingSection store={store} range={range} today={today} width={358} trend={trend(weeks)} />,
-  );
+) => renderThemed(<TrainingSection store={store} range={range} today={today} width={358} />);
 
 describe("TrainingSection", () => {
   it("draws the weeks as columns under weekday initials, hollow outside the range", async () => {
@@ -78,15 +57,13 @@ describe("TrainingSection", () => {
     expect(53 * size + 52 * 2).toBeLessThanOrEqual(358 - 16);
   });
 
-  it("shows workouts per week with a decimal only when not whole", async () => {
+  it("shows workouts per week over the range, with a decimal only when not whole", async () => {
+    // Two finished workouts over the eight days from Nov 4 to Nov 11.
     const first = await mount();
-    expect(screen.getByLabelText("Workouts per week: 2.5")).toBeOnTheScreen();
+    expect(screen.getByLabelText("Workouts per week: 1.8")).toBeOnTheScreen();
     expect(screen.getByLabelText("Week streak: 2")).toBeOnTheScreen();
     first.unmount();
-    await mount(undefined, undefined, [
-      { weekStart: "2026-11-02", planned: 3, done: 3 },
-      { weekStart: "2026-11-09", planned: 3, done: 3 },
-    ]);
-    expect(screen.getByLabelText("Workouts per week: 3")).toBeOnTheScreen();
+    await mount(storeWith(["2026-11-05", "2026-11-09"]), rangeOf("2026-11-05", today));
+    expect(screen.getByLabelText("Workouts per week: 2")).toBeOnTheScreen();
   });
 });

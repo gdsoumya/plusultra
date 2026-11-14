@@ -16,7 +16,7 @@ async function open(choice: Parameters<typeof RangePicker>[0]["choice"] = { days
 
 describe("RangePicker", () => {
   it("counts a preset back from today", () => {
-    expect(rangeFor({ days: 7 }, today)).toEqual(rangeOf("2026-11-04", today));
+    expect(rangeFor({ days: 7 }, today)).toEqual(rangeOf("2026-11-05", today));
     expect(rangeFor({ from: "2026-10-01", to: "2026-10-15" }, today).days).toBe(14);
   });
 

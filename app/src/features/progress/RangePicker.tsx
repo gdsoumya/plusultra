@@ -6,7 +6,7 @@ import { Button, Chip, Sheet, space } from "../../ui";
 import { DateRangeCalendar, type Span } from "./DateRangeCalendar";
 import { rangeOf, type Range } from "./shared";
 
-// A preset counts back from today; a custom range is fixed dates.
+// A preset is the last N dates, today included; a custom range is fixed dates.
 export type RangeChoice = { days: number } | { from: string; to: string };
 
 const presets = [
@@ -18,7 +18,9 @@ const presets = [
 ];
 
 export const rangeFor = (choice: RangeChoice, today: string): Range =>
-  "days" in choice ? rangeOf(addDays(today, -choice.days), today) : rangeOf(choice.from, choice.to);
+  "days" in choice
+    ? rangeOf(addDays(today, 1 - choice.days), today)
+    : rangeOf(choice.from, choice.to);
 
 const label = (choice: RangeChoice) =>
   "days" in choice
