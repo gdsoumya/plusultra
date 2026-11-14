@@ -19,10 +19,11 @@ const ready = setAudioModeAsync({
 
 // A short beep at the start and end of a work timer and the end of a rest. Audio that cannot be
 // set up (web without a user gesture, a missing native module) is dropped: the bar still shows.
-export function beep(kind: Beep) {
+export function beep(kind: Beep, volume = 1) {
   ready.then(() => {
     try {
       const player = (players[kind] ??= createAudioPlayer(sources[kind]));
+      player.volume = volume;
       player.seekTo(0);
       player.play();
     } catch {}

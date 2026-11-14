@@ -23,7 +23,8 @@
       "predictiveBackGestureEnabled": false,
       "permissions": [
         "android.permission.SCHEDULE_EXACT_ALARM",
-        "android.permission.USE_EXACT_ALARM"
+        "android.permission.USE_EXACT_ALARM",
+        "android.permission.ACCESS_NOTIFICATION_POLICY"
       ],
       "versionCode": 101
     },
@@ -41,7 +42,8 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "PlusUltra scans food barcodes with the camera."
+          "cameraPermission": "PlusUltra scans food barcodes with the camera.",
+          "recordAudioAndroid": false
         }
       ],
       [
@@ -80,7 +82,8 @@
         "expo-notifications",
         {
           "icon": "./assets/notification-icon.png",
-          "color": "#B4F23C"
+          "color": "#B4F23C",
+          "sounds": ["./assets/sounds/end.wav"]
         }
       ]
     ]

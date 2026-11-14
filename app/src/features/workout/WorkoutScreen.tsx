@@ -1,6 +1,6 @@
 import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useRef, useState } from "react";
-import { Pressable, View } from "react-native";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Pressable, Vibration, View } from "react-native";
 import { GestureDetector, usePanGesture } from "react-native-gesture-handler";
 
 import { useApi } from "../../api/useApi";
@@ -28,7 +28,8 @@ import { ExerciseCarousel } from "./ExerciseCarousel";
 import { ExercisePane } from "./ExercisePane";
 import { ExercisesSheet } from "./ExercisesSheet";
 import { SessionActions } from "./SessionActions";
-import { setTimerOnScreen } from "./notifications";
+import { useSettings } from "../../data/settings";
+import { askTimerPermission, setAlertInDnd, setTimerOnScreen } from "./notifications";
 import { beep, type Beep } from "./sounds";
 import { TimerBar } from "./TimerBar";
 import { useTimer } from "./useTimer";
@@ -80,7 +81,14 @@ export default function WorkoutScreen({ id, unit }: { id: string; unit: Unit }) 
       };
     }, []),
   );
-  const sound = (kind: Beep) => focused.current && beep(kind);
+  const [{ volume, vibrate, alertInDnd }] = useSettings();
+  useEffect(() => setAlertInDnd(alertInDnd), [alertInDnd]);
+  useEffect(askTimerPermission, []);
+  const sound = (kind: Beep) => {
+    if (!focused.current) return;
+    beep(kind, volume);
+    if (vibrate) Vibration.vibrate(kind === "end" ? [0, 300, 150, 300] : 150);
+  };
   const timer = useTimer<Timer>((t, endedAt) => {
     // The set may have been removed while its timer ran.
     const s = record?.entries[t.exercise]?.sets[t.set];
@@ -151,7 +159,7 @@ export default function WorkoutScreen({ id, unit }: { id: string; unit: Unit }) 
   };
 
   // `from` is when the timer before it ended, which is in the past if the app was away.
-  const startSet = (exercise: number, set: number, from?: number) => {
+  const startSet = (exercise: number, set: number, from?: number, beepAfter = 0) => {
     const { work, countUp, rest } = record.entries[exercise].sets[set].planned;
     const next = rest ? { seconds: rest, notice: notices.rest } : undefined;
     timer.start(
@@ -161,7 +169,8 @@ export default function WorkoutScreen({ id, unit }: { id: string; unit: Unit }) 
       from,
       next,
     );
-    sound("start");
+    if (beepAfter) setTimeout(() => sound("start"), beepAfter);
+    else sound("start");
   };
 
   // A few seconds to get into position before a set the user starts by hand; Skip starts it now.
@@ -172,10 +181,11 @@ export default function WorkoutScreen({ id, unit }: { id: string; unit: Unit }) 
 
   // Hoisted so the timer callback above may call them; hoisting loses the record narrowing.
   // auto: the next pending timed set of the exercise starts by itself.
+  // The rest's end beep is still sounding when the chained set starts; its start beep waits a beat.
   function chain(exercise: number, from?: number) {
     const sets = record!.entries[exercise].sets;
     const next = sets.findIndex((s) => !s.completed);
-    if (next >= 0 && sets[next].planned.work) startSet(exercise, next, from);
+    if (next >= 0 && sets[next].planned.work) startSet(exercise, next, from, 1000);
   }
 
   // Completing moves the active set on, so an open editor closes with it.

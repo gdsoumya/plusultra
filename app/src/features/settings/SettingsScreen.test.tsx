@@ -33,6 +33,7 @@ describe("SettingsScreen", () => {
     ["Account", "/settings/account"],
     ["Equipment and plates", "/settings/equipment"],
     ["1RMs", "/settings/maxes"],
+    ["Timers and screen", "/settings/timers"],
     ["Catalog", "/settings/catalog"],
     ["API keys", "/settings/api-keys"],
     ["Export", "/settings/export"],

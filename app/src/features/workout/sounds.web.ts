@@ -21,7 +21,7 @@ let context: AudioContext | undefined;
 
 // Browsers only allow audio after a user gesture; the first beep follows a tap on play, so the
 // context opens then. Where there is no Web Audio the bar stays silent.
-export function beep(kind: Beep) {
+export function beep(kind: Beep, volume = 1) {
   try {
     context ??= new AudioContext();
     let at = context.currentTime;
@@ -30,7 +30,7 @@ export function beep(kind: Beep) {
       const gain = context.createGain();
       osc.type = "square";
       osc.frequency.value = hz;
-      gain.gain.value = 0.6;
+      gain.gain.value = 0.6 * volume;
       osc.connect(gain).connect(context.destination);
       osc.start(at);
       osc.stop(at + seconds);

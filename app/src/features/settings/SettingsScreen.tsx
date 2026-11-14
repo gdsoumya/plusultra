@@ -15,6 +15,7 @@ const pages: { title: string; icon: IconName; href: string }[] = [
   { title: "Account", icon: "person-circle-outline", href: "/settings/account" },
   { title: "Equipment and plates", icon: "barbell-outline", href: "/settings/equipment" },
   { title: "1RMs", icon: "trophy-outline", href: "/settings/maxes" },
+  { title: "Timers and screen", icon: "timer-outline", href: "/settings/timers" },
   { title: "Catalog", icon: "list-outline", href: "/settings/catalog" },
   { title: "API keys", icon: "key-outline", href: "/settings/api-keys" },
   { title: "Export", icon: "download-outline", href: "/settings/export" },

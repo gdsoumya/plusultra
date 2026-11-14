@@ -7,7 +7,10 @@ jest.mock("expo-notifications", () => ({
   SchedulableTriggerInputTypes: { DATE: "date" },
   setNotificationHandler: jest.fn(),
   requestPermissionsAsync: jest.fn(async () => ({ granted: true })),
+  getPermissionsAsync: jest.fn(async () => ({ granted: true })),
   scheduleNotificationAsync: jest.fn(async () => "n1"),
+  setNotificationChannelAsync: jest.fn(async () => null),
+  AndroidImportance: { MAX: 5 },
   cancelScheduledNotificationAsync: jest.fn(async () => {}),
 }));
 
@@ -39,8 +42,8 @@ describe("useTimer", () => {
     await tick(5000);
     expect(onEnd).toHaveBeenCalledTimes(1);
     expect(Notifications.scheduleNotificationAsync).toHaveBeenCalledWith({
-      content: notice,
-      trigger: { type: "date", date: startedAt + 3000 },
+      content: expect.objectContaining(notice),
+      trigger: expect.objectContaining({ type: "date", date: startedAt + 3000 }),
     });
     expect(Notifications.cancelScheduledNotificationAsync).not.toHaveBeenCalled();
   });
@@ -86,8 +89,8 @@ describe("useTimer", () => {
     await act(async () => {});
     expect(Notifications.cancelScheduledNotificationAsync).toHaveBeenCalledWith("n1");
     expect(Notifications.scheduleNotificationAsync).toHaveBeenLastCalledWith({
-      content: notice,
-      trigger: { type: "date", date: startedAt + 70_000 },
+      content: expect.objectContaining(notice),
+      trigger: expect.objectContaining({ type: "date", date: startedAt + 70_000 }),
     });
     await act(() => result.current.adjust(-10));
     expect(result.current.remaining).toBe(60);
@@ -125,8 +128,8 @@ describe("useTimer", () => {
     await act(() => result.current.start("rest", 30, notice, startedAt + 10_000));
     expect(result.current).toMatchObject({ running: "rest", remaining: 14, elapsed: 16 });
     expect(Notifications.scheduleNotificationAsync).toHaveBeenCalledWith({
-      content: notice,
-      trigger: { type: "date", date: startedAt + 40_000 },
+      content: expect.objectContaining(notice),
+      trigger: expect.objectContaining({ type: "date", date: startedAt + 40_000 }),
     });
 
     // A timer whose end has already passed schedules no notification and ends on the next tick.
@@ -147,8 +150,18 @@ describe("useTimer", () => {
     scheduled.mockResolvedValueOnce("work").mockResolvedValueOnce("rest");
     await act(() => result.current.start("set", 10, notice, undefined, rest));
     expect(scheduled.mock.calls).toEqual([
-      [{ content: notice, trigger: { type: "date", date: startedAt + 10_000 } }],
-      [{ content: restNotice, trigger: { type: "date", date: startedAt + 40_000 } }],
+      [
+        {
+          content: expect.objectContaining(notice),
+          trigger: expect.objectContaining({ type: "date", date: startedAt + 10_000 }),
+        },
+      ],
+      [
+        {
+          content: expect.objectContaining(restNotice),
+          trigger: expect.objectContaining({ type: "date", date: startedAt + 40_000 }),
+        },
+      ],
     ]);
     await tick(10_000);
     expect(onEnd).toHaveBeenCalledWith("set", startedAt + 10_000);

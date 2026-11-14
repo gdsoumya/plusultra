@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react-native";
 import * as Notifications from "expo-notifications";
 import { useEffect, useState } from "react";
-import { BackHandler, Text } from "react-native";
+import { BackHandler, Text, Vibration } from "react-native";
 import { GestureHandlerRootView, State } from "react-native-gesture-handler";
 import { fireGestureHandler, getByGestureTestId } from "react-native-gesture-handler/jest-utils";
 
@@ -24,6 +24,7 @@ jest.mock("expo-notifications", () => ({
   SchedulableTriggerInputTypes: { DATE: "date" },
   setNotificationHandler: jest.fn(),
   requestPermissionsAsync: jest.fn(async () => ({ granted: true })),
+  getPermissionsAsync: jest.fn(async () => ({ granted: true })),
   scheduleNotificationAsync: jest.fn(async () => "n1"),
   cancelScheduledNotificationAsync: jest.fn(async () => {}),
 }));
@@ -41,6 +42,9 @@ jest.mock("expo-audio", () => ({
 }));
 const beeps = () => mockPlayer.play.mock.calls.length;
 jest.mock("../../api/useApi", () => ({ useApi: () => mockApi }));
+jest.mock("../../data/settings", () => ({
+  useSettings: () => [{ volume: 1, vibrate: true, alertInDnd: false }, jest.fn()],
+}));
 jest.mock("../../data/session", () => ({
   useSession: () => ({ status: "signedIn" }),
   useServerUrl: () => undefined,
@@ -669,7 +673,7 @@ describe("WorkoutScreen", () => {
     expect(screen.getByText("2:59")).toBeOnTheScreen();
     expect(Notifications.scheduleNotificationAsync).toHaveBeenCalledWith(
       expect.objectContaining({
-        trigger: { type: "date", date: startedAt + rest * 1000 },
+        trigger: expect.objectContaining({ type: "date", date: startedAt + rest * 1000 }),
       }),
     );
 
@@ -680,7 +684,9 @@ describe("WorkoutScreen", () => {
     expect(screen.getByText("2:49")).toBeOnTheScreen();
     await act(async () => {});
     expect(Notifications.scheduleNotificationAsync).toHaveBeenLastCalledWith(
-      expect.objectContaining({ trigger: { type: "date", date: startedAt + (rest - 10) * 1000 } }),
+      expect.objectContaining({
+        trigger: expect.objectContaining({ type: "date", date: startedAt + (rest - 10) * 1000 }),
+      }),
     );
 
     await fireEvent.press(screen.getByRole("button", { name: "Skip" }));
@@ -688,6 +694,11 @@ describe("WorkoutScreen", () => {
     expect(screen.queryByTestId("rest-timer")).toBeNull();
     expect(Notifications.cancelScheduledNotificationAsync).toHaveBeenCalledWith("n1");
     jest.useRealTimers();
+  });
+
+  it("asks for notification permission as the workout opens, before any timer", async () => {
+    await mount(await seed());
+    expect(Notifications.requestPermissionsAsync).toHaveBeenCalledTimes(1);
   });
 
   it("beeps when a work timer starts and ends and when the rest ends, not on a plain tick", async () => {
@@ -716,12 +727,18 @@ describe("WorkoutScreen", () => {
     await fireEvent.press(screen.getByTestId("set-1-0-done"));
     await act(async () => {});
     expect(beeps()).toBe(0);
+    const vibrate = jest.spyOn(Vibration, "vibrate").mockImplementation(() => {});
     await act(() => jest.advanceTimersByTime(5_000));
     expect(beeps()).toBe(1);
     expect(mockPlayer.seekTo).toHaveBeenCalledWith(0);
+    // Full volume and vibration by default; the Timers settings change both.
+    expect(mockPlayer).toMatchObject({ volume: 1 });
+    expect(vibrate).toHaveBeenLastCalledWith(150);
     await act(() => jest.advanceTimersByTime(20_000));
     await act(async () => {});
     expect(beeps()).toBe(2);
+    expect(vibrate).toHaveBeenLastCalledWith([0, 300, 150, 300]);
+    vibrate.mockRestore();
     expect(screen.getByTestId("rest-timer")).toBeOnTheScreen();
     await act(() => jest.advanceTimersByTime(30_000));
     await act(async () => {});
@@ -841,8 +858,8 @@ describe("WorkoutScreen", () => {
     await fireEvent.press(screen.getByRole("button", { name: "Skip" }));
     expect(within(screen.getByTestId("set-timer")).getByText("0:45")).toBeOnTheScreen();
     expect(Notifications.scheduleNotificationAsync).toHaveBeenCalledWith({
-      content: { title: "Set is over", body: "Stop and rest." },
-      trigger: { type: "date", date: startedAt + 45_000 },
+      content: expect.objectContaining({ title: "Set is over", body: "Stop and rest." }),
+      trigger: expect.objectContaining({ type: "date", date: startedAt + 45_000 }),
     });
 
     await act(() => jest.advanceTimersByTime(45_000));
@@ -850,13 +867,18 @@ describe("WorkoutScreen", () => {
     expect(screen.queryByTestId("set-timer")).toBeNull();
     expect(within(screen.getByTestId("rest-timer")).getByText("0:30")).toBeOnTheScreen();
     expect(Notifications.scheduleNotificationAsync).toHaveBeenLastCalledWith({
-      content: { title: "Rest is over", body: "Time for the next set." },
-      trigger: { type: "date", date: startedAt + 75_000 },
+      content: expect.objectContaining({ title: "Rest is over", body: "Time for the next set." }),
+      trigger: expect.objectContaining({ type: "date", date: startedAt + 75_000 }),
     });
 
+    const before = beeps();
     await act(() => jest.advanceTimersByTime(30_000));
     expect(screen.queryByTestId("rest-timer")).toBeNull();
     expect(within(screen.getByTestId("set-timer")).getByText("Set 2")).toBeOnTheScreen();
+    // The rest's end beep, then the chained set's start beep a second later, not on top of it.
+    expect(beeps()).toBe(before + 1);
+    await act(() => jest.advanceTimersByTime(1_000));
+    expect(beeps()).toBe(before + 2);
     expect(screen.getByTestId("set-1-1-done")).toHaveAccessibleName("Stop set 2");
 
     await finishTile();
@@ -897,14 +919,17 @@ describe("WorkoutScreen", () => {
     expect(jest.mocked(Notifications.scheduleNotificationAsync).mock.calls).toEqual([
       [
         {
-          content: { title: "Set is over", body: "Stop and rest." },
-          trigger: { type: "date", date: startedAt + 45_000 },
+          content: expect.objectContaining({ title: "Set is over", body: "Stop and rest." }),
+          trigger: expect.objectContaining({ type: "date", date: startedAt + 45_000 }),
         },
       ],
       [
         {
-          content: { title: "Rest is over", body: "Time for the next set." },
-          trigger: { type: "date", date: startedAt + 75_000 },
+          content: expect.objectContaining({
+            title: "Rest is over",
+            body: "Time for the next set.",
+          }),
+          trigger: expect.objectContaining({ type: "date", date: startedAt + 75_000 }),
         },
       ],
     ]);
@@ -957,8 +982,8 @@ describe("WorkoutScreen", () => {
       ["rest"],
     ]);
     expect(Notifications.scheduleNotificationAsync).toHaveBeenLastCalledWith({
-      content: { title: "Rest is over", body: "Time for the next set." },
-      trigger: { type: "date", date: stoppedAt + 30_000 },
+      content: expect.objectContaining({ title: "Rest is over", body: "Time for the next set." }),
+      trigger: expect.objectContaining({ type: "date", date: stoppedAt + 30_000 }),
     });
     jest.useRealTimers();
   });

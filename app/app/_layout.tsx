@@ -4,6 +4,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { SessionProvider, useSession } from "../src/data/session";
 import { SettingsProvider } from "../src/data/settings";
+import { useKeepAwake } from "../src/data/useKeepAwake";
 import { StoreProvider } from "../src/data/StoreProvider";
 import { SyncProvider } from "../src/data/useSync";
 import { ThemeProvider, useTheme } from "../src/ui";
@@ -29,6 +30,7 @@ export default function RootLayout() {
 function ThemedStack() {
   const { colors } = useTheme();
   const { status } = useSession();
+  useKeepAwake();
   if (status === "loading") return null;
   return (
     <>

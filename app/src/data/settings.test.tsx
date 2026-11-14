@@ -41,6 +41,10 @@ describe("SettingsProvider", () => {
     store.clearUserData();
     mockUser = { ...mockUser!, id: "user-2", displayName: "Next" };
     await rerender({});
-    expect(result.current).toEqual({ displayName: "Next", units: "lb", measurementUnit: "cm" });
+    expect(result.current).toMatchObject({
+      displayName: "Next",
+      units: "lb",
+      measurementUnit: "cm",
+    });
   });
 });

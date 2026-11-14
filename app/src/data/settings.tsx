@@ -12,6 +12,14 @@ export interface UserSettings {
   displayName: string;
   units: Unit;
   measurementUnit: MeasurementUnit;
+  /** Keep the screen on while the app is in front. */
+  keepAwake: boolean;
+  /** Vibrate with the timer beeps. */
+  vibrate: boolean;
+  /** Timer beep volume, 0 to 1. */
+  volume: number;
+  /** Timer notifications on a channel that bypasses Do Not Disturb (needs DND access). */
+  alertInDnd: boolean;
 }
 
 export const SETTINGS_KEY = "userSettings";
@@ -20,6 +28,10 @@ const fromUser = (user?: User): UserSettings => ({
   displayName: user?.displayName ?? "",
   units: user?.units === ProtoUnit.LB ? "lb" : "kg",
   measurementUnit: user?.measurementUnit === LengthUnit.IN ? "in" : "cm",
+  keepAwake: false,
+  vibrate: true,
+  volume: 1,
+  alertInDnd: false,
 });
 
 type Settings = [UserSettings, (patch: Partial<UserSettings>) => void];
@@ -37,7 +49,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   if (state.userId !== user?.id) setState(read());
 
   const value = useMemo<Settings>(() => {
-    const settings = state.stored ?? fromUser(user);
+    // Stored values win; a setting added since the store was written takes its default.
+    const settings = { ...fromUser(user), ...state.stored };
     return [
       settings,
       (patch) => {
