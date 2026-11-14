@@ -32,7 +32,7 @@ const gap = (value: number, goal: number, unit: string) => {
 
 // Every macro eaten against its target in full, with how far off each is, for a meal or the day.
 export function MacroSheet({ open, title, totals, target, onTarget, onClose }: Props) {
-  const rows = shown.filter(({ key }) => totals[key] || target?.[key]);
+  const rows = shown.filter(({ key }) => Math.round(totals[key]) || Math.round(target?.[key] ?? 0));
   return (
     <Sheet open={open} onClose={onClose} title={title} snapPoints={[0.6, 0.9]} testID="macro-sheet">
       {onTarget !== undefined && (
@@ -52,7 +52,7 @@ export function MacroSheet({ open, title, totals, target, onTarget, onClose }: P
         <ListCard>
           {rows.map(({ key, label, unit }) => {
             const value = Math.round(totals[key]);
-            const goal = target?.[key] ? Math.round(target[key]) : undefined;
+            const goal = target && Math.round(target[key]) ? Math.round(target[key]) : undefined;
             return (
               <ListRow
                 key={key}

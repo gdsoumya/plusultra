@@ -34,6 +34,14 @@ describe("MacroSheet", () => {
     expect(screen.queryByText("Fiber")).toBeNull();
   });
 
+  it("drops a macro whose amount and target both round to zero", async () => {
+    const totals = { ...macros(800, 40), waterMl: 0.2 };
+    await renderThemed(
+      <MacroSheet open title="Lunch" totals={totals} target={totals} onClose={jest.fn()} />,
+    );
+    expect(screen.queryByText("Water")).toBeNull();
+  });
+
   it("says so when nothing has macros", async () => {
     const zero = { kcal: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, waterMl: 0 };
     await renderThemed(

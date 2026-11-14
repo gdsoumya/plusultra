@@ -138,6 +138,16 @@ describe("SetRow", () => {
     expect(screen.getByLabelText("Reps 2")).toBeOnTheScreen();
   });
 
+  it("edits a hold's time in seconds instead of its reps", async () => {
+    const onChange = jest.fn();
+    await row(set({ work: 60, reps: 1 }), false, { editing: true, onChange });
+    expect(screen.queryByLabelText("Reps")).toBeNull();
+    await fireEvent.press(screen.getByLabelText("Time plus"));
+    expect(onChange).toHaveBeenLastCalledWith({ workTime: 65 });
+    await fireEvent.changeText(screen.getByLabelText("Time (s)"), "45");
+    expect(onChange).toHaveBeenLastCalledWith({ workTime: 45 });
+  });
+
   it("shows the logged time of a done timed set", async () => {
     await row(set({ work: 60, reps: 1 }, { completed: true, reps: 1, workTime: 50 }));
     expect(screen.getByTestId("set-0-0-reps")).toHaveTextContent(/^0:50$/);

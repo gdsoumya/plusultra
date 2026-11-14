@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Pressable, View } from "react-native";
 
+import { isHold } from "../../domain/sets";
 import type { SetEntry, Unit } from "../../domain/types";
 import { inUnit, toKg } from "../../domain/units";
 import { Field, Icon, minTouch, pressedOpacity, space } from "../../ui";
 import { shown } from "./workoutEdits";
 
-export type Values = Partial<Pick<SetEntry, "reps" | "repsLeft" | "weight" | "rpe">>;
+export type Values = Partial<Pick<SetEntry, "reps" | "repsLeft" | "weight" | "rpe" | "workTime">>;
 
 // shortcut: one plate step for every exercise, swap in the exercise's rounding once exercise data
 // is cached in the store.
@@ -97,13 +98,23 @@ export function SetEditor({
           onChange={(repsLeft) => onChange({ repsLeft })}
         />
       )}
-      <Stepper
-        label={reps}
-        name={reps}
-        value={current.reps}
-        step={1}
-        onChange={(reps) => onChange({ reps })}
-      />
+      {isHold({ ...set.planned, reps: current.reps }) ? (
+        <Stepper
+          label="Time (s)"
+          name="Time"
+          value={set.workTime ?? set.planned.work}
+          step={5}
+          onChange={(workTime) => onChange({ workTime })}
+        />
+      ) : (
+        <Stepper
+          label={reps}
+          name={reps}
+          value={current.reps}
+          step={1}
+          onChange={(reps) => onChange({ reps })}
+        />
+      )}
       <Stepper
         label={`Weight (${unit})`}
         name="Weight"

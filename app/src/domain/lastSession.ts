@@ -7,7 +7,7 @@ export type LastSession = {
   date: string;
   // Completed work sets; empty when the session comes from the server's history.
   sets: SetEntry[];
-  best: { weight: Weight; reps: number };
+  best: Lifted;
   e1rm?: Weight;
   // Set when the record is in the local store.
   recordId?: string;
@@ -16,11 +16,16 @@ export type LastSession = {
 // Epley estimate of the one-rep max, in kilograms.
 const epley = (s: SetEntry) => toKg(s.weight.value, s.weight.unit) * (1 + s.reps / 30);
 
+// Ties (holds, bodyweight sets) go to the longer hold, then the more reps.
 export function bestSet(sets: SetEntry[]) {
-  const best = sets.reduce((b, s) =>
-    epley(s) > epley(b) || (epley(s) === epley(b) && s.reps > b.reps) ? s : b,
-  );
-  return { weight: best.weight, reps: best.reps, e1rm: round1(epley(best)) };
+  const better = (s: SetEntry, b: SetEntry) =>
+    epley(s) !== epley(b)
+      ? epley(s) > epley(b)
+      : (s.workTime ?? 0) !== (b.workTime ?? 0)
+        ? (s.workTime ?? 0) > (b.workTime ?? 0)
+        : s.reps > b.reps;
+  const best = sets.reduce((b, s) => (better(s, b) ? s : b));
+  return { ...best, e1rm: round1(epley(best)) };
 }
 
 const same = (entry: ExerciseEntry, e: ExerciseEntry) =>
@@ -53,18 +58,20 @@ export function findLastSession(
   return undefined;
 }
 
-type Lifted = Pick<SetEntry, "reps" | "repsLeft" | "weight">;
+export type Lifted = Pick<SetEntry, "reps" | "repsLeft" | "weight"> &
+  Partial<Pick<SetEntry, "planned" | "workTime">>;
 
 const reps = (s: Lifted, unilateral: boolean, sep: string) =>
   unilateral ? `L${sep}${s.repsLeft ?? 0} R${sep}${s.reps}` : `${s.reps}`;
+const holdTime = (s: Lifted) =>
+  s.planned && isHold(s.planned) ? clock(s.workTime ?? s.planned.work) : undefined;
 
 // "80 kg x 5", "12 reps", or "20 kg x L 7 R 8" for a unilateral set.
+// "80 kg x 5", "L 8 R 8", "5 reps"; a hold is its time, "0:45" or "10 kg x 0:45".
 export const setLine = (s: Lifted, unit: Unit, unilateral = false) =>
   s.weight.value
-    ? `${formatWeight(s.weight, unit)} x ${reps(s, unilateral, " ")}`
-    : unilateral
-      ? reps(s, unilateral, " ")
-      : `${s.reps} reps`;
+    ? `${formatWeight(s.weight, unit)} x ${holdTime(s) ?? reps(s, unilateral, " ")}`
+    : (holdTime(s) ?? (unilateral ? reps(s, unilateral, " ") : `${s.reps} reps`));
 
 // "2x5 80 kg · 1x5 65 kg", like setsSummary for the plan.
 // A hold is its time ("0:45"), any other set its reps.

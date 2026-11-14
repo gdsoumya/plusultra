@@ -68,7 +68,7 @@ describe("findLastSession", () => {
     const last = findLastSession([older, latest, pending, other, self, future], squat, current);
     expect(last).toMatchObject({ date: "2026-11-09", recordId: "r2" });
     expect(last?.sets).toHaveLength(2);
-    expect(last?.best).toEqual({ weight: { value: 80, unit: "kg" }, reps: 5 });
+    expect(last?.best).toMatchObject({ weight: { value: 80, unit: "kg" }, reps: 5 });
     expect(last?.e1rm).toEqual({ value: 93.3, unit: "kg" });
   });
 
@@ -87,6 +87,16 @@ describe("bestSet", () => {
   it("prefers the highest estimated 1RM, then the most reps for bodyweight work", () => {
     expect(bestSet([done(5, 80), done(8, 75), done(3, 85)])).toMatchObject({ reps: 8 });
     expect(bestSet([done(10, 0), done(12, 0)])).toMatchObject({ reps: 12, e1rm: 0 });
+  });
+
+  it("prefers the longer hold when nothing was lifted", () => {
+    const hold = (workTime: number) =>
+      done(1, 0, { planned: { ...sets(1, 1, 0)[0], work: 60 }, workTime });
+    expect(bestSet([hold(45), hold(60), hold(50)])).toMatchObject({ workTime: 60 });
+    expect(setLine(bestSet([hold(45), hold(60)]), "kg")).toBe("1:00");
+    expect(
+      setLine(done(1, 10, { planned: { ...sets(1, 1, 10)[0], work: 60 }, workTime: 45 }), "kg"),
+    ).toBe("10 kg x 0:45");
   });
 });
 

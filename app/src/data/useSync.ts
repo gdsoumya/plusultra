@@ -55,6 +55,7 @@ export function SyncProvider({
   return createElement(Runner, null, children);
 }
 
+const LAST_SYNCED_KEY = "sync.lastSyncedAt";
 const pending = (store: Store) => syncTables.reduce((n, t) => n + store.listDirty(t).length, 0);
 
 // Syncs on start, on foreground, two seconds after a local write and on request, retrying with
@@ -65,6 +66,7 @@ function Runner({ children }: { children: ReactNode }) {
   const userId = useSession().user?.id;
   const [state, setState] = useState<Omit<SyncStatus, "syncNow">>(() => ({
     status: "idle",
+    lastSyncedAt: store.getKv<string>(LAST_SYNCED_KEY),
     pendingCount: pending(store),
     reasons: {},
   }));
@@ -87,7 +89,9 @@ function Runner({ children }: { children: ReactNode }) {
       try {
         const { reasons, pushed } = await syncOnce(api, store, { userId });
         failures = 0;
-        update({ status: "idle", lastSyncedAt: new Date().toISOString(), reasons });
+        const lastSyncedAt = new Date().toISOString();
+        store.setKv(LAST_SYNCED_KEY, lastSyncedAt);
+        update({ status: "idle", lastSyncedAt, reasons });
         // Rows still waiting already have a debounced run that will do the same.
         if (pushed > 0 && pending(store) === 0) schedule(SERVER_PULL_LAG_MS);
       } catch (e) {

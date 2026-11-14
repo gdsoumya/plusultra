@@ -86,6 +86,17 @@ describe("SyncProvider", () => {
     expect(store.list("workoutRecords")).toHaveLength(21);
   });
 
+  it("remembers the last sync time across a relaunch", async () => {
+    store.setKv("sync.lastSyncedAt", "2026-11-10T08:00:00.000Z");
+    mock = createMockTransport({ today, latencyMs: 50 });
+    mockApi = createClients(mock.transport);
+    await mount();
+    expect(text("synced")).toBe("2026-11-10T08:00:00.000Z");
+    await settle(syncMs);
+    expect(store.getKv("sync.lastSyncedAt")).toBe(text("synced"));
+    expect(text("synced")).not.toBe("2026-11-10T08:00:00.000Z");
+  });
+
   it("pushes two seconds after a local write", async () => {
     await mount();
     await act(async () => {
