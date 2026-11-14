@@ -23,6 +23,7 @@ const (
 	InsightService_LiftHistory_FullMethodName   = "/plusultra.v1.InsightService/LiftHistory"
 	InsightService_WeightTrend_FullMethodName   = "/plusultra.v1.InsightService/WeightTrend"
 	InsightService_Adherence_FullMethodName     = "/plusultra.v1.InsightService/Adherence"
+	InsightService_WeeklyTrend_FullMethodName   = "/plusultra.v1.InsightService/WeeklyTrend"
 )
 
 // InsightServiceClient is the client API for InsightService service.
@@ -39,6 +40,8 @@ type InsightServiceClient interface {
 	WeightTrend(ctx context.Context, in *WeightTrendRequest, opts ...grpc.CallOption) (*WeightTrendResponse, error)
 	// Adherence counts planned, done, partial and skipped days in a date range.
 	Adherence(ctx context.Context, in *AdherenceRequest, opts ...grpc.CallOption) (*AdherenceResponse, error)
+	// WeeklyTrend summarises every week that touches a date range, oldest first: adherence, sets per muscle group and region, macros and body weight. Estimated 1RMs are left out.
+	WeeklyTrend(ctx context.Context, in *WeeklyTrendRequest, opts ...grpc.CallOption) (*WeeklyTrendResponse, error)
 }
 
 type insightServiceClient struct {
@@ -89,6 +92,16 @@ func (c *insightServiceClient) Adherence(ctx context.Context, in *AdherenceReque
 	return out, nil
 }
 
+func (c *insightServiceClient) WeeklyTrend(ctx context.Context, in *WeeklyTrendRequest, opts ...grpc.CallOption) (*WeeklyTrendResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(WeeklyTrendResponse)
+	err := c.cc.Invoke(ctx, InsightService_WeeklyTrend_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // InsightServiceServer is the server API for InsightService service.
 // All implementations must embed UnimplementedInsightServiceServer
 // for forward compatibility.
@@ -103,6 +116,8 @@ type InsightServiceServer interface {
 	WeightTrend(context.Context, *WeightTrendRequest) (*WeightTrendResponse, error)
 	// Adherence counts planned, done, partial and skipped days in a date range.
 	Adherence(context.Context, *AdherenceRequest) (*AdherenceResponse, error)
+	// WeeklyTrend summarises every week that touches a date range, oldest first: adherence, sets per muscle group and region, macros and body weight. Estimated 1RMs are left out.
+	WeeklyTrend(context.Context, *WeeklyTrendRequest) (*WeeklyTrendResponse, error)
 	mustEmbedUnimplementedInsightServiceServer()
 }
 
@@ -124,6 +139,9 @@ func (UnimplementedInsightServiceServer) WeightTrend(context.Context, *WeightTre
 }
 func (UnimplementedInsightServiceServer) Adherence(context.Context, *AdherenceRequest) (*AdherenceResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Adherence not implemented")
+}
+func (UnimplementedInsightServiceServer) WeeklyTrend(context.Context, *WeeklyTrendRequest) (*WeeklyTrendResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method WeeklyTrend not implemented")
 }
 func (UnimplementedInsightServiceServer) mustEmbedUnimplementedInsightServiceServer() {}
 func (UnimplementedInsightServiceServer) testEmbeddedByValue()                        {}
@@ -218,6 +236,24 @@ func _InsightService_Adherence_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _InsightService_WeeklyTrend_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(WeeklyTrendRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InsightServiceServer).WeeklyTrend(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: InsightService_WeeklyTrend_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InsightServiceServer).WeeklyTrend(ctx, req.(*WeeklyTrendRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // InsightService_ServiceDesc is the grpc.ServiceDesc for InsightService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -240,6 +276,10 @@ var InsightService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Adherence",
 			Handler:    _InsightService_Adherence_Handler,
+		},
+		{
+			MethodName: "WeeklyTrend",
+			Handler:    _InsightService_WeeklyTrend_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

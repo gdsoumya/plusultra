@@ -56,13 +56,15 @@ func (f *fixture) exercise(slug string, muscles ...string) {
 	must(f.t, err)
 }
 
-func (f *fixture) record(date string, finalized bool, entries ...model.RecordEntry) {
+func (f *fixture) record(date string, finalized bool, entries ...model.RecordEntry) uuid.UUID {
 	b, err := json.Marshal(entries)
 	must(f.t, err)
+	id := uuid.New()
 	_, err = f.q.UpsertWorkoutRecord(f.ctx, sqlc.UpsertWorkoutRecordParams{
-		ID: uuid.New(), UserID: f.user, Date: day(date), ResolvedDay: []byte(`{}`), Entries: b, Finalized: finalized,
+		ID: id, UserID: f.user, Date: day(date), ResolvedDay: []byte(`{}`), Entries: b, Finalized: finalized,
 	})
 	must(f.t, err)
+	return id
 }
 
 func (f *fixture) dayLog(date, status string) {
@@ -129,7 +131,8 @@ func TestE1RMEpley(t *testing.T) {
 	warm.Warmup = true
 	undone := set(5, 300, model.UnitKg)
 	undone.Completed = false
-	f.record("2026-11-03", true, entry("bench-press", set(5, 100, model.UnitKg), set(3, 110, model.UnitKg), warm, undone))
+	first := f.record("2026-11-03", true, entry("bench-press", set(5, 100, model.UnitKg), set(3, 110, model.UnitKg), warm, undone))
+	f.record("2026-11-03", true, entry("bench-press", set(8, 60, model.UnitKg), set(10, 0, model.UnitKg))) // same day, weaker: adds sets and volume only
 	f.record("2026-11-05", true, entry("bench-press", set(5, 225, model.UnitLb)))
 
 	s, err := f.svc.WeeklySummary(f.ctx, f.user, day("2026-11-02"), day("2026-12-01"))
@@ -146,8 +149,16 @@ func TestE1RMEpley(t *testing.T) {
 		t.Fatalf("points = %d, want 2", len(h))
 	}
 	near(t, "day1 e1rm", h[0].E1RM.Value, 121)
-	if h[0].BestSet.Reps != 3 || h[0].BestSet.Weight.Value != 110 {
-		t.Errorf("best set = %+v", h[0].BestSet)
+	if h[0].BestSet.Reps != 3 || h[0].BestSet.Weight.Value != 110 || h[0].RecordID != first {
+		t.Errorf("best set = %+v from %s, want 110x3 from %s", h[0].BestSet, h[0].RecordID, first)
+	}
+	// 100x5 + 110x3 + 60x8 + bodyweight 0x10 over two records; the warmup and the undone set are out.
+	if h[0].Sets != 4 {
+		t.Errorf("day1 sets = %d, want 4", h[0].Sets)
+	}
+	near(t, "day1 volume", h[0].Volume.Value, 500+330+480)
+	if h[0].Volume.Unit != model.UnitKg {
+		t.Errorf("volume unit = %q, want kg", h[0].Volume.Unit)
 	}
 	near(t, "day2 e1rm", h[1].E1RM.Value, 225*0.45359237*(1+5.0/30))
 	near(t, "day2 best weight", h[1].BestSet.Weight.Value, 225*0.45359237)
@@ -296,6 +307,46 @@ func TestWeeklyMacrosAndWeight(t *testing.T) {
 	near(t, "start", s.Weight.Start.Value, 81)
 	near(t, "end", s.Weight.End.Value, 79)
 	near(t, "avg7", s.Weight.Avg7.Value, 80) // Oct 30 is outside the 7 days ending Nov 8
+}
+
+// WeeklyTrend returns one summary per Monday-start week from the week of from to the week of to, without e1rm.
+func TestWeeklyTrendBuckets(t *testing.T) {
+	f := newFixture(t)
+	f.exercise("squat", "quads")
+	f.planned("2026-11-03", "2026-11-11")
+	f.dayLog("2026-11-03", "done")
+	f.record("2026-11-03", true, entry("squat", set(5, 100, model.UnitKg), set(5, 100, model.UnitKg)))
+	f.record("2026-11-11", true, entry("squat", set(5, 100, model.UnitKg)))
+	f.weigh("2026-11-17", 80)
+
+	// Wednesday Nov 4 to Monday Nov 16 touches the weeks of Nov 2, Nov 9 and Nov 16.
+	weeks, err := f.svc.WeeklyTrend(f.ctx, f.user, day("2026-11-04"), day("2026-11-16"), day("2026-12-01"))
+	must(t, err)
+	if len(weeks) != 3 {
+		t.Fatalf("weeks = %d, want 3", len(weeks))
+	}
+	for i, want := range []string{"2026-11-02", "2026-11-09", "2026-11-16"} {
+		if got := weeks[i].WeekStart.Format(time.DateOnly); got != want {
+			t.Errorf("week %d starts %s, want %s", i, got, want)
+		}
+		if len(weeks[i].E1RM) != 0 {
+			t.Errorf("week %d e1rm = %v, want none", i, weeks[i].E1RM)
+		}
+	}
+	if weeks[0].Adherence.Done != 1 || weeks[0].SetsPerMuscle["quadriceps"] != 2 {
+		t.Errorf("week 0 = %+v", weeks[0])
+	}
+	if weeks[1].Adherence.Skipped != 1 || weeks[1].SetsPerMuscle["quadriceps"] != 1 {
+		t.Errorf("week 1 = %+v", weeks[1])
+	}
+	if len(weeks[2].SetsPerMuscle) != 0 || weeks[2].Weight.End == nil || weeks[2].Weight.End.Value != 80 {
+		t.Errorf("week 2 = %+v", weeks[2])
+	}
+
+	_, err = f.svc.WeeklyTrend(f.ctx, f.user, day("2024-01-01"), day("2026-11-16"), day("2026-12-01"))
+	if !errors.Is(err, ErrInvalid) {
+		t.Errorf("three-year trend err = %v, want ErrInvalid", err)
+	}
 }
 
 func TestWeeklySummaryNeedsMonday(t *testing.T) {

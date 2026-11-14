@@ -26,6 +26,7 @@ type WeightSummary struct{ Start, End, Avg7 *model.Weight }
 
 // Summary is one week of training, nutrition and body weight.
 type Summary struct {
+	WeekStart time.Time
 	Adherence Counts
 	// SetsPerMuscle counts each completed working set once for every primary
 	// muscle group of its exercise, so a set can count under several groups; a
@@ -45,13 +46,49 @@ func (s *Service) WeeklySummary(ctx context.Context, userID uuid.UUID, weekStart
 	if weekStart.Weekday() != time.Monday {
 		return Summary{}, fmt.Errorf("%w: week start %s is not a Monday", ErrInvalid, weekStart.Format(time.DateOnly))
 	}
+	muscles, err := s.muscleIndex(ctx, userID)
+	if err != nil {
+		return Summary{}, err
+	}
+	return s.week(ctx, userID, weekStart, today, muscles)
+}
+
+// maxTrendSpan bounds a WeeklyTrend range so a request cannot fan out into
+// thousands of per-week queries.
+const maxTrendSpan = 2 // years
+
+// WeeklyTrend summarises every Monday-start week from the week of from to the
+// week of to, oldest first, with E1RM left empty. Ranges longer than two years
+// fail with ErrInvalid.
+func (s *Service) WeeklyTrend(ctx context.Context, userID uuid.UUID, from, to, today time.Time) ([]Summary, error) {
+	if to.After(from.AddDate(maxTrendSpan, 0, 0)) {
+		return nil, fmt.Errorf("%w: weekly trend range longer than %d years", ErrInvalid, maxTrendSpan)
+	}
+	muscles, err := s.muscleIndex(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	// shortcut: one round of queries per week, fine for the two-year cap; bucket a single range query when it gets slow.
+	var out []Summary
+	for w := from.AddDate(0, 0, -int((from.Weekday()+6)%7)); !w.After(to); w = w.AddDate(0, 0, 7) {
+		sum, err := s.week(ctx, userID, w, today, muscles)
+		if err != nil {
+			return nil, err
+		}
+		sum.E1RM = nil
+		out = append(out, sum)
+	}
+	return out, nil
+}
+
+func (s *Service) week(ctx context.Context, userID uuid.UUID, weekStart, today time.Time, muscles map[string][]string) (Summary, error) {
 	end := weekStart.AddDate(0, 0, 6)
-	sum := Summary{SetsPerMuscle: map[string]int{}, SetsPerRegion: map[string]int{}, E1RM: map[string]model.Weight{}}
+	sum := Summary{WeekStart: weekStart, SetsPerMuscle: map[string]int{}, SetsPerRegion: map[string]int{}, E1RM: map[string]model.Weight{}}
 	var err error
 	if sum.Adherence, err = s.workoutCounts(ctx, userID, weekStart, end, today); err != nil {
 		return sum, err
 	}
-	if err = s.trainingStats(ctx, userID, weekStart, end, &sum); err != nil {
+	if err = s.trainingStats(ctx, userID, weekStart, end, muscles, &sum); err != nil {
 		return sum, err
 	}
 	days, err := s.mealDays(ctx, userID, weekStart, end)
@@ -79,17 +116,14 @@ func (s *Service) WeeklySummary(ctx context.Context, userID uuid.UUID, weekStart
 	return sum, err
 }
 
-func (s *Service) trainingStats(ctx context.Context, userID uuid.UUID, from, to time.Time, sum *Summary) error {
-	recs, err := s.records(ctx, userID, from, to)
-	if err != nil {
-		return err
-	}
+// muscleIndex maps the primary muscles of every exercise the user can see,
+// keyed by slug and by lowercased name and alias: records written before a
+// name resolved, or by a client that sent no slug, still count (R80).
+func (s *Service) muscleIndex(ctx context.Context, userID uuid.UUID) (map[string][]string, error) {
 	exs, err := s.q.ListExercises(ctx, &userID)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	// Keyed by slug and by lowercased name and alias: records written before a
-	// name resolved, or by a client that sent no slug, still count (R80).
 	muscles := make(map[string][]string, len(exs))
 	for _, e := range exs {
 		muscles[e.Slug], muscles[strings.ToLower(e.Name)] = e.PrimaryMuscles, e.PrimaryMuscles
@@ -98,6 +132,14 @@ func (s *Service) trainingStats(ctx context.Context, userID uuid.UUID, from, to 
 				muscles[a] = e.PrimaryMuscles
 			}
 		}
+	}
+	return muscles, nil
+}
+
+func (s *Service) trainingStats(ctx context.Context, userID uuid.UUID, from, to time.Time, muscles map[string][]string, sum *Summary) error {
+	recs, err := s.records(ctx, userID, from, to)
+	if err != nil {
+		return err
 	}
 	for _, r := range recs {
 		for _, e := range r.entries {

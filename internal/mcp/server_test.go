@@ -152,8 +152,8 @@ func TestToolsListContainsExpected(t *testing.T) {
 		}
 		names = append(names, tool.Name)
 	}
-	if len(names) != 62 {
-		t.Errorf("%d tools, want 62: %v", len(names), names)
+	if len(names) != 63 {
+		t.Errorf("%d tools, want 63: %v", len(names), names)
 	}
 	for _, want := range []string{"program_create", "reference_get_program_language", "auth_update_me"} {
 		if !slices.Contains(names, want) {

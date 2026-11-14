@@ -48,8 +48,9 @@ func TestInsightsOverAPI(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	recordID := uuid.New()
 	if _, err := q.UpsertWorkoutRecord(ctx, sqlc.UpsertWorkoutRecordParams{
-		ID: uuid.New(), UserID: userID, Date: date("2026-11-10"), ResolvedDay: []byte(`{}`), Entries: entries, Finalized: true,
+		ID: recordID, UserID: userID, Date: date("2026-11-10"), ResolvedDay: []byte(`{}`), Entries: entries, Finalized: true,
 	}); err != nil {
 		t.Fatal(err)
 	}
@@ -78,7 +79,8 @@ func TestInsightsOverAPI(t *testing.T) {
 	if hist.GetSlug() != "bench-press-barbell" || hist.GetName() != "Bench Press, Barbell" || len(hist.GetPoints()) != 1 {
 		t.Fatalf("lift history = %v", hist)
 	}
-	if p := hist.GetPoints()[0]; p.GetDate() != "2026-11-10" || p.GetBestReps() != 5 || !lb(p.GetBestWeight(), 100) || !lb(p.GetE1Rm(), e1rm) {
+	if p := hist.GetPoints()[0]; p.GetDate() != "2026-11-10" || p.GetBestReps() != 5 || !lb(p.GetBestWeight(), 100) || !lb(p.GetE1Rm(), e1rm) ||
+		p.GetSets() != 1 || !lb(p.GetVolume(), 500) || p.GetRecordId() != recordID.String() {
 		t.Fatalf("lift point = %v", p)
 	}
 	before := call(c.LiftHistory(ctx, as(tok, &pb.LiftHistoryRequest{Slug: "bench-press-barbell", Dates: &pb.DateRange{From: "2026-11-01", To: "2026-11-09"}}))).ok(t)
@@ -98,6 +100,20 @@ func TestInsightsOverAPI(t *testing.T) {
 	if adh.GetCounts().GetPlanned() != 1 || adh.GetCounts().GetDone() != 1 || adh.GetCounts().GetSkipped() != 0 {
 		t.Fatalf("adherence = %v", adh)
 	}
+
+	// Tuesday Nov 3 to Tuesday Nov 10 touches the weeks of Nov 2 and Nov 9; only the second has data.
+	trendWeeks := call(c.WeeklyTrend(ctx, as(tok, &pb.WeeklyTrendRequest{Dates: &pb.DateRange{From: "2026-11-03", To: "2026-11-10"}}))).ok(t).GetWeeks()
+	if len(trendWeeks) != 2 || trendWeeks[0].GetWeekStart() != "2026-11-02" || trendWeeks[0].GetAdherence().GetPlanned() != 0 || trendWeeks[0].GetWeight().GetEnd() != nil {
+		t.Fatalf("weekly trend = %v", trendWeeks)
+	}
+	if w := trendWeeks[1]; w.GetWeekStart() != "2026-11-09" || w.GetAdherence().GetDone() != 1 || w.GetSetsPerMuscle()["chest"] != 1 || len(w.GetE1Rm()) != 0 ||
+		w.GetMacros().GetActual().GetKcal() != 380 || !lb(w.GetWeight().GetEnd(), 81) {
+		t.Fatalf("weekly trend week = %v", w)
+	}
+	_, err = c.WeeklyTrend(ctx, as(tok, &pb.WeeklyTrendRequest{}))
+	assertCode(t, err, connect.CodeInvalidArgument)
+	_, err = c.WeeklyTrend(ctx, as(tok, &pb.WeeklyTrendRequest{Dates: &pb.DateRange{From: "2020-01-01", To: "2026-11-10"}}))
+	assertCode(t, err, connect.CodeInvalidArgument)
 
 	bob := e.invitee(t, tok, "bob").GetToken()
 	other := call(c.WeeklySummary(ctx, as(bob, &pb.WeeklySummaryRequest{WeekStart: "2026-11-09"}))).ok(t)

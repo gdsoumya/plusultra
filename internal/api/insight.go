@@ -88,8 +88,21 @@ func (s *insightServer) WeeklySummary(ctx context.Context, req *connect.Request[
 	if err != nil {
 		return nil, err
 	}
+	res := weeklyPB(sum, unit)
+	for _, slug := range slices.Sorted(maps.Keys(sum.E1RM)) {
+		name, err := s.exerciseName(ctx, userID, slug)
+		if err != nil {
+			return nil, err
+		}
+		res.E1Rm = append(res.E1Rm, &pb.LiftEstimate{Slug: slug, Name: name, E1Rm: weightIn(sum.E1RM[slug], unit)})
+	}
+	return connect.NewResponse(res), nil
+}
+
+// weeklyPB maps a week without its e1rm, which needs a catalog lookup per exercise.
+func weeklyPB(sum insights.Summary, unit model.Unit) *pb.WeeklySummaryResponse {
 	res := &pb.WeeklySummaryResponse{
-		WeekStart: req.Msg.GetWeekStart(), Adherence: countsPB(sum.Adherence), SetsPerMuscle: make(map[string]int32, len(sum.SetsPerMuscle)), SetsPerRegion: make(map[string]int32, len(sum.SetsPerRegion)),
+		WeekStart: dateString(&sum.WeekStart), Adherence: countsPB(sum.Adherence), SetsPerMuscle: make(map[string]int32, len(sum.SetsPerMuscle)), SetsPerRegion: make(map[string]int32, len(sum.SetsPerRegion)),
 		Macros: &pb.MacroSummary{Target: macrosPB(sum.Macros.TargetAvg), Actual: macrosPB(sum.Macros.ActualAvg)},
 		Weight: &pb.WeightSummary{Start: optWeightIn(sum.Weight.Start, unit), End: optWeightIn(sum.Weight.End, unit), Average: optWeightIn(sum.Weight.Avg7, unit)},
 	}
@@ -99,12 +112,25 @@ func (s *insightServer) WeeklySummary(ctx context.Context, req *connect.Request[
 	for m, n := range sum.SetsPerRegion {
 		res.SetsPerRegion[m] = i32(n)
 	}
-	for _, slug := range slices.Sorted(maps.Keys(sum.E1RM)) {
-		name, err := s.exerciseName(ctx, userID, slug)
-		if err != nil {
-			return nil, err
-		}
-		res.E1Rm = append(res.E1Rm, &pb.LiftEstimate{Slug: slug, Name: name, E1Rm: weightIn(sum.E1RM[slug], unit)})
+	return res
+}
+
+func (s *insightServer) WeeklyTrend(ctx context.Context, req *connect.Request[pb.WeeklyTrendRequest]) (*connect.Response[pb.WeeklyTrendResponse], error) {
+	userID, today, unit, err := s.user(ctx)
+	if err != nil {
+		return nil, err
+	}
+	from, to, err := rangeOf(req.Msg.GetDates())
+	if err != nil {
+		return nil, err
+	}
+	weeks, err := s.insights.WeeklyTrend(ctx, userID, from, to, today)
+	if err != nil {
+		return nil, err
+	}
+	res := &pb.WeeklyTrendResponse{Weeks: make([]*pb.WeeklySummaryResponse, 0, len(weeks))}
+	for _, w := range weeks {
+		res.Weeks = append(res.Weeks, weeklyPB(w, unit))
 	}
 	return connect.NewResponse(res), nil
 }
@@ -130,7 +156,8 @@ func (s *insightServer) LiftHistory(ctx context.Context, req *connect.Request[pb
 	res := &pb.LiftHistoryResponse{Slug: m.GetSlug(), Name: name}
 	for _, p := range pts {
 		res.Points = append(res.Points, &pb.LiftPoint{Date: dateString(&p.Date), E1Rm: weightIn(p.E1RM, unit),
-			BestWeight: weightIn(p.BestSet.Weight, unit), BestReps: i32(p.BestSet.Reps)})
+			BestWeight: weightIn(p.BestSet.Weight, unit), BestReps: i32(p.BestSet.Reps),
+			Volume: weightIn(p.Volume, unit), Sets: i32(p.Sets), RecordId: p.RecordID.String()})
 	}
 	return connect.NewResponse(res), nil
 }

@@ -5,7 +5,7 @@ import type { ExerciseEntry } from "../../domain/types";
 import { InsightService } from "../../gen/plusultra/v1/insight_pb";
 import { toProto } from "../convert";
 import { kg } from "../fixtures/build";
-import { addDays, datesIn, daysBetween } from "../fixtures/dates";
+import { addDays, datesIn, daysBetween, mondayOf } from "../fixtures/dates";
 import { average } from "../fixtures/macros";
 import { inDates, live, notFound, onDate, required, type MockDb, type Range } from "./db";
 import { workoutPlan } from "./plans";
@@ -45,65 +45,90 @@ export function insights(db: MockDb): ServiceImpl<typeof InsightService> {
     return counts;
   }
 
-  return {
-    weeklySummary({ weekStart }) {
-      const dates = { from: weekStart, to: addDays(weekStart, 6) };
-      const setsPerMuscle: Record<string, number> = {};
-      const setsPerRegion: Record<string, number> = {};
-      const best = new Map<string, number>();
-      for (const record of inDates(db, "workoutRecords", dates)) {
-        for (const entry of record.entries) {
-          const muscles = db.exercises.find((e) => e.name === entry.name)?.primaryMuscles ?? [];
-          const working = entry.sets.filter((s) => s.completed && !s.planned.warmup).length;
-          for (const g of new Set(muscles.map(groupOf))) {
-            setsPerMuscle[g] = (setsPerMuscle[g] ?? 0) + working;
-          }
-          for (const m of muscles.filter((m) => groupOf(m) !== m)) {
-            setsPerRegion[m] = (setsPerRegion[m] ?? 0) + working;
-          }
-          const top = bestSet(entry);
-          if (top && top.e1rm > (best.get(entry.name) ?? 0)) best.set(entry.name, top.e1rm);
+  function weeklySummary(weekStart: string) {
+    const dates = { from: weekStart, to: addDays(weekStart, 6) };
+    const setsPerMuscle: Record<string, number> = {};
+    const setsPerRegion: Record<string, number> = {};
+    const best = new Map<string, number>();
+    for (const record of inDates(db, "workoutRecords", dates)) {
+      for (const entry of record.entries) {
+        const muscles = db.exercises.find((e) => e.name === entry.name)?.primaryMuscles ?? [];
+        const working = entry.sets.filter((s) => s.completed && !s.planned.warmup).length;
+        for (const g of new Set(muscles.map(groupOf))) {
+          setsPerMuscle[g] = (setsPerMuscle[g] ?? 0) + working;
         }
+        for (const m of muscles.filter((m) => groupOf(m) !== m)) {
+          setsPerRegion[m] = (setsPerRegion[m] ?? 0) + working;
+        }
+        const top = bestSet(entry);
+        if (top && top.e1rm > (best.get(entry.name) ?? 0)) best.set(entry.name, top.e1rm);
       }
-      const meals = inDates(db, "mealLogs", dates);
-      const weights = inDates(db, "checkins", dates).filter((c) => c.weight);
-      const last = weights.at(-1);
-      return {
-        weekStart,
-        adherence: adherence(dates),
-        setsPerMuscle,
-        setsPerRegion,
-        e1rm: [...best].map(([name, v]) => ({ slug: slugOf(name), name, e1rm: weight(v) })),
-        macros: {
-          target: average(meals.flatMap((m) => (m.target ? [m.target] : []))),
-          actual: average(meals.map((m) => m.totals)),
-        },
-        weight: last && {
-          start: toProto.weight(weights[0].weight!),
-          end: toProto.weight(last.weight!),
-          average: weight(movingAverage(last.date)),
-        },
-      };
+    }
+    const meals = inDates(db, "mealLogs", dates);
+    const weights = inDates(db, "checkins", dates).filter((c) => c.weight);
+    const last = weights.at(-1);
+    return {
+      weekStart,
+      adherence: adherence(dates),
+      setsPerMuscle,
+      setsPerRegion,
+      e1rm: [...best].map(([name, v]) => ({ slug: slugOf(name), name, e1rm: weight(v) })),
+      macros: {
+        target: average(meals.flatMap((m) => (m.target ? [m.target] : []))),
+        actual: average(meals.map((m) => m.totals)),
+      },
+      weight: last && {
+        start: toProto.weight(weights[0].weight!),
+        end: toProto.weight(last.weight!),
+        average: weight(movingAverage(last.date)),
+      },
+    };
+  }
+
+  return {
+    weeklySummary: ({ weekStart }) => weeklySummary(weekStart),
+    weeklyTrend({ dates }) {
+      const { from, to } = required(dates, "dates");
+      const weeks = [];
+      for (let w = mondayOf(from); w <= to; w = addDays(w, 7)) weeks.push(weeklySummary(w));
+      return { weeks };
     },
     liftHistory({ slug, dates }) {
       const exercise = db.exercises.find((e) => e.slug === slug);
       if (!exercise) throw notFound(`exercise ${slug}`);
       const records = dates ? inDates(db, "workoutRecords", dates) : live(db, "workoutRecords");
-      const byDate = new Map<string, NonNullable<ReturnType<typeof bestSet>>>();
+      type Day = {
+        top: NonNullable<ReturnType<typeof bestSet>>;
+        volume: number;
+        sets: number;
+        recordId: string;
+      };
+      const byDate = new Map<string, Day>();
       for (const r of records) {
         for (const entry of r.entries.filter((e) => e.name === exercise.name)) {
           const top = bestSet(entry);
-          if (top && top.e1rm > (byDate.get(r.date)?.e1rm ?? 0)) byDate.set(r.date, top);
+          if (!top) continue;
+          const working = entry.sets.filter((s) => s.completed && !s.planned.warmup);
+          const day = byDate.get(r.date) ?? { top, volume: 0, sets: 0, recordId: r.id };
+          byDate.set(r.date, {
+            top: top.e1rm > day.top.e1rm ? top : day.top,
+            volume: day.volume + working.reduce((t, s) => t + s.weight.value * s.reps, 0),
+            sets: day.sets + working.length,
+            recordId: day.recordId,
+          });
         }
       }
       return {
         slug,
         name: exercise.name,
-        points: [...byDate].map(([date, top]) => ({
+        points: [...byDate].map(([date, { top, volume, sets, recordId }]) => ({
           date,
           e1rm: weight(top.e1rm),
           bestWeight: weight(top.weight),
           bestReps: top.reps,
+          volume: weight(volume),
+          sets,
+          recordId,
         })),
       };
     },

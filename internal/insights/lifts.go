@@ -18,14 +18,20 @@ type BestSet struct {
 	Weight model.Weight
 }
 
-// Point is an exercise's performance on one date.
+// Point is an exercise's performance on one date. Volume sums weight times
+// reps over the completed working sets, bodyweight sets counting 0; RecordID
+// is the workout record the best set is from.
 type Point struct {
-	Date    time.Time
-	E1RM    model.Weight
-	BestSet BestSet
+	Date     time.Time
+	E1RM     model.Weight
+	BestSet  BestSet
+	Volume   model.Weight
+	Sets     int
+	RecordID uuid.UUID
 }
 
 type record struct {
+	id      uuid.UUID
 	date    time.Time
 	entries []model.RecordEntry
 }
@@ -42,7 +48,7 @@ func (s *Service) records(ctx context.Context, userID uuid.UUID, from, to time.T
 		if err := json.Unmarshal(r.Entries, &es); err != nil {
 			return nil, fmt.Errorf("workout record %s entries: %w", r.ID, err)
 		}
-		out = append(out, record{r.Date, es})
+		out = append(out, record{r.ID, r.Date, es})
 	}
 	return out, nil
 }
@@ -65,10 +71,13 @@ func (s *Service) LiftHistory(ctx context.Context, userID uuid.UUID, slug string
 			if !ok {
 				continue
 			}
-			p.Date = r.date
+			p.Date, p.RecordID = r.date, r.id
 			if n := len(pts); n > 0 && pts[n-1].Date.Equal(p.Date) {
-				if p.E1RM.Value > pts[n-1].E1RM.Value {
-					pts[n-1] = p
+				last := &pts[n-1]
+				last.Sets += p.Sets
+				last.Volume.Value += p.Volume.Value
+				if p.E1RM.Value > last.E1RM.Value {
+					last.E1RM, last.BestSet, last.RecordID = p.E1RM, p.BestSet, p.RecordID
 				}
 				continue
 			}
@@ -80,15 +89,17 @@ func (s *Service) LiftHistory(ctx context.Context, userID uuid.UUID, slug string
 
 func isWorking(s model.RecordSet) bool { return s.Completed && !s.Warmup && !s.Planned.Warmup }
 
-// bestSet picks the working set with the highest Epley estimate. A set without
-// logged reps or weight falls back to its plan.
+// bestSet picks the working set with the highest Epley estimate and tallies
+// the working sets and their volume. A set without logged reps or weight falls
+// back to its plan; found is false without a weighted set.
 func bestSet(sets []model.RecordSet) (Point, bool) {
-	var best Point
+	best := Point{Volume: inKg(0)}
 	var found bool
 	for _, st := range sets {
 		if !isWorking(st) {
 			continue
 		}
+		best.Sets++
 		reps, w := st.Reps, model.Weight(st.Weight).Kg()
 		if reps == 0 {
 			reps = st.Planned.Reps
@@ -99,8 +110,9 @@ func bestSet(sets []model.RecordSet) (Point, bool) {
 		if reps <= 0 || w <= 0 {
 			continue
 		}
+		best.Volume.Value += w * float64(reps)
 		if e := w * (1 + float64(reps)/30); !found || e > best.E1RM.Value {
-			best, found = Point{E1RM: inKg(e), BestSet: BestSet{reps, inKg(w)}}, true
+			best.E1RM, best.BestSet, found = inKg(e), BestSet{reps, inKg(w)}, true
 		}
 	}
 	return best, found

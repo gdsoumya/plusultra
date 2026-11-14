@@ -225,7 +225,13 @@ type LiftPoint struct {
 	// Weight of the best set.
 	BestWeight *Weight `protobuf:"bytes,3,opt,name=best_weight,json=bestWeight,proto3" json:"best_weight,omitempty"`
 	// Reps of the best set.
-	BestReps      int32 `protobuf:"varint,4,opt,name=best_reps,json=bestReps,proto3" json:"best_reps,omitempty"`
+	BestReps int32 `protobuf:"varint,4,opt,name=best_reps,json=bestReps,proto3" json:"best_reps,omitempty"`
+	// Completed working-set weight times reps, summed, in the user's unit; bodyweight sets count 0.
+	Volume *Weight `protobuf:"bytes,5,opt,name=volume,proto3" json:"volume,omitempty"`
+	// Completed working sets.
+	Sets int32 `protobuf:"varint,6,opt,name=sets,proto3" json:"sets,omitempty"`
+	// Workout record the best set is from.
+	RecordId      string `protobuf:"bytes,7,opt,name=record_id,json=recordId,proto3" json:"record_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -286,6 +292,27 @@ func (x *LiftPoint) GetBestReps() int32 {
 		return x.BestReps
 	}
 	return 0
+}
+
+func (x *LiftPoint) GetVolume() *Weight {
+	if x != nil {
+		return x.Volume
+	}
+	return nil
+}
+
+func (x *LiftPoint) GetSets() int32 {
+	if x != nil {
+		return x.Sets
+	}
+	return 0
+}
+
+func (x *LiftPoint) GetRecordId() string {
+	if x != nil {
+		return x.RecordId
+	}
+	return ""
 }
 
 // LiftEstimate is an exercise's best estimated one-rep max.
@@ -874,6 +901,98 @@ func (x *AdherenceResponse) GetCounts() *AdherenceCounts {
 	return nil
 }
 
+// WeeklyTrendRequest is the input of WeeklyTrend.
+type WeeklyTrendRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Dates to cover; every week touching them is summarised.
+	Dates         *DateRange `protobuf:"bytes,1,opt,name=dates,proto3" json:"dates,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *WeeklyTrendRequest) Reset() {
+	*x = WeeklyTrendRequest{}
+	mi := &file_plusultra_v1_insight_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WeeklyTrendRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WeeklyTrendRequest) ProtoMessage() {}
+
+func (x *WeeklyTrendRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_plusultra_v1_insight_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WeeklyTrendRequest.ProtoReflect.Descriptor instead.
+func (*WeeklyTrendRequest) Descriptor() ([]byte, []int) {
+	return file_plusultra_v1_insight_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *WeeklyTrendRequest) GetDates() *DateRange {
+	if x != nil {
+		return x.Dates
+	}
+	return nil
+}
+
+// WeeklyTrendResponse is the output of WeeklyTrend.
+type WeeklyTrendResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// One summary per Monday-start week, oldest first, from the week of from to the week of to; e1rm is empty.
+	Weeks         []*WeeklySummaryResponse `protobuf:"bytes,1,rep,name=weeks,proto3" json:"weeks,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *WeeklyTrendResponse) Reset() {
+	*x = WeeklyTrendResponse{}
+	mi := &file_plusultra_v1_insight_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WeeklyTrendResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WeeklyTrendResponse) ProtoMessage() {}
+
+func (x *WeeklyTrendResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_plusultra_v1_insight_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WeeklyTrendResponse.ProtoReflect.Descriptor instead.
+func (*WeeklyTrendResponse) Descriptor() ([]byte, []int) {
+	return file_plusultra_v1_insight_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *WeeklyTrendResponse) GetWeeks() []*WeeklySummaryResponse {
+	if x != nil {
+		return x.Weeks
+	}
+	return nil
+}
+
 var File_plusultra_v1_insight_proto protoreflect.FileDescriptor
 
 const file_plusultra_v1_insight_proto_rawDesc = "" +
@@ -890,13 +1009,16 @@ const file_plusultra_v1_insight_proto_rawDesc = "" +
 	"\rWeightSummary\x12*\n" +
 	"\x05start\x18\x01 \x01(\v2\x14.plusultra.v1.WeightR\x05start\x12&\n" +
 	"\x03end\x18\x02 \x01(\v2\x14.plusultra.v1.WeightR\x03end\x12.\n" +
-	"\aaverage\x18\x03 \x01(\v2\x14.plusultra.v1.WeightR\aaverage\"\x9d\x01\n" +
+	"\aaverage\x18\x03 \x01(\v2\x14.plusultra.v1.WeightR\aaverage\"\xfc\x01\n" +
 	"\tLiftPoint\x12\x12\n" +
 	"\x04date\x18\x01 \x01(\tR\x04date\x12(\n" +
 	"\x04e1rm\x18\x02 \x01(\v2\x14.plusultra.v1.WeightR\x04e1rm\x125\n" +
 	"\vbest_weight\x18\x03 \x01(\v2\x14.plusultra.v1.WeightR\n" +
 	"bestWeight\x12\x1b\n" +
-	"\tbest_reps\x18\x04 \x01(\x05R\bbestReps\"`\n" +
+	"\tbest_reps\x18\x04 \x01(\x05R\bbestReps\x12,\n" +
+	"\x06volume\x18\x05 \x01(\v2\x14.plusultra.v1.WeightR\x06volume\x12\x12\n" +
+	"\x04sets\x18\x06 \x01(\x05R\x04sets\x12\x1b\n" +
+	"\trecord_id\x18\a \x01(\tR\brecordId\"`\n" +
 	"\fLiftEstimate\x12\x12\n" +
 	"\x04slug\x18\x01 \x01(\tR\x04slug\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12(\n" +
@@ -940,8 +1062,11 @@ const file_plusultra_v1_insight_proto_rawDesc = "" +
 	"\x10AdherenceRequest\x125\n" +
 	"\x05dates\x18\x01 \x01(\v2\x17.plusultra.v1.DateRangeB\x06\xbaH\x03\xc8\x01\x01R\x05dates\"J\n" +
 	"\x11AdherenceResponse\x125\n" +
-	"\x06counts\x18\x01 \x01(\v2\x1d.plusultra.v1.AdherenceCountsR\x06counts2\xd8\n" +
-	"\n" +
+	"\x06counts\x18\x01 \x01(\v2\x1d.plusultra.v1.AdherenceCountsR\x06counts\"K\n" +
+	"\x12WeeklyTrendRequest\x125\n" +
+	"\x05dates\x18\x01 \x01(\v2\x17.plusultra.v1.DateRangeB\x06\xbaH\x03\xc8\x01\x01R\x05dates\"P\n" +
+	"\x13WeeklyTrendResponse\x129\n" +
+	"\x05weeks\x18\x01 \x03(\v2#.plusultra.v1.WeeklySummaryResponseR\x05weeks2\x89\x0e\n" +
 	"\x0eInsightService\x12\xa1\x03\n" +
 	"\rWeeklySummary\x12\".plusultra.v1.WeeklySummaryRequest\x1a#.plusultra.v1.WeeklySummaryResponse\"\xc6\x02\x8a\xb5\x18\xc1\x02\n" +
 	"\x0eweekly_summary\x12\x0eWeekly Summary\x1a\x9a\x02Summarises one week from its Monday (weekStart, YYYY-MM-DD): workout adherence, completed working sets per muscle group (and per region when exercises name one), best estimated 1RM per exercise, macros against target and body weight. Use it for weekly reviews and coaching feedback. \x01(\x01\x12\xcb\x02\n" +
@@ -950,7 +1075,9 @@ const file_plusultra_v1_insight_proto_rawDesc = "" +
 	"\vWeightTrend\x12 .plusultra.v1.WeightTrendRequest\x1a!.plusultra.v1.WeightTrendResponse\"\xe4\x01\x8a\xb5\x18\xdf\x01\n" +
 	"\fweight_trend\x12\fWeight Trend\x1a\xbc\x01Returns body weight check-ins in a local date range with a 7-day moving average and the weekly rate of change (negative when losing). Use it to judge a cut or bulk against its target rate. \x01(\x01\x12\x87\x02\n" +
 	"\tAdherence\x12\x1e.plusultra.v1.AdherenceRequest\x1a\x1f.plusultra.v1.AdherenceResponse\"\xb8\x01\x8a\xb5\x18\xb3\x01\n" +
-	"\tadherence\x12\x10Adherence Counts\x1a\x8f\x01Counts planned, done, partial and skipped days in a local date range (YYYY-MM-DD). Use it to report consistency over a training block or month. \x01(\x01\x1a\x0e\x92\xb5\x18\n" +
+	"\tadherence\x12\x10Adherence Counts\x1a\x8f\x01Counts planned, done, partial and skipped days in a local date range (YYYY-MM-DD). Use it to report consistency over a training block or month. \x01(\x01\x12\xae\x03\n" +
+	"\vWeeklyTrend\x12 .plusultra.v1.WeeklyTrendRequest\x1a!.plusultra.v1.WeeklyTrendResponse\"\xd9\x02\x8a\xb5\x18\xd4\x02\n" +
+	"\fweekly_trend\x12\fWeekly Trend\x1a\xb1\x02Summarises every Monday-start week touching a local date range (YYYY-MM-DD), oldest first: workout adherence, completed working sets per muscle group and region, macros against target and body weight. Estimated 1RMs are left out; use lift_history for those. Use it to chart progress over a training block. \x01(\x01\x1a\x0e\x92\xb5\x18\n" +
 	"\n" +
 	"\binsight_B?Z=github.com/gdsoumya/plusultra/gen/go/plusultra/v1;plusultrav1b\x06proto3"
 
@@ -966,7 +1093,7 @@ func file_plusultra_v1_insight_proto_rawDescGZIP() []byte {
 	return file_plusultra_v1_insight_proto_rawDescData
 }
 
-var file_plusultra_v1_insight_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
+var file_plusultra_v1_insight_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_plusultra_v1_insight_proto_goTypes = []any{
 	(*AdherenceCounts)(nil),       // 0: plusultra.v1.AdherenceCounts
 	(*MacroSummary)(nil),          // 1: plusultra.v1.MacroSummary
@@ -982,49 +1109,56 @@ var file_plusultra_v1_insight_proto_goTypes = []any{
 	(*WeightTrendResponse)(nil),   // 11: plusultra.v1.WeightTrendResponse
 	(*AdherenceRequest)(nil),      // 12: plusultra.v1.AdherenceRequest
 	(*AdherenceResponse)(nil),     // 13: plusultra.v1.AdherenceResponse
-	nil,                           // 14: plusultra.v1.WeeklySummaryResponse.SetsPerMuscleEntry
-	nil,                           // 15: plusultra.v1.WeeklySummaryResponse.SetsPerRegionEntry
-	(*Macros)(nil),                // 16: plusultra.v1.Macros
-	(*Weight)(nil),                // 17: plusultra.v1.Weight
-	(*DateRange)(nil),             // 18: plusultra.v1.DateRange
+	(*WeeklyTrendRequest)(nil),    // 14: plusultra.v1.WeeklyTrendRequest
+	(*WeeklyTrendResponse)(nil),   // 15: plusultra.v1.WeeklyTrendResponse
+	nil,                           // 16: plusultra.v1.WeeklySummaryResponse.SetsPerMuscleEntry
+	nil,                           // 17: plusultra.v1.WeeklySummaryResponse.SetsPerRegionEntry
+	(*Macros)(nil),                // 18: plusultra.v1.Macros
+	(*Weight)(nil),                // 19: plusultra.v1.Weight
+	(*DateRange)(nil),             // 20: plusultra.v1.DateRange
 }
 var file_plusultra_v1_insight_proto_depIdxs = []int32{
-	16, // 0: plusultra.v1.MacroSummary.target:type_name -> plusultra.v1.Macros
-	16, // 1: plusultra.v1.MacroSummary.actual:type_name -> plusultra.v1.Macros
-	17, // 2: plusultra.v1.WeightSummary.start:type_name -> plusultra.v1.Weight
-	17, // 3: plusultra.v1.WeightSummary.end:type_name -> plusultra.v1.Weight
-	17, // 4: plusultra.v1.WeightSummary.average:type_name -> plusultra.v1.Weight
-	17, // 5: plusultra.v1.LiftPoint.e1rm:type_name -> plusultra.v1.Weight
-	17, // 6: plusultra.v1.LiftPoint.best_weight:type_name -> plusultra.v1.Weight
-	17, // 7: plusultra.v1.LiftEstimate.e1rm:type_name -> plusultra.v1.Weight
-	17, // 8: plusultra.v1.WeightPoint.weight:type_name -> plusultra.v1.Weight
-	17, // 9: plusultra.v1.WeightPoint.moving_average:type_name -> plusultra.v1.Weight
-	0,  // 10: plusultra.v1.WeeklySummaryResponse.adherence:type_name -> plusultra.v1.AdherenceCounts
-	14, // 11: plusultra.v1.WeeklySummaryResponse.sets_per_muscle:type_name -> plusultra.v1.WeeklySummaryResponse.SetsPerMuscleEntry
-	15, // 12: plusultra.v1.WeeklySummaryResponse.sets_per_region:type_name -> plusultra.v1.WeeklySummaryResponse.SetsPerRegionEntry
-	4,  // 13: plusultra.v1.WeeklySummaryResponse.e1rm:type_name -> plusultra.v1.LiftEstimate
-	1,  // 14: plusultra.v1.WeeklySummaryResponse.macros:type_name -> plusultra.v1.MacroSummary
-	2,  // 15: plusultra.v1.WeeklySummaryResponse.weight:type_name -> plusultra.v1.WeightSummary
-	18, // 16: plusultra.v1.LiftHistoryRequest.dates:type_name -> plusultra.v1.DateRange
-	3,  // 17: plusultra.v1.LiftHistoryResponse.points:type_name -> plusultra.v1.LiftPoint
-	18, // 18: plusultra.v1.WeightTrendRequest.dates:type_name -> plusultra.v1.DateRange
-	5,  // 19: plusultra.v1.WeightTrendResponse.points:type_name -> plusultra.v1.WeightPoint
-	17, // 20: plusultra.v1.WeightTrendResponse.weekly_rate:type_name -> plusultra.v1.Weight
-	18, // 21: plusultra.v1.AdherenceRequest.dates:type_name -> plusultra.v1.DateRange
-	0,  // 22: plusultra.v1.AdherenceResponse.counts:type_name -> plusultra.v1.AdherenceCounts
-	6,  // 23: plusultra.v1.InsightService.WeeklySummary:input_type -> plusultra.v1.WeeklySummaryRequest
-	8,  // 24: plusultra.v1.InsightService.LiftHistory:input_type -> plusultra.v1.LiftHistoryRequest
-	10, // 25: plusultra.v1.InsightService.WeightTrend:input_type -> plusultra.v1.WeightTrendRequest
-	12, // 26: plusultra.v1.InsightService.Adherence:input_type -> plusultra.v1.AdherenceRequest
-	7,  // 27: plusultra.v1.InsightService.WeeklySummary:output_type -> plusultra.v1.WeeklySummaryResponse
-	9,  // 28: plusultra.v1.InsightService.LiftHistory:output_type -> plusultra.v1.LiftHistoryResponse
-	11, // 29: plusultra.v1.InsightService.WeightTrend:output_type -> plusultra.v1.WeightTrendResponse
-	13, // 30: plusultra.v1.InsightService.Adherence:output_type -> plusultra.v1.AdherenceResponse
-	27, // [27:31] is the sub-list for method output_type
-	23, // [23:27] is the sub-list for method input_type
-	23, // [23:23] is the sub-list for extension type_name
-	23, // [23:23] is the sub-list for extension extendee
-	0,  // [0:23] is the sub-list for field type_name
+	18, // 0: plusultra.v1.MacroSummary.target:type_name -> plusultra.v1.Macros
+	18, // 1: plusultra.v1.MacroSummary.actual:type_name -> plusultra.v1.Macros
+	19, // 2: plusultra.v1.WeightSummary.start:type_name -> plusultra.v1.Weight
+	19, // 3: plusultra.v1.WeightSummary.end:type_name -> plusultra.v1.Weight
+	19, // 4: plusultra.v1.WeightSummary.average:type_name -> plusultra.v1.Weight
+	19, // 5: plusultra.v1.LiftPoint.e1rm:type_name -> plusultra.v1.Weight
+	19, // 6: plusultra.v1.LiftPoint.best_weight:type_name -> plusultra.v1.Weight
+	19, // 7: plusultra.v1.LiftPoint.volume:type_name -> plusultra.v1.Weight
+	19, // 8: plusultra.v1.LiftEstimate.e1rm:type_name -> plusultra.v1.Weight
+	19, // 9: plusultra.v1.WeightPoint.weight:type_name -> plusultra.v1.Weight
+	19, // 10: plusultra.v1.WeightPoint.moving_average:type_name -> plusultra.v1.Weight
+	0,  // 11: plusultra.v1.WeeklySummaryResponse.adherence:type_name -> plusultra.v1.AdherenceCounts
+	16, // 12: plusultra.v1.WeeklySummaryResponse.sets_per_muscle:type_name -> plusultra.v1.WeeklySummaryResponse.SetsPerMuscleEntry
+	17, // 13: plusultra.v1.WeeklySummaryResponse.sets_per_region:type_name -> plusultra.v1.WeeklySummaryResponse.SetsPerRegionEntry
+	4,  // 14: plusultra.v1.WeeklySummaryResponse.e1rm:type_name -> plusultra.v1.LiftEstimate
+	1,  // 15: plusultra.v1.WeeklySummaryResponse.macros:type_name -> plusultra.v1.MacroSummary
+	2,  // 16: plusultra.v1.WeeklySummaryResponse.weight:type_name -> plusultra.v1.WeightSummary
+	20, // 17: plusultra.v1.LiftHistoryRequest.dates:type_name -> plusultra.v1.DateRange
+	3,  // 18: plusultra.v1.LiftHistoryResponse.points:type_name -> plusultra.v1.LiftPoint
+	20, // 19: plusultra.v1.WeightTrendRequest.dates:type_name -> plusultra.v1.DateRange
+	5,  // 20: plusultra.v1.WeightTrendResponse.points:type_name -> plusultra.v1.WeightPoint
+	19, // 21: plusultra.v1.WeightTrendResponse.weekly_rate:type_name -> plusultra.v1.Weight
+	20, // 22: plusultra.v1.AdherenceRequest.dates:type_name -> plusultra.v1.DateRange
+	0,  // 23: plusultra.v1.AdherenceResponse.counts:type_name -> plusultra.v1.AdherenceCounts
+	20, // 24: plusultra.v1.WeeklyTrendRequest.dates:type_name -> plusultra.v1.DateRange
+	7,  // 25: plusultra.v1.WeeklyTrendResponse.weeks:type_name -> plusultra.v1.WeeklySummaryResponse
+	6,  // 26: plusultra.v1.InsightService.WeeklySummary:input_type -> plusultra.v1.WeeklySummaryRequest
+	8,  // 27: plusultra.v1.InsightService.LiftHistory:input_type -> plusultra.v1.LiftHistoryRequest
+	10, // 28: plusultra.v1.InsightService.WeightTrend:input_type -> plusultra.v1.WeightTrendRequest
+	12, // 29: plusultra.v1.InsightService.Adherence:input_type -> plusultra.v1.AdherenceRequest
+	14, // 30: plusultra.v1.InsightService.WeeklyTrend:input_type -> plusultra.v1.WeeklyTrendRequest
+	7,  // 31: plusultra.v1.InsightService.WeeklySummary:output_type -> plusultra.v1.WeeklySummaryResponse
+	9,  // 32: plusultra.v1.InsightService.LiftHistory:output_type -> plusultra.v1.LiftHistoryResponse
+	11, // 33: plusultra.v1.InsightService.WeightTrend:output_type -> plusultra.v1.WeightTrendResponse
+	13, // 34: plusultra.v1.InsightService.Adherence:output_type -> plusultra.v1.AdherenceResponse
+	15, // 35: plusultra.v1.InsightService.WeeklyTrend:output_type -> plusultra.v1.WeeklyTrendResponse
+	31, // [31:36] is the sub-list for method output_type
+	26, // [26:31] is the sub-list for method input_type
+	26, // [26:26] is the sub-list for extension type_name
+	26, // [26:26] is the sub-list for extension extendee
+	0,  // [0:26] is the sub-list for field type_name
 }
 
 func init() { file_plusultra_v1_insight_proto_init() }
@@ -1040,7 +1174,7 @@ func file_plusultra_v1_insight_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_plusultra_v1_insight_proto_rawDesc), len(file_plusultra_v1_insight_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   16,
+			NumMessages:   18,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

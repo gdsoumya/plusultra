@@ -38,7 +38,7 @@ var hintRules = []struct {
 	rpc  *regexp.Regexp
 	want hints
 }{
-	{regexp.MustCompile(`^(Get|List|Search|Lookup|Validate|Simulate|Export)|^(WeeklySummary|LiftHistory|WeightTrend|Adherence)$`), hints{readOnly: true, idempotent: true}},
+	{regexp.MustCompile(`^(Get|List|Search|Lookup|Validate|Simulate|Export)|^(WeeklySummary|WeeklyTrend|LiftHistory|WeightTrend|Adherence)$`), hints{readOnly: true, idempotent: true}},
 	{regexp.MustCompile(`^(Delete|Revoke)`), hints{idempotent: true, destructive: true}},
 	{regexp.MustCompile(`^(Finish|Finalize)`), hints{destructive: true}},
 	{regexp.MustCompile(`^Set`), hints{idempotent: true}},

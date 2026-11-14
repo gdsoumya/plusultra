@@ -45,6 +45,9 @@ const (
 	// InsightServiceAdherenceProcedure is the fully-qualified name of the InsightService's Adherence
 	// RPC.
 	InsightServiceAdherenceProcedure = "/plusultra.v1.InsightService/Adherence"
+	// InsightServiceWeeklyTrendProcedure is the fully-qualified name of the InsightService's
+	// WeeklyTrend RPC.
+	InsightServiceWeeklyTrendProcedure = "/plusultra.v1.InsightService/WeeklyTrend"
 )
 
 // InsightServiceClient is a client for the plusultra.v1.InsightService service.
@@ -57,6 +60,8 @@ type InsightServiceClient interface {
 	WeightTrend(context.Context, *connect.Request[v1.WeightTrendRequest]) (*connect.Response[v1.WeightTrendResponse], error)
 	// Adherence counts planned, done, partial and skipped days in a date range.
 	Adherence(context.Context, *connect.Request[v1.AdherenceRequest]) (*connect.Response[v1.AdherenceResponse], error)
+	// WeeklyTrend summarises every week that touches a date range, oldest first: adherence, sets per muscle group and region, macros and body weight. Estimated 1RMs are left out.
+	WeeklyTrend(context.Context, *connect.Request[v1.WeeklyTrendRequest]) (*connect.Response[v1.WeeklyTrendResponse], error)
 }
 
 // NewInsightServiceClient constructs a client for the plusultra.v1.InsightService service. By
@@ -94,6 +99,12 @@ func NewInsightServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(insightServiceMethods.ByName("Adherence")),
 			connect.WithClientOptions(opts...),
 		),
+		weeklyTrend: connect.NewClient[v1.WeeklyTrendRequest, v1.WeeklyTrendResponse](
+			httpClient,
+			baseURL+InsightServiceWeeklyTrendProcedure,
+			connect.WithSchema(insightServiceMethods.ByName("WeeklyTrend")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -103,6 +114,7 @@ type insightServiceClient struct {
 	liftHistory   *connect.Client[v1.LiftHistoryRequest, v1.LiftHistoryResponse]
 	weightTrend   *connect.Client[v1.WeightTrendRequest, v1.WeightTrendResponse]
 	adherence     *connect.Client[v1.AdherenceRequest, v1.AdherenceResponse]
+	weeklyTrend   *connect.Client[v1.WeeklyTrendRequest, v1.WeeklyTrendResponse]
 }
 
 // WeeklySummary calls plusultra.v1.InsightService.WeeklySummary.
@@ -125,6 +137,11 @@ func (c *insightServiceClient) Adherence(ctx context.Context, req *connect.Reque
 	return c.adherence.CallUnary(ctx, req)
 }
 
+// WeeklyTrend calls plusultra.v1.InsightService.WeeklyTrend.
+func (c *insightServiceClient) WeeklyTrend(ctx context.Context, req *connect.Request[v1.WeeklyTrendRequest]) (*connect.Response[v1.WeeklyTrendResponse], error) {
+	return c.weeklyTrend.CallUnary(ctx, req)
+}
+
 // InsightServiceHandler is an implementation of the plusultra.v1.InsightService service.
 type InsightServiceHandler interface {
 	// WeeklySummary summarises one week: adherence, sets per muscle group and region, estimated 1RMs, macros and body weight.
@@ -135,6 +152,8 @@ type InsightServiceHandler interface {
 	WeightTrend(context.Context, *connect.Request[v1.WeightTrendRequest]) (*connect.Response[v1.WeightTrendResponse], error)
 	// Adherence counts planned, done, partial and skipped days in a date range.
 	Adherence(context.Context, *connect.Request[v1.AdherenceRequest]) (*connect.Response[v1.AdherenceResponse], error)
+	// WeeklyTrend summarises every week that touches a date range, oldest first: adherence, sets per muscle group and region, macros and body weight. Estimated 1RMs are left out.
+	WeeklyTrend(context.Context, *connect.Request[v1.WeeklyTrendRequest]) (*connect.Response[v1.WeeklyTrendResponse], error)
 }
 
 // NewInsightServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -168,6 +187,12 @@ func NewInsightServiceHandler(svc InsightServiceHandler, opts ...connect.Handler
 		connect.WithSchema(insightServiceMethods.ByName("Adherence")),
 		connect.WithHandlerOptions(opts...),
 	)
+	insightServiceWeeklyTrendHandler := connect.NewUnaryHandler(
+		InsightServiceWeeklyTrendProcedure,
+		svc.WeeklyTrend,
+		connect.WithSchema(insightServiceMethods.ByName("WeeklyTrend")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/plusultra.v1.InsightService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case InsightServiceWeeklySummaryProcedure:
@@ -178,6 +203,8 @@ func NewInsightServiceHandler(svc InsightServiceHandler, opts ...connect.Handler
 			insightServiceWeightTrendHandler.ServeHTTP(w, r)
 		case InsightServiceAdherenceProcedure:
 			insightServiceAdherenceHandler.ServeHTTP(w, r)
+		case InsightServiceWeeklyTrendProcedure:
+			insightServiceWeeklyTrendHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -201,4 +228,8 @@ func (UnimplementedInsightServiceHandler) WeightTrend(context.Context, *connect.
 
 func (UnimplementedInsightServiceHandler) Adherence(context.Context, *connect.Request[v1.AdherenceRequest]) (*connect.Response[v1.AdherenceResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("plusultra.v1.InsightService.Adherence is not implemented"))
+}
+
+func (UnimplementedInsightServiceHandler) WeeklyTrend(context.Context, *connect.Request[v1.WeeklyTrendRequest]) (*connect.Response[v1.WeeklyTrendResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("plusultra.v1.InsightService.WeeklyTrend is not implemented"))
 }
