@@ -14,7 +14,8 @@ const withKeepNotificationSound = (config) =>
     (c) => {
       const raw = path.join(c.modRequest.platformProjectRoot, "app", "src", "main", "res", "raw");
       fs.mkdirSync(raw, { recursive: true });
-      fs.writeFileSync(path.join(raw, "keep.xml"), KEEP);
+      // Not keep.xml: the React Native bundle step writes that name for its own assets and wins the merge.
+      fs.writeFileSync(path.join(raw, "keep_notification_sound.xml"), KEEP);
       return c;
     },
   ]);
