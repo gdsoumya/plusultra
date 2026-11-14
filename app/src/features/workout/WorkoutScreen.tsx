@@ -279,7 +279,7 @@ export default function WorkoutScreen({ id, unit }: { id: string; unit: Unit }) 
         </View>
         {finished && (
           <Text variant="caption" color="textMuted">
-            {`Finished${record.finishedAt ? ` ${formatDateTime(new Date(record.finishedAt))}` : ""}. Edits update the program's next sessions.`}
+            {`Finished${record.finishedAt ? ` ${formatDateTime(new Date(record.finishedAt))}` : ""}.${record.programId ? " Edits update the program's next sessions." : ""}`}
           </Text>
         )}
         {countsForProgram && (

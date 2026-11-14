@@ -1316,4 +1316,18 @@ describe("WorkoutScreen", () => {
     await mount(createMemoryStore());
     expect(screen.getByText("Workout not found")).toBeOnTheScreen();
   });
+
+  it("says nothing about a program on a finished ad hoc workout", async () => {
+    const store = await seed();
+    workoutRecordsRepo(store).upsertFromServer([
+      {
+        ...saved(store),
+        programId: undefined,
+        finalized: true,
+        finishedAt: "2026-11-11T08:30:00.000Z",
+      },
+    ]);
+    await mount(store);
+    expect(screen.getByText(/^Finished 11 Nov 2026, [^.]*\.$/)).toBeOnTheScreen();
+  });
 });
