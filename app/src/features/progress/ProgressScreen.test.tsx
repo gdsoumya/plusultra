@@ -6,8 +6,11 @@ import { Dimensions } from "react-native";
 import { createClients, type Api } from "../../api/clients";
 import { OFFLINE } from "../../api/errors";
 import { fromProto } from "../../api/convert";
+import { addDays, mondayOf } from "../../domain/dates";
 import { createMockTransport } from "../../api/mockTransport";
 import { createMemoryStore } from "../../data/memoryStore";
+import { checkinsRepo } from "../../data/repositories/checkins";
+import { mealLogsRepo } from "../../data/repositories/mealLogs";
 import { workoutRecordsRepo } from "../../data/repositories/workoutRecords";
 import type { Store } from "../../data/store";
 import {
@@ -33,6 +36,8 @@ async function setup(store: Store = createMemoryStore()) {
   const api = createClients(mock.transport);
   const rows = fromProto.syncRows((await api.sync.pull({})).rows, "user-1");
   workoutRecordsRepo(store).upsertFromServer(rows.workoutRecords);
+  mealLogsRepo(store).upsertFromServer(rows.mealLogs);
+  checkinsRepo(store).upsertFromServer(rows.checkins);
   return { mock, api, store };
 }
 
@@ -104,19 +109,43 @@ describe("ProgressScreen", () => {
     expect(await lifts.findByLabelText(/^Squat: /)).toBeOnTheScreen();
   });
 
-  it("charts weekly intake against weight with their averages and the change", async () => {
+  it("charts intake against weight by day over four weeks, from the local logs", async () => {
     const { api, store } = await setup();
     await mount(api.insights, store);
     const nutrition = card("progress-nutrition");
-    const summary = await nutrition.findByLabelText(/weeks with meals averaging/);
+    const from = addDays(today, -28);
+    const logged = store.list("mealLogs", { dateFrom: from, dateTo: today });
+    const weighIns = store.list("checkins", { dateFrom: from, dateTo: today });
+    expect(logged.length).toBeGreaterThan(0);
+    const summary = await nutrition.findByLabelText(/days with meals averaging/);
     expect(summary.props.accessibilityLabel).toMatch(
-      /^5 weeks with meals averaging \d+ kcal and \d+ g protein a day; weight -\d\.\d kg over 5 weeks/,
+      new RegExp(
+        `^${logged.length} days with meals averaging \\d+ kcal and \\d+ g protein a day; weight -?\\d+(\\.\\d)? kg across ${weighIns.length} weighings`,
+      ),
     );
     expect(nutrition.getByLabelText(/^Protein a day: \d+ g$/)).toBeOnTheScreen();
-    expect(nutrition.getByLabelText(/^Weight change: -\d\.\d kg$/)).toBeOnTheScreen();
-    expect(nutrition.getAllByTestId("bar")).toHaveLength(5);
+    expect(nutrition.getByLabelText(/^Weight change: -?\d+(\.\d)? kg$/)).toBeOnTheScreen();
+    // One bar per logged day; days without a log leave a gap.
+    expect(nutrition.getAllByTestId("bar")).toHaveLength(logged.length);
     await fireEvent.press(nutrition.getByRole("button", { name: "Show table" }));
-    expect(nutrition.getByText("Protein")).toBeOnTheScreen();
+    expect(nutrition.getByText("Day")).toBeOnTheScreen();
+  });
+
+  it("buckets intake and weight by week beyond four weeks", async () => {
+    const { api, store } = await setup();
+    await mount(api.insights, store);
+    const sheet = await openRanges();
+    await fireEvent.press(sheet.getByLabelText("3 months"));
+    const nutrition = card("progress-nutrition");
+    await nutrition.findByLabelText(/days with meals averaging/);
+    const weeks = new Set(
+      store
+        .list("mealLogs", { dateFrom: addDays(today, -91), dateTo: today })
+        .map((l) => mondayOf(l.date)),
+    );
+    expect(nutrition.getAllByTestId("bar")).toHaveLength(weeks.size);
+    await fireEvent.press(nutrition.getByRole("button", { name: "Show table" }));
+    expect(nutrition.getByText("Week")).toBeOnTheScreen();
   });
 
   it("charts a muscle group's sets per week, all groups by default", async () => {
@@ -140,7 +169,7 @@ describe("ProgressScreen", () => {
     const trained = training.getAllByTestId("trained").length;
     expect(trained).toBeGreaterThan(5);
     expect(grid.props.accessibilityLabel).toMatch(new RegExp(`^${trained} training days`));
-    expect(await training.findByLabelText(/^Workouts per week: \d\.\d$/)).toBeOnTheScreen();
+    expect(await training.findByLabelText(/^Workouts per week: \d+(\.\d)?$/)).toBeOnTheScreen();
     // Every week of the last month has a finished workout; today's is still open.
     expect(training.getByLabelText(/^Week streak: [4-6]$/)).toBeOnTheScreen();
   });
@@ -152,22 +181,26 @@ describe("ProgressScreen", () => {
     await screen.findByLabelText(/23 weigh-ins/);
     let sheet = await openRanges();
     await fireEvent.press(sheet.getByLabelText("Custom"));
-    await fireEvent.changeText(sheet.getByLabelText("From"), "2026-10-15");
-    await fireEvent.changeText(sheet.getByLabelText("To"), "2026-10-01");
-    expect(sheet.getByText("Must be on or after From")).toBeOnTheScreen();
+    await fireEvent.press(sheet.getByRole("button", { name: "Previous month" }));
+    expect(sheet.getByText("October 2026")).toBeOnTheScreen();
+    await fireEvent.press(sheet.getByRole("button", { name: "Thursday 15 October" }));
+    // A tap before From restarts the span.
+    await fireEvent.press(sheet.getByRole("button", { name: "Thursday 1 October" }));
+    expect(sheet.getByText(/^From (Oct 1|1 Oct) – To …$/)).toBeOnTheScreen();
     expect(sheet.getByRole("button", { name: "Apply" })).toBeDisabled();
-    await fireEvent.changeText(sheet.getByLabelText("To"), "2026-10-31");
+    await fireEvent.press(sheet.getByRole("button", { name: "Saturday 31 October" }));
+    expect(sheet.getByText(/^From (Oct 1|1 Oct) – To (Oct 31|31 Oct)$/)).toBeOnTheScreen();
     await fireEvent.press(sheet.getByRole("button", { name: "Apply" }));
-    const dates = { from: "2026-10-15", to: "2026-10-31" };
+    const dates = { from: "2026-10-01", to: "2026-10-31" };
     expect(trend).toHaveBeenLastCalledWith({ dates });
-    const label = /Oct 15 – Oct 31|15 Oct – 31 Oct/;
+    const label = /Oct 1 – Oct 31|1 Oct – 31 Oct/;
     expect(within(screen.getByTestId("progress-range")).getByText(label)).toBeOnTheScreen();
     await first.unmount();
-
     await mount(api.insights, store);
     expect(within(screen.getByTestId("progress-range")).getByText(label)).toBeOnTheScreen();
     sheet = await openRanges();
     expect(sheet.getByLabelText("Custom")).toBeChecked();
+    expect(sheet.getByRole("button", { name: "Thursday 15 October" })).toBeSelected();
     await fireEvent.press(sheet.getByLabelText("4 weeks"));
     expect(trend).toHaveBeenLastCalledWith({ dates: { from: "2026-10-14", to: today } });
   });

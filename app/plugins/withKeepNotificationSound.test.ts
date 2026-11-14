@@ -21,7 +21,10 @@ describe("withKeepNotificationSound", () => {
         introspect: false,
       },
     });
-    const keep = fs.readFileSync(path.join(root, "app/src/main/res/raw/keep_notification_sound.xml"), "utf8");
+    const keep = fs.readFileSync(
+      path.join(root, "app/src/main/res/raw/keep_notification_sound.xml"),
+      "utf8",
+    );
     expect(keep).toContain('tools:keep="@raw/end"');
   });
 });

@@ -3,7 +3,7 @@ import { View } from "react-native";
 
 import type { Store } from "../../data/store";
 import { addDays, mondayOf, shortDate } from "../../domain/dates";
-import { Card, space, Text, useTheme } from "../../ui";
+import { Card, stroke, Text, typography, useTheme } from "../../ui";
 import { StatTiles } from "../../ui/charts/StatTiles";
 import { CachedView } from "./CachedView";
 import type { SectionProps } from "./shared";
@@ -11,7 +11,10 @@ import type { Trend } from "./useWeeklyTrend";
 
 type Props = Pick<SectionProps, "store" | "range" | "today" | "width"> & { trend: Trend };
 
-const gap = space[1];
+const gap = 2;
+// Room for the weekday initials.
+const labelColumn = 16;
+const weekdays = ["M", "T", "W", "T", "F", "S", "S"];
 const finishedDates = (store: Store, from?: string, to?: string) =>
   store
     .list("workoutRecords", { dateFrom: from, dateTo: to })
@@ -36,10 +39,21 @@ export function TrainingSection({ store, range, today, width, trend }: Props) {
   const streak = useMemo(() => weekStreak(store, today), [store, today]);
   const weeks: string[] = [];
   for (let w = mondayOf(from); w <= to; w = addDays(w, 7)) weeks.push(w);
-  // Squares shrink to fit the weeks in one row down to 8 px, then the row wraps.
-  const size = Math.max(8, Math.min(16, Math.floor(width / weeks.length) - gap));
-  const fill = (date: string) =>
-    date < from || date > to ? "transparent" : trained.has(date) ? colors.accent : colors.border;
+  // Squares shrink so the weeks always fit one row; a year on a phone is about 4 px.
+  const size = Math.max(
+    4,
+    Math.min(16, Math.floor((width - labelColumn - (weeks.length - 1) * gap) / weeks.length)),
+  );
+  const outside = (date: string) => date < from || date > to;
+  const square = (date: string) => ({
+    width: size,
+    height: size,
+    borderRadius: 2,
+    ...(outside(date)
+      ? { borderWidth: stroke.control, borderColor: colors.border, opacity: 0.3 }
+      : { backgroundColor: trained.has(date) ? colors.accent : colors.border }),
+  });
+  const whole = (v: number) => (Number.isInteger(v) ? String(v) : v.toFixed(1));
 
   return (
     <Card testID="progress-training">
@@ -57,7 +71,7 @@ export function TrainingSection({ store, range, today, width, trend }: Props) {
               items={[
                 {
                   label: "Workouts per week",
-                  value: active.length ? (done / active.length).toFixed(1) : "–",
+                  value: active.length ? whole(done / active.length) : "–",
                 },
                 { label: "Week streak", value: streak },
               ]}
@@ -68,15 +82,30 @@ export function TrainingSection({ store, range, today, width, trend }: Props) {
       <View
         accessible
         accessibilityLabel={`${trained.size} training days from ${shortDate(from)} to ${shortDate(to)}.`}
-        style={{ flexDirection: "row", flexWrap: "wrap", gap }}
+        style={{ flexDirection: "row", gap }}
       >
+        <View style={{ width: labelColumn, gap }}>
+          {weekdays.map((name, i) => (
+            <Text
+              key={i}
+              variant="caption"
+              style={{
+                height: size,
+                lineHeight: size,
+                fontSize: Math.min(typography.caption.fontSize, size),
+              }}
+            >
+              {name}
+            </Text>
+          ))}
+        </View>
         {weeks.map((monday) => (
           <View key={monday} style={{ gap }}>
             {Array.from({ length: 7 }, (_, d) => addDays(monday, d)).map((date) => (
               <View
                 key={date}
-                testID={trained.has(date) ? "trained" : undefined}
-                style={{ width: size, height: size, borderRadius: 2, backgroundColor: fill(date) }}
+                testID={outside(date) ? "outside" : trained.has(date) ? "trained" : undefined}
+                style={square(date)}
               />
             ))}
           </View>

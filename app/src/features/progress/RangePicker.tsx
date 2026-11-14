@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { View } from "react-native";
 
-import { addDays, isDate, shortDate } from "../../domain/dates";
-import { Button, Chip, Field, Sheet, space } from "../../ui";
+import { addDays, monthOf, shortDate } from "../../domain/dates";
+import { Button, Chip, Sheet, space } from "../../ui";
+import { DateRangeCalendar, type Span } from "./DateRangeCalendar";
 import { rangeOf, type Range } from "./shared";
 
 // A preset counts back from today; a custom range is fixed dates.
@@ -29,11 +30,7 @@ type Props = { range: Range; choice: RangeChoice; onChange: (choice: RangeChoice
 export function RangePicker({ range, choice, onChange }: Props) {
   const [open, setOpen] = useState(false);
   const [custom, setCustom] = useState(!("days" in choice));
-  const [from, setFrom] = useState(range.from);
-  const [to, setTo] = useState(range.to);
-  const badDate = "Enter a date as YYYY-MM-DD";
-  const fromError = isDate(from) ? undefined : badDate;
-  const toError = !isDate(to) ? badDate : to < from ? "Must be on or after From" : undefined;
+  const [span, setSpan] = useState<Span>(() => ("days" in choice ? {} : choice));
   const pick = (next: RangeChoice) => {
     onChange(next);
     setOpen(false);
@@ -47,11 +44,12 @@ export function RangePicker({ range, choice, onChange }: Props) {
         onPress={() => setOpen(true)}
         testID="progress-range"
       />
+      {/* Short for the chips alone; the calendar needs most of the window. */}
       <Sheet
         open={open}
         onClose={() => setOpen(false)}
         title="Range"
-        snapPoints={[0.6]}
+        snapPoints={[custom ? 0.85 : 0.3]}
         testID="progress-range-sheet"
       >
         <View style={{ flexDirection: "row", flexWrap: "wrap", gap: space[2] }}>
@@ -70,28 +68,15 @@ export function RangePicker({ range, choice, onChange }: Props) {
         </View>
         {custom && (
           <>
-            <Field
-              label="From"
-              value={from}
-              onChangeText={setFrom}
-              placeholder="YYYY-MM-DD"
-              autoCapitalize="none"
-              autoCorrect={false}
-              error={fromError}
-            />
-            <Field
-              label="To"
-              value={to}
-              onChangeText={setTo}
-              placeholder="YYYY-MM-DD"
-              autoCapitalize="none"
-              autoCorrect={false}
-              error={toError}
+            <DateRangeCalendar
+              span={span}
+              initialMonth={monthOf(span.to ?? range.to)}
+              onChange={setSpan}
             />
             <Button
               title="Apply"
-              disabled={!!(fromError || toError)}
-              onPress={() => pick({ from, to })}
+              disabled={!span.from || !span.to}
+              onPress={() => pick({ from: span.from!, to: span.to! })}
             />
           </>
         )}

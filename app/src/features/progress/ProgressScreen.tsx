@@ -53,7 +53,7 @@ export default function ProgressScreen({ insights, store, today, unit }: Progres
       <RangePicker range={range} choice={choice} onChange={pickRange} />
       <Fragment key={generation}>
         <WeightSection {...section} />
-        <NutritionSection {...section} trend={trend} />
+        <NutritionSection {...section} />
         <LiftSection {...section} />
         <VolumeSection insights={insights} store={store} weekStart={mondayOf(today)} />
         <MuscleTrendSection {...section} trend={trend} />
