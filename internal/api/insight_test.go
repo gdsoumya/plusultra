@@ -110,6 +110,11 @@ func TestInsightsOverAPI(t *testing.T) {
 		w.GetMacros().GetActual().GetKcal() != 380 || !lb(w.GetWeight().GetEnd(), 81) {
 		t.Fatalf("weekly trend week = %v", w)
 	}
+	trendDays := call(c.WeeklyTrend(ctx, as(tok, &pb.WeeklyTrendRequest{Dates: &pb.DateRange{From: "2026-11-09", To: "2026-11-10"}, Daily: true}))).ok(t).GetWeeks()
+	if len(trendDays) != 2 || trendDays[0].GetWeekStart() != "2026-11-09" || trendDays[0].GetSetsPerMuscle()["chest"] != 0 ||
+		trendDays[1].GetWeekStart() != "2026-11-10" || trendDays[1].GetSetsPerMuscle()["chest"] != 1 || !lb(trendDays[1].GetWeight().GetEnd(), 81) {
+		t.Fatalf("daily trend = %v", trendDays)
+	}
 	_, err = c.WeeklyTrend(ctx, as(tok, &pb.WeeklyTrendRequest{}))
 	assertCode(t, err, connect.CodeInvalidArgument)
 	_, err = c.WeeklyTrend(ctx, as(tok, &pb.WeeklyTrendRequest{Dates: &pb.DateRange{From: "2020-01-01", To: "2026-11-10"}}))

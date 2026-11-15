@@ -325,7 +325,7 @@ func TestWeeklyTrendBuckets(t *testing.T) {
 	f.weigh("2026-11-17", 80)
 
 	// Wednesday Nov 4 to Monday Nov 16 touches the weeks of Nov 2, Nov 9 and Nov 16.
-	weeks, err := f.svc.WeeklyTrend(f.ctx, f.user, day("2026-11-04"), day("2026-11-16"), day("2026-12-01"))
+	weeks, err := f.svc.WeeklyTrend(f.ctx, f.user, day("2026-11-04"), day("2026-11-16"), day("2026-12-01"), false)
 	must(t, err)
 	if len(weeks) != 3 {
 		t.Fatalf("weeks = %d, want 3", len(weeks))
@@ -349,9 +349,36 @@ func TestWeeklyTrendBuckets(t *testing.T) {
 		t.Errorf("week 2 = %+v", weeks[2])
 	}
 
-	_, err = f.svc.WeeklyTrend(f.ctx, f.user, day("2024-01-01"), day("2026-11-16"), day("2026-12-01"))
+	_, err = f.svc.WeeklyTrend(f.ctx, f.user, day("2024-01-01"), day("2026-11-16"), day("2026-12-01"), false)
 	if !errors.Is(err, ErrInvalid) {
 		t.Errorf("three-year trend err = %v, want ErrInvalid", err)
+	}
+}
+
+// A daily trend has one summary per day of the range, capped at maxDailySpan days.
+func TestWeeklyTrendDaily(t *testing.T) {
+	f := newFixture(t)
+	f.exercise("squat", "quads")
+	f.record("2026-11-03", true, entry("squat", set(5, 100, model.UnitKg), set(5, 100, model.UnitKg)))
+	f.record("2026-11-05", true, entry("squat", set(5, 100, model.UnitKg)))
+
+	days, err := f.svc.WeeklyTrend(f.ctx, f.user, day("2026-11-03"), day("2026-11-05"), day("2026-12-01"), true)
+	must(t, err)
+	if len(days) != 3 {
+		t.Fatalf("days = %d, want 3", len(days))
+	}
+	for i, want := range []int{2, 0, 1} {
+		if start := day("2026-11-03").AddDate(0, 0, i); !days[i].WeekStart.Equal(start) {
+			t.Errorf("day %d starts %s, want %s", i, days[i].WeekStart.Format(time.DateOnly), start.Format(time.DateOnly))
+		}
+		if got := days[i].SetsPerMuscle["quadriceps"]; got != want {
+			t.Errorf("day %d quadriceps sets = %d, want %d", i, got, want)
+		}
+	}
+
+	_, err = f.svc.WeeklyTrend(f.ctx, f.user, day("2026-01-01"), day("2026-11-05"), day("2026-12-01"), true)
+	if !errors.Is(err, ErrInvalid) {
+		t.Errorf("ten-month daily trend err = %v, want ErrInvalid", err)
 	}
 }
 

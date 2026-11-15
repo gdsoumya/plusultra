@@ -148,17 +148,31 @@ describe("ProgressScreen", () => {
     expect(nutrition.getByText("Week")).toBeOnTheScreen();
   });
 
-  it("charts a muscle group's sets per week, all groups by default", async () => {
+  it("charts a muscle group's sets per day up to four weeks, per week beyond", async () => {
     const { api, store } = await setup();
+    const trend = jest.spyOn(api.insights, "weeklyTrend");
     await mount(api.insights, store);
     const muscles = card("progress-muscles");
-    const all = await muscles.findByLabelText(/^All: \d+ working sets over 5 weeks/);
+    const all = await muscles.findByLabelText(/^All: \d+ working sets over 28 days, \d+ a day\.$/);
     expect(all).toBeOnTheScreen();
+    expect(trend).toHaveBeenLastCalledWith({
+      dates: { from: "2026-10-15", to: today },
+      daily: true,
+    });
     expect(muscles.getByLabelText("All")).toBeChecked();
     expect(muscles.queryByLabelText("Neck")).toBeNull();
     await fireEvent.press(muscles.getByLabelText("Quadriceps"));
     expect(muscles.getByLabelText(/^Quadriceps: \d+ working sets/)).toBeOnTheScreen();
-    expect(muscles.getAllByTestId("bar")).toHaveLength(5);
+    expect(muscles.getAllByTestId("bar")).toHaveLength(28);
+    const sheet = await openRanges();
+    await fireEvent.press(sheet.getByLabelText("3 months"));
+    expect(
+      await muscles.findByLabelText(/^Quadriceps: \d+ working sets over 14 weeks, \d+ a week\.$/),
+    ).toBeOnTheScreen();
+    expect(trend).toHaveBeenLastCalledWith({
+      dates: { from: "2026-08-13", to: today },
+      daily: false,
+    });
   });
 
   it("shows the training days as a heatmap with the weekly rate and streak", async () => {
@@ -192,7 +206,7 @@ describe("ProgressScreen", () => {
     expect(sheet.getByText(/^From (Oct 1|1 Oct) – To (Oct 31|31 Oct)$/)).toBeOnTheScreen();
     await fireEvent.press(sheet.getByRole("button", { name: "Apply" }));
     const dates = { from: "2026-10-01", to: "2026-10-31" };
-    expect(trend).toHaveBeenLastCalledWith({ dates });
+    expect(trend).toHaveBeenLastCalledWith({ dates, daily: false });
     const label = /Oct 1 – Oct 31|1 Oct – 31 Oct/;
     expect(within(screen.getByTestId("progress-range")).getByText(label)).toBeOnTheScreen();
     await first.unmount();
@@ -202,7 +216,10 @@ describe("ProgressScreen", () => {
     expect(sheet.getByLabelText("Custom")).toBeChecked();
     expect(sheet.getByRole("button", { name: "Thursday 15 October" })).toBeSelected();
     await fireEvent.press(sheet.getByLabelText("4 weeks"));
-    expect(trend).toHaveBeenLastCalledWith({ dates: { from: "2026-10-15", to: today } });
+    expect(trend).toHaveBeenLastCalledWith({
+      dates: { from: "2026-10-15", to: today },
+      daily: true,
+    });
   });
 
   it("plots the lift's max weight, volume or reps instead of its e1RM", async () => {
@@ -331,7 +348,7 @@ describe("ProgressScreen", () => {
       const dates = { from: "2026-08-13", to: today };
       expect(insights.weightTrend).toHaveBeenLastCalledWith({ dates });
       expect(insights.adherence).toHaveBeenLastCalledWith({ dates });
-      expect(insights.weeklyTrend).toHaveBeenLastCalledWith({ dates });
+      expect(insights.weeklyTrend).toHaveBeenLastCalledWith({ dates, daily: false });
       expect(screen.queryByTestId("progress-range-sheet")).toBeNull();
     });
   });

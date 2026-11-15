@@ -905,7 +905,9 @@ func (x *AdherenceResponse) GetCounts() *AdherenceCounts {
 type WeeklyTrendRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Dates to cover; every week touching them is summarised.
-	Dates         *DateRange `protobuf:"bytes,1,opt,name=dates,proto3" json:"dates,omitempty"`
+	Dates *DateRange `protobuf:"bytes,1,opt,name=dates,proto3" json:"dates,omitempty"`
+	// One summary per day of the range instead of per week; the range may span 90 days at most.
+	Daily         bool `protobuf:"varint,2,opt,name=daily,proto3" json:"daily,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -947,10 +949,17 @@ func (x *WeeklyTrendRequest) GetDates() *DateRange {
 	return nil
 }
 
+func (x *WeeklyTrendRequest) GetDaily() bool {
+	if x != nil {
+		return x.Daily
+	}
+	return false
+}
+
 // WeeklyTrendResponse is the output of WeeklyTrend.
 type WeeklyTrendResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// One summary per Monday-start week, oldest first, from the week of from to the week of to; e1rm is empty.
+	// One summary per bucket, oldest first: each Monday-start week from the week of from to the week of to, or each day when daily. week_start is the bucket's first day; e1rm is empty.
 	Weeks         []*WeeklySummaryResponse `protobuf:"bytes,1,rep,name=weeks,proto3" json:"weeks,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1062,11 +1071,12 @@ const file_plusultra_v1_insight_proto_rawDesc = "" +
 	"\x10AdherenceRequest\x125\n" +
 	"\x05dates\x18\x01 \x01(\v2\x17.plusultra.v1.DateRangeB\x06\xbaH\x03\xc8\x01\x01R\x05dates\"J\n" +
 	"\x11AdherenceResponse\x125\n" +
-	"\x06counts\x18\x01 \x01(\v2\x1d.plusultra.v1.AdherenceCountsR\x06counts\"K\n" +
+	"\x06counts\x18\x01 \x01(\v2\x1d.plusultra.v1.AdherenceCountsR\x06counts\"a\n" +
 	"\x12WeeklyTrendRequest\x125\n" +
-	"\x05dates\x18\x01 \x01(\v2\x17.plusultra.v1.DateRangeB\x06\xbaH\x03\xc8\x01\x01R\x05dates\"P\n" +
+	"\x05dates\x18\x01 \x01(\v2\x17.plusultra.v1.DateRangeB\x06\xbaH\x03\xc8\x01\x01R\x05dates\x12\x14\n" +
+	"\x05daily\x18\x02 \x01(\bR\x05daily\"P\n" +
 	"\x13WeeklyTrendResponse\x129\n" +
-	"\x05weeks\x18\x01 \x03(\v2#.plusultra.v1.WeeklySummaryResponseR\x05weeks2\x89\x0e\n" +
+	"\x05weeks\x18\x01 \x03(\v2#.plusultra.v1.WeeklySummaryResponseR\x05weeks2\xba\x0e\n" +
 	"\x0eInsightService\x12\xa1\x03\n" +
 	"\rWeeklySummary\x12\".plusultra.v1.WeeklySummaryRequest\x1a#.plusultra.v1.WeeklySummaryResponse\"\xc6\x02\x8a\xb5\x18\xc1\x02\n" +
 	"\x0eweekly_summary\x12\x0eWeekly Summary\x1a\x9a\x02Summarises one week from its Monday (weekStart, YYYY-MM-DD): workout adherence, completed working sets per muscle group (and per region when exercises name one), best estimated 1RM per exercise, macros against target and body weight. Use it for weekly reviews and coaching feedback. \x01(\x01\x12\xcb\x02\n" +
@@ -1075,9 +1085,9 @@ const file_plusultra_v1_insight_proto_rawDesc = "" +
 	"\vWeightTrend\x12 .plusultra.v1.WeightTrendRequest\x1a!.plusultra.v1.WeightTrendResponse\"\xe4\x01\x8a\xb5\x18\xdf\x01\n" +
 	"\fweight_trend\x12\fWeight Trend\x1a\xbc\x01Returns body weight check-ins in a local date range with a 7-day moving average and the weekly rate of change (negative when losing). Use it to judge a cut or bulk against its target rate. \x01(\x01\x12\x87\x02\n" +
 	"\tAdherence\x12\x1e.plusultra.v1.AdherenceRequest\x1a\x1f.plusultra.v1.AdherenceResponse\"\xb8\x01\x8a\xb5\x18\xb3\x01\n" +
-	"\tadherence\x12\x10Adherence Counts\x1a\x8f\x01Counts planned, done, partial and skipped days in a local date range (YYYY-MM-DD). Use it to report consistency over a training block or month. \x01(\x01\x12\xae\x03\n" +
-	"\vWeeklyTrend\x12 .plusultra.v1.WeeklyTrendRequest\x1a!.plusultra.v1.WeeklyTrendResponse\"\xd9\x02\x8a\xb5\x18\xd4\x02\n" +
-	"\fweekly_trend\x12\fWeekly Trend\x1a\xb1\x02Summarises every Monday-start week touching a local date range (YYYY-MM-DD), oldest first: workout adherence, completed working sets per muscle group and region, macros against target and body weight. Estimated 1RMs are left out; use lift_history for those. Use it to chart progress over a training block. \x01(\x01\x1a\x0e\x92\xb5\x18\n" +
+	"\tadherence\x12\x10Adherence Counts\x1a\x8f\x01Counts planned, done, partial and skipped days in a local date range (YYYY-MM-DD). Use it to report consistency over a training block or month. \x01(\x01\x12\xdf\x03\n" +
+	"\vWeeklyTrend\x12 .plusultra.v1.WeeklyTrendRequest\x1a!.plusultra.v1.WeeklyTrendResponse\"\x8a\x03\x8a\xb5\x18\x85\x03\n" +
+	"\fweekly_trend\x12\fWeekly Trend\x1a\xe2\x02Summarises every Monday-start week touching a local date range (YYYY-MM-DD), or with daily every day of it (90 days at most), oldest first: workout adherence, completed working sets per muscle group and region, macros against target and body weight. Estimated 1RMs are left out; use lift_history for those. Use it to chart progress over a training block. \x01(\x01\x1a\x0e\x92\xb5\x18\n" +
 	"\n" +
 	"\binsight_B?Z=github.com/gdsoumya/plusultra/gen/go/plusultra/v1;plusultrav1b\x06proto3"
 

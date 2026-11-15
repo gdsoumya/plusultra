@@ -124,7 +124,7 @@ func (s *insightServer) WeeklyTrend(ctx context.Context, req *connect.Request[pb
 	if err != nil {
 		return nil, err
 	}
-	weeks, err := s.insights.WeeklyTrend(ctx, userID, from, to, today)
+	weeks, err := s.insights.WeeklyTrend(ctx, userID, from, to, today, req.Msg.GetDaily())
 	if err != nil {
 		return nil, err
 	}

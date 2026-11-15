@@ -5,13 +5,14 @@ import { muscleGroups } from "../../domain/muscles";
 import { Card, Chip, ChipStrip, EmptyState, Text } from "../../ui";
 import { ComboChart } from "../../ui/charts/ComboChart";
 import { CachedView } from "./CachedView";
-import { capitalize, type SectionProps } from "./shared";
+import { capitalize, DAILY_UP_TO, type SectionProps } from "./shared";
 import type { Trend } from "./useWeeklyTrend";
 
-type Props = Pick<SectionProps, "width"> & { trend: Trend };
+type Props = Pick<SectionProps, "width" | "range"> & { trend: Trend };
 
-export function MuscleTrendSection({ width, trend }: Props) {
+export function MuscleTrendSection({ width, range, trend }: Props) {
   const [picked, setPicked] = useState("All");
+  const bucket = range.days <= DAILY_UP_TO ? "day" : "week";
 
   return (
     <Card testID="progress-muscles">
@@ -56,9 +57,9 @@ export function MuscleTrendSection({ width, trend }: Props) {
                 labels={labels}
                 bars={sets}
                 format={String}
-                summary={`${capitalize(group)}: ${total} working sets over ${weeks.length} weeks, ${Math.round(total / weeks.length)} a week.`}
+                summary={`${capitalize(group)}: ${total} working sets over ${weeks.length} ${bucket}s, ${Math.round(total / weeks.length)} a ${bucket}.`}
                 table={{
-                  columns: ["Week", "Sets"],
+                  columns: [capitalize(bucket), "Sets"],
                   rows: weeks.map((_, i) => [labels[i], String(sets[i])]),
                 }}
               />

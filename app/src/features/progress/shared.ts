@@ -8,6 +8,9 @@ import type { Weight } from "../../gen/plusultra/v1/common_pb";
 
 export type Range = { from: string; to: string; days: number };
 
+// Up to four weeks a bucket is a day; beyond that a Monday-started week.
+export const DAILY_UP_TO = 28;
+
 export const rangeOf = (from: string, to: string): Range => ({
   from,
   to,

@@ -53,12 +53,12 @@ service InsightService {
       idempotent: true
     };
   }
-  // WeeklyTrend summarises every week that touches a date range, oldest first: adherence, sets per muscle group and region, macros and body weight. Estimated 1RMs are left out.
+  // WeeklyTrend summarises every week that touches a date range, or every day of it, oldest first: adherence, sets per muscle group and region, macros and body weight. Estimated 1RMs are left out.
   rpc WeeklyTrend(WeeklyTrendRequest) returns (WeeklyTrendResponse) {
     option (protomcp.v1.tool) = {
       name: "weekly_trend"
       title: "Weekly Trend"
-      description: "Summarises every Monday-start week touching a local date range (YYYY-MM-DD), oldest first: workout adherence, completed working sets per muscle group and region, macros against target and body weight. Estimated 1RMs are left out; use lift_history for those. Use it to chart progress over a training block."
+      description: "Summarises every Monday-start week touching a local date range (YYYY-MM-DD), or with daily every day of it (90 days at most), oldest first: workout adherence, completed working sets per muscle group and region, macros against target and body weight. Estimated 1RMs are left out; use lift_history for those. Use it to chart progress over a training block."
       read_only: true
       idempotent: true
     };
@@ -208,10 +208,12 @@ message AdherenceResponse {
 message WeeklyTrendRequest {
   // Dates to cover; every week touching them is summarised.
   DateRange dates = 1 [(buf.validate.field).required = true];
+  // One summary per day of the range instead of per week; the range may span 90 days at most.
+  bool daily = 2;
 }
 
 // WeeklyTrendResponse is the output of WeeklyTrend.
 message WeeklyTrendResponse {
-  // One summary per Monday-start week, oldest first, from the week of from to the week of to; e1rm is empty.
+  // One summary per bucket, oldest first: each Monday-start week from the week of from to the week of to, or each day when daily. week_start is the bucket's first day; e1rm is empty.
   repeated WeeklySummaryResponse weeks = 1;
 }

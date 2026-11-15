@@ -7,12 +7,9 @@ import { fromKg, inUnit } from "../../domain/units";
 import { Card, EmptyState, Text } from "../../ui";
 import { ComboChart } from "../../ui/charts/ComboChart";
 import { StatTiles } from "../../ui/charts/StatTiles";
-import { signed, type SectionProps } from "./shared";
+import { DAILY_UP_TO, signed, type SectionProps } from "./shared";
 
 type Props = Pick<SectionProps, "store" | "range" | "unit" | "width">;
-
-// Up to four weeks a bucket is a day; beyond that a Monday-started week.
-export const DAILY_UP_TO = 28;
 
 const avg = (values: number[]) =>
   values.length ? values.reduce((t, v) => t + v, 0) / values.length : undefined;

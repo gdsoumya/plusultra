@@ -45,8 +45,8 @@ export function insights(db: MockDb): ServiceImpl<typeof InsightService> {
     return counts;
   }
 
-  function weeklySummary(weekStart: string) {
-    const dates = { from: weekStart, to: addDays(weekStart, 6) };
+  function weeklySummary(weekStart: string, to = addDays(weekStart, 6)) {
+    const dates = { from: weekStart, to };
     const setsPerMuscle: Record<string, number> = {};
     const setsPerRegion: Record<string, number> = {};
     const best = new Map<string, number>();
@@ -87,10 +87,12 @@ export function insights(db: MockDb): ServiceImpl<typeof InsightService> {
 
   return {
     weeklySummary: ({ weekStart }) => weeklySummary(weekStart),
-    weeklyTrend({ dates }) {
+    weeklyTrend({ dates, daily }) {
       const { from, to } = required(dates, "dates");
+      const step = daily ? 1 : 7;
       const weeks = [];
-      for (let w = mondayOf(from); w <= to; w = addDays(w, 7)) weeks.push(weeklySummary(w));
+      for (let d = daily ? from : mondayOf(from); d <= to; d = addDays(d, step))
+        weeks.push(weeklySummary(d, addDays(d, step - 1)));
       return { weeks };
     },
     liftHistory({ slug, dates }) {

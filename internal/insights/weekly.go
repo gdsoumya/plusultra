@@ -26,6 +26,7 @@ type WeightSummary struct{ Start, End, Avg7 *model.Weight }
 
 // Summary is one week of training, nutrition and body weight.
 type Summary struct {
+	// WeekStart is the bucket's first day: a Monday, or the day itself in a daily trend.
 	WeekStart time.Time
 	Adherence Counts
 	// SetsPerMuscle counts each completed working set once for every primary
@@ -50,28 +51,35 @@ func (s *Service) WeeklySummary(ctx context.Context, userID uuid.UUID, weekStart
 	if err != nil {
 		return Summary{}, err
 	}
-	return s.week(ctx, userID, weekStart, today, muscles)
+	return s.span(ctx, userID, weekStart, weekStart.AddDate(0, 0, 6), today, muscles)
 }
 
-// maxTrendSpan bounds a WeeklyTrend range so a request cannot fan out into
-// thousands of per-week queries.
-const maxTrendSpan = 2 // years
+// The trend caps bound a WeeklyTrend range so a request cannot fan out into
+// thousands of per-bucket queries.
+const (
+	maxTrendSpan = 2  // years of weeks
+	maxDailySpan = 90 // days
+)
 
 // WeeklyTrend summarises every Monday-start week from the week of from to the
-// week of to, oldest first, with E1RM left empty. Ranges longer than two years
-// fail with ErrInvalid.
-func (s *Service) WeeklyTrend(ctx context.Context, userID uuid.UUID, from, to, today time.Time) ([]Summary, error) {
-	if to.After(from.AddDate(maxTrendSpan, 0, 0)) {
-		return nil, fmt.Errorf("%w: weekly trend range longer than %d years", ErrInvalid, maxTrendSpan)
+// week of to, or with daily every day of the range, oldest first, with E1RM left
+// empty. Ranges longer than two years (90 days when daily) fail with ErrInvalid.
+func (s *Service) WeeklyTrend(ctx context.Context, userID uuid.UUID, from, to, today time.Time, daily bool) ([]Summary, error) {
+	start, step, limit := from.AddDate(0, 0, -int((from.Weekday()+6)%7)), 7, from.AddDate(maxTrendSpan, 0, 0)
+	if daily {
+		start, step, limit = from, 1, from.AddDate(0, 0, maxDailySpan)
+	}
+	if to.After(limit) {
+		return nil, fmt.Errorf("%w: trend range %s to %s is too long", ErrInvalid, from.Format(time.DateOnly), to.Format(time.DateOnly))
 	}
 	muscles, err := s.muscleIndex(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
-	// shortcut: one round of queries per week, fine for the two-year cap; bucket a single range query when it gets slow.
+	// shortcut: one round of queries per bucket, fine under the caps; bucket a single range query when it gets slow.
 	var out []Summary
-	for w := from.AddDate(0, 0, -int((from.Weekday()+6)%7)); !w.After(to); w = w.AddDate(0, 0, 7) {
-		sum, err := s.week(ctx, userID, w, today, muscles)
+	for b := start; !b.After(to); b = b.AddDate(0, 0, step) {
+		sum, err := s.span(ctx, userID, b, b.AddDate(0, 0, step-1), today, muscles)
 		if err != nil {
 			return nil, err
 		}
@@ -81,17 +89,16 @@ func (s *Service) WeeklyTrend(ctx context.Context, userID uuid.UUID, from, to, t
 	return out, nil
 }
 
-func (s *Service) week(ctx context.Context, userID uuid.UUID, weekStart, today time.Time, muscles map[string][]string) (Summary, error) {
-	end := weekStart.AddDate(0, 0, 6)
-	sum := Summary{WeekStart: weekStart, SetsPerMuscle: map[string]int{}, SetsPerRegion: map[string]int{}, E1RM: map[string]model.Weight{}}
+func (s *Service) span(ctx context.Context, userID uuid.UUID, start, end, today time.Time, muscles map[string][]string) (Summary, error) {
+	sum := Summary{WeekStart: start, SetsPerMuscle: map[string]int{}, SetsPerRegion: map[string]int{}, E1RM: map[string]model.Weight{}}
 	var err error
-	if sum.Adherence, err = s.workoutCounts(ctx, userID, weekStart, end, today); err != nil {
+	if sum.Adherence, err = s.workoutCounts(ctx, userID, start, end, today); err != nil {
 		return sum, err
 	}
-	if err = s.trainingStats(ctx, userID, weekStart, end, muscles, &sum); err != nil {
+	if err = s.trainingStats(ctx, userID, start, end, muscles, &sum); err != nil {
 		return sum, err
 	}
-	days, err := s.mealDays(ctx, userID, weekStart, end)
+	days, err := s.mealDays(ctx, userID, start, end)
 	if err != nil {
 		return sum, err
 	}
@@ -112,7 +119,7 @@ func (s *Service) week(ctx context.Context, userID uuid.UUID, weekStart, today t
 	if n := sum.Macros.ActualDays; n > 0 {
 		sum.Macros.ActualAvg = actual.Scale(1 / float64(n))
 	}
-	sum.Weight, err = s.weekWeight(ctx, userID, weekStart, end)
+	sum.Weight, err = s.weekWeight(ctx, userID, start, end)
 	return sum, err
 }
 

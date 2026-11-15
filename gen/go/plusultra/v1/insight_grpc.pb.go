@@ -40,7 +40,7 @@ type InsightServiceClient interface {
 	WeightTrend(ctx context.Context, in *WeightTrendRequest, opts ...grpc.CallOption) (*WeightTrendResponse, error)
 	// Adherence counts planned, done, partial and skipped days in a date range.
 	Adherence(ctx context.Context, in *AdherenceRequest, opts ...grpc.CallOption) (*AdherenceResponse, error)
-	// WeeklyTrend summarises every week that touches a date range, oldest first: adherence, sets per muscle group and region, macros and body weight. Estimated 1RMs are left out.
+	// WeeklyTrend summarises every week that touches a date range, or every day of it, oldest first: adherence, sets per muscle group and region, macros and body weight. Estimated 1RMs are left out.
 	WeeklyTrend(ctx context.Context, in *WeeklyTrendRequest, opts ...grpc.CallOption) (*WeeklyTrendResponse, error)
 }
 
@@ -116,7 +116,7 @@ type InsightServiceServer interface {
 	WeightTrend(context.Context, *WeightTrendRequest) (*WeightTrendResponse, error)
 	// Adherence counts planned, done, partial and skipped days in a date range.
 	Adherence(context.Context, *AdherenceRequest) (*AdherenceResponse, error)
-	// WeeklyTrend summarises every week that touches a date range, oldest first: adherence, sets per muscle group and region, macros and body weight. Estimated 1RMs are left out.
+	// WeeklyTrend summarises every week that touches a date range, or every day of it, oldest first: adherence, sets per muscle group and region, macros and body weight. Estimated 1RMs are left out.
 	WeeklyTrend(context.Context, *WeeklyTrendRequest) (*WeeklyTrendResponse, error)
 	mustEmbedUnimplementedInsightServiceServer()
 }

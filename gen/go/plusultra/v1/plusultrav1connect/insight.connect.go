@@ -60,7 +60,7 @@ type InsightServiceClient interface {
 	WeightTrend(context.Context, *connect.Request[v1.WeightTrendRequest]) (*connect.Response[v1.WeightTrendResponse], error)
 	// Adherence counts planned, done, partial and skipped days in a date range.
 	Adherence(context.Context, *connect.Request[v1.AdherenceRequest]) (*connect.Response[v1.AdherenceResponse], error)
-	// WeeklyTrend summarises every week that touches a date range, oldest first: adherence, sets per muscle group and region, macros and body weight. Estimated 1RMs are left out.
+	// WeeklyTrend summarises every week that touches a date range, or every day of it, oldest first: adherence, sets per muscle group and region, macros and body weight. Estimated 1RMs are left out.
 	WeeklyTrend(context.Context, *connect.Request[v1.WeeklyTrendRequest]) (*connect.Response[v1.WeeklyTrendResponse], error)
 }
 
@@ -152,7 +152,7 @@ type InsightServiceHandler interface {
 	WeightTrend(context.Context, *connect.Request[v1.WeightTrendRequest]) (*connect.Response[v1.WeightTrendResponse], error)
 	// Adherence counts planned, done, partial and skipped days in a date range.
 	Adherence(context.Context, *connect.Request[v1.AdherenceRequest]) (*connect.Response[v1.AdherenceResponse], error)
-	// WeeklyTrend summarises every week that touches a date range, oldest first: adherence, sets per muscle group and region, macros and body weight. Estimated 1RMs are left out.
+	// WeeklyTrend summarises every week that touches a date range, or every day of it, oldest first: adherence, sets per muscle group and region, macros and body weight. Estimated 1RMs are left out.
 	WeeklyTrend(context.Context, *connect.Request[v1.WeeklyTrendRequest]) (*connect.Response[v1.WeeklyTrendResponse], error)
 }
 
