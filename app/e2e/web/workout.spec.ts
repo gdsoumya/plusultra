@@ -62,6 +62,11 @@ test("logs today's workout and finishes it", async ({ page }) => {
 
   // The Finish tile ends the carousel.
   await page.getByTestId("finish-workout").click();
+  // Unticked sets ask first.
+  await page
+    .getByRole("button", { name: "Finish workout" })
+    .click({ timeout: 2000 })
+    .catch(() => {});
   await expect(page.getByTestId("today-screen")).toBeVisible();
 });
 
@@ -113,6 +118,11 @@ test("a finished workout stays done while the app is open", async ({ page }) => 
   await expect(page.getByRole("checkbox").first()).toBeVisible();
   await completeAllSets(page);
   await page.getByTestId("finish-workout").click();
+  // Unticked sets ask first.
+  await page
+    .getByRole("button", { name: "Finish workout" })
+    .click({ timeout: 2000 })
+    .catch(() => {});
   await expect(page.getByTestId("today-screen")).toBeVisible();
 
   // Back into the record without a reload: Today's workout card opens the existing record.

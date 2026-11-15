@@ -225,8 +225,9 @@ shot 08-today-relaunched
 tab "Settings"
 agent-device wait 'id="settings-screen"'
 press "Account, E2E Android"
-agent-device scroll down --until 'label="Log out"' > /dev/null
-press "Log out"
+agent-device scroll down --until 'label="Sign out"' > /dev/null
+press "Sign out"
+press "Yes, sign out"
 agent-device wait 'id="server-screen"'
 press "Connect"
 agent-device wait 'id="login-screen"'
@@ -266,6 +267,8 @@ agent-device press 'id="rest-timer-action"' --settle > /dev/null
 # The last exercise's pane ends with Finish; a sideways scroll there would swipe exercises.
 agent-device scroll down --until 'id="next-exercise"' > /dev/null
 agent-device press 'id="next-exercise"' --settle > /dev/null
+# Unticked sets ask first.
+if agent-device snapshot -i | grep -q 'Finish workout'; then press "Finish workout"; fi
 agent-device wait 'id="today-screen"'
 wait_text "per side"
 # The finished workout opens editable, without a Finish button.
