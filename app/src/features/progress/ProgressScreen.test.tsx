@@ -200,7 +200,7 @@ describe("ProgressScreen", () => {
     await fireEvent.press(sheet.getByRole("button", { name: "Thursday 15 October" }));
     // A tap before From restarts the span.
     await fireEvent.press(sheet.getByRole("button", { name: "Thursday 1 October" }));
-    expect(sheet.getByText(/^From (Oct 1|1 Oct) – To …$/)).toBeOnTheScreen();
+    expect(sheet.getByText(/^From (Oct 1|1 Oct) – To … · up to a year$/)).toBeOnTheScreen();
     expect(sheet.getByRole("button", { name: "Apply" })).toBeDisabled();
     await fireEvent.press(sheet.getByRole("button", { name: "Saturday 31 October" }));
     expect(sheet.getByText(/^From (Oct 1|1 Oct) – To (Oct 31|31 Oct)$/)).toBeOnTheScreen();
@@ -220,6 +220,13 @@ describe("ProgressScreen", () => {
       dates: { from: "2026-10-15", to: today },
       daily: true,
     });
+  });
+
+  it("falls back to four weeks when the remembered custom span is longer than a year", async () => {
+    const { api, store } = await setup();
+    store.setKv("progress.range", { from: "2025-01-01", to: today });
+    await mount(api.insights, store);
+    expect(within(screen.getByTestId("progress-range")).getByText("4 weeks")).toBeOnTheScreen();
   });
 
   it("plots the lift's max weight, volume or reps instead of its e1RM", async () => {

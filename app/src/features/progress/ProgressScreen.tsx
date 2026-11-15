@@ -12,7 +12,7 @@ import { AdherenceSection } from "./AdherenceSection";
 import { LiftSection } from "./LiftSection";
 import { MuscleTrendSection } from "./MuscleTrendSection";
 import { NutritionSection } from "./NutritionSection";
-import { rangeFor, RangePicker, type RangeChoice } from "./RangePicker";
+import { rangeFor, RangePicker, validChoice, type RangeChoice } from "./RangePicker";
 import { TrainingSection } from "./TrainingSection";
 import { useWeeklyTrend } from "./useWeeklyTrend";
 import { VolumeSection } from "./VolumeSection";
@@ -29,9 +29,10 @@ export type ProgressScreenProps = {
 const RANGE_KEY = "progress.range";
 
 export default function ProgressScreen({ insights, store, today, unit }: ProgressScreenProps) {
-  const [choice, setChoice] = useState<RangeChoice>(
-    () => store.getKv<RangeChoice>(RANGE_KEY) ?? { days: 28 },
-  );
+  const [choice, setChoice] = useState<RangeChoice>(() => {
+    const saved = store.getKv<RangeChoice>(RANGE_KEY);
+    return saved && validChoice(saved) ? saved : { days: 28 };
+  });
   const pickRange = (next: RangeChoice) => {
     store.setKv(RANGE_KEY, next);
     setChoice(next);

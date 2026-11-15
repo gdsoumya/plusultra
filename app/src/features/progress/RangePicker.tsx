@@ -3,7 +3,7 @@ import { View } from "react-native";
 
 import { addDays, monthOf, shortDate } from "../../domain/dates";
 import { Button, Chip, Sheet, space } from "../../ui";
-import { DateRangeCalendar, type Span } from "./DateRangeCalendar";
+import { DateRangeCalendar, tooLong, type Span } from "./DateRangeCalendar";
 import { rangeOf, type Range } from "./shared";
 
 // A preset is the last N dates, today included; a custom range is fixed dates.
@@ -16,6 +16,9 @@ const presets = [
   { label: "6 months", days: 182 },
   { label: "1 year", days: 365 },
 ];
+
+export const validChoice = (choice: RangeChoice) =>
+  "days" in choice || !tooLong(choice.from, choice.to);
 
 export const rangeFor = (choice: RangeChoice, today: string): Range =>
   "days" in choice
@@ -77,7 +80,7 @@ export function RangePicker({ range, choice, onChange }: Props) {
             />
             <Button
               title="Apply"
-              disabled={!span.from || !span.to}
+              disabled={!span.from || !span.to || tooLong(span.from, span.to)}
               onPress={() => pick({ from: span.from!, to: span.to! })}
             />
           </>

@@ -34,7 +34,7 @@ describe("RangePicker", () => {
     await fireEvent.press(sheet.getByRole("button", { name: "Previous month" }));
     expect(sheet.getByText("October 2026")).toBeOnTheScreen();
     await fireEvent.press(sheet.getByRole("button", { name: "Thursday 1 October" }));
-    expect(sheet.getByText(/^From (Oct 1|1 Oct) – To …$/)).toBeOnTheScreen();
+    expect(sheet.getByText(/^From (Oct 1|1 Oct) – To … · up to a year$/)).toBeOnTheScreen();
     expect(sheet.getByRole("button", { name: "Apply" })).toBeDisabled();
     await fireEvent.press(sheet.getByRole("button", { name: "Thursday 15 October" }));
     expect(sheet.getByText(/^From (Oct 1|1 Oct) – To (Oct 15|15 Oct)$/)).toBeOnTheScreen();
@@ -50,7 +50,29 @@ describe("RangePicker", () => {
     await fireEvent.press(sheet.getByRole("button", { name: "Previous month" }));
     await fireEvent.press(sheet.getByRole("button", { name: "Thursday 15 October" }));
     await fireEvent.press(sheet.getByRole("button", { name: "Thursday 1 October" }));
-    expect(sheet.getByText(/^From (Oct 1|1 Oct) – To …$/)).toBeOnTheScreen();
+    expect(sheet.getByText(/^From (Oct 1|1 Oct) – To … · up to a year$/)).toBeOnTheScreen();
+    expect(sheet.getByRole("button", { name: "Apply" })).toBeDisabled();
+  });
+
+  it("blocks a To more than a year after From", async () => {
+    const { sheet } = await open();
+    await fireEvent.press(sheet.getByLabelText("Custom"));
+    await fireEvent.press(sheet.getByRole("button", { name: "Previous month" }));
+    await fireEvent.press(sheet.getByRole("button", { name: "Thursday 1 October" }));
+    for (let i = 0; i < 12; i++)
+      await fireEvent.press(sheet.getByRole("button", { name: "Next month" }));
+    expect(sheet.getByText("October 2027")).toBeOnTheScreen();
+    expect(sheet.getByText(/up to a year/)).toBeOnTheScreen();
+    const tooLate = sheet.getByRole("button", { name: "Friday 1 October" });
+    expect(tooLate).toBeDisabled();
+    await fireEvent.press(tooLate);
+    expect(sheet.getByText(/^From (Oct 1|1 Oct) – To …/)).toBeOnTheScreen();
+    await fireEvent.press(sheet.getByRole("button", { name: "Thursday 30 September" }));
+    expect(sheet.getByRole("button", { name: "Apply" })).toBeEnabled();
+  });
+
+  it("will not apply a remembered span longer than a year", async () => {
+    const { sheet } = await open({ from: "2025-01-01", to: "2026-11-11" });
     expect(sheet.getByRole("button", { name: "Apply" })).toBeDisabled();
   });
 

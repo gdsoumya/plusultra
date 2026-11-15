@@ -4,6 +4,7 @@ import { Pressable, View } from "react-native";
 import {
   addMonths,
   dateLabel,
+  daysBetween,
   monthGrid,
   monthLabel,
   monthOf,
@@ -17,8 +18,11 @@ type Props = { span: Span; initialMonth: string; onChange: (span: Span) => void 
 
 const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
+// A span covers at most a year of dates, like the longest preset; the heatmap draws no more.
+export const tooLong = (from: string, to: string) => daysBetween(from, to) >= 365;
+
 // A month at a time, as on Calendar; the first tap starts the span, the second ends it, and a tap
-// before the start begins again.
+// before the start begins again. Dates more than a year after the start cannot end it.
 export function DateRangeCalendar({ span: { from, to }, initialMonth, onChange }: Props) {
   const { colors } = useTheme();
   const [month, setMonth] = useState(initialMonth);
@@ -26,6 +30,7 @@ export function DateRangeCalendar({ span: { from, to }, initialMonth, onChange }
     onChange(!from || to || date < from ? { from: date } : { from, to: date });
   const within = (date: string) => !!from && date >= from && date <= (to ?? from);
   const isEnd = (date: string) => date === from || date === to;
+  const blocked = (date: string) => !!from && !to && date > from && tooLong(from, date);
 
   return (
     <View style={{ gap: space[1] }}>
@@ -58,10 +63,12 @@ export function DateRangeCalendar({ span: { from, to }, initialMonth, onChange }
               key={date}
               accessibilityRole="button"
               accessibilityLabel={dateLabel(date)}
-              accessibilityState={{ selected: within(date) }}
+              accessibilityState={{ selected: within(date), disabled: blocked(date) }}
+              disabled={blocked(date)}
               onPress={() => pick(date)}
               style={{
                 flex: 1,
+                opacity: blocked(date) ? 0.3 : 1,
                 minHeight: minTouch,
                 alignItems: "center",
                 justifyContent: "center",
@@ -85,7 +92,9 @@ export function DateRangeCalendar({ span: { from, to }, initialMonth, onChange }
         </View>
       ))}
       <Text variant="caption">
-        {`From ${from ? shortDate(from) : "…"} – To ${to ? shortDate(to) : "…"}`}
+        {`From ${from ? shortDate(from) : "…"} – To ${to ? shortDate(to) : "…"}${
+          from && !to ? " · up to a year" : ""
+        }`}
       </Text>
     </View>
   );
