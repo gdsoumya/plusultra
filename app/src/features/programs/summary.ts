@@ -50,12 +50,10 @@ export const sections = (all: ProgramSummary[], today: string) =>
   [
     { title: "Active", programs: all.filter((p) => p.status === "active" && !hasEnded(p, today)) },
     { title: "Ended", programs: all.filter((p) => hasEnded(p, today)) },
-    ...groups
-      .slice(1)
-      .map(({ title, statuses }) => ({
-        title,
-        programs: all.filter((p) => statuses.includes(p.status)),
-      })),
+    ...groups.slice(1).map(({ title, statuses }) => ({
+      title,
+      programs: all.filter((p) => statuses.includes(p.status)),
+    })),
   ]
     .map((s) => ({ ...s, programs: sortPrograms(s.programs) }))
     .filter((s) => s.programs.length > 0);

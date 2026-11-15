@@ -1,14 +1,26 @@
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { errorMessage } from "../../api/errors";
 import { fromProto } from "../../api/convert";
 import { useApi } from "../../api/useApi";
+import { rememberExerciseData } from "../../data/exerciseData";
 import { useStore } from "../../data/StoreProvider";
 import type { ResolvedDay, Unit } from "../../domain/types";
 import type { ExerciseData } from "../../gen/plusultra/v1/exercise_pb";
 import { ProgramKind, type CatalogProgram } from "../../gen/plusultra/v1/program_pb";
-import { BackButton, Button, Card, ConfirmSheet, ErrorLine, Screen, Text } from "../../ui";
+import {
+  BackButton,
+  Button,
+  Card,
+  Chip,
+  ChipStrip,
+  ConfirmSheet,
+  ErrorLine,
+  Screen,
+  Text,
+} from "../../ui";
+import { MaxSheet } from "../settings/MaxSheet";
 import { remember } from "./programStore";
 import { levelLabel, spanLabel, withMaxesHint } from "./summary";
 import { WeekPlan } from "./WeekPlan";
@@ -33,6 +45,18 @@ export default function CatalogProgramScreen({ slug, unit = "kg" }: { slug: stri
   const [adding, setAdding] = useState(false);
   const [busy, setBusy] = useState(false);
   const [addError, setAddError] = useState<string>();
+  const [lift, setLift] = useState<{ slug: string; name: string }>();
+  const [savingMax, setSavingMax] = useState(false);
+  const [maxError, setMaxError] = useState<string>();
+
+  const preview = useCallback(
+    async (p: CatalogProgram) => {
+      const r = await api.programs.simulateProgram({ script: p.script, weeks: p.weeks });
+      setPreviewError(r.errors[0] && withMaxesHint(r.errors[0].message));
+      setDays(r.days.map((d) => fromProto.resolvedDay(d).payload));
+    },
+    [api],
+  );
 
   useEffect(() => {
     api.programs
@@ -44,12 +68,38 @@ export default function CatalogProgramScreen({ slug, unit = "kg" }: { slug: stri
           const { items } = await api.exercises.listExerciseData({});
           setMissing(p.maxes.filter((m) => !hasMax(m, items)));
         }
-        const r = await api.programs.simulateProgram({ script: p.script, weeks: p.weeks });
-        setPreviewError(r.errors[0] && withMaxesHint(r.errors[0].message));
-        setDays(r.days.map((d) => fromProto.resolvedDay(d).payload));
+        await preview(p);
       })
       .catch((e) => setMessage(errorMessage(e)));
-  }, [api, slug]);
+  }, [api, slug, preview]);
+
+  // The program names lifts ("Squat"); the sheet needs the exercise's slug.
+  const openMax = async (name: string) => {
+    try {
+      const { exercises } = await api.exercises.searchExercises({ query: name, limit: 5 });
+      const found = exercises.find((e) => e.name === name) ?? exercises[0];
+      setMaxError(undefined);
+      if (found) setLift({ slug: found.slug, name });
+    } catch (e) {
+      setMessage(errorMessage(e));
+    }
+  };
+
+  const saveMax = async (data: ExerciseData) => {
+    setSavingMax(true);
+    try {
+      const r = await api.exercises.setExerciseData({ data });
+      rememberExerciseData(store, r.data ?? data);
+      setLift(undefined);
+      if (data.rm1) {
+        setMissing((m) => m.filter((n) => n !== lift!.name));
+        await preview(program!);
+      }
+    } catch (e) {
+      setMaxError(errorMessage(e));
+    }
+    setSavingMax(false);
+  };
 
   const add = async () => {
     setBusy(true);
@@ -82,14 +132,27 @@ export default function CatalogProgramScreen({ slug, unit = "kg" }: { slug: stri
           {missing.length > 0 && (
             <>
               <Text color="textMuted">
-                {`Needs your 1RM for ${missing.join(", ")}. Set them under Settings › 1RMs before activating.`}
+                {`Needs your 1RM for ${missing.join(", ")}. Set them here or under Settings › 1RMs.`}
               </Text>
-              <Button
-                title="Open 1RMs"
-                variant="ghost"
-                onPress={() => router.push("/(tabs)/(settings)/settings/maxes")}
-              />
+              <ChipStrip>
+                {missing.map((name) => (
+                  <Chip key={name} label={`Set ${name} 1RM`} onPress={() => openMax(name)} />
+                ))}
+              </ChipStrip>
             </>
+          )}
+          {lift && (
+            <MaxSheet
+              key={lift.slug}
+              open
+              slug={lift.slug}
+              name={lift.name}
+              unit={unit}
+              busy={savingMax}
+              error={maxError}
+              onSave={saveMax}
+              onClose={() => setLift(undefined)}
+            />
           )}
           {(previewError || days.length > 0) && (
             <>

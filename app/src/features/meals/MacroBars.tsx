@@ -4,11 +4,11 @@ import { fractionOf, type MacroKey } from "../../domain/totals";
 import type { Macros } from "../../domain/types";
 import { pressedOpacity, Progress, space, tabular, Text } from "../../ui";
 
-const shown: { key: MacroKey; label: string }[] = [
-  { key: "kcal", label: "kcal" },
-  { key: "protein", label: "Protein" },
-  { key: "carbs", label: "Carbs" },
-  { key: "fat", label: "Fat" },
+const shown: { key: MacroKey; label: string; unit: string }[] = [
+  { key: "kcal", label: "kcal", unit: "" },
+  { key: "protein", label: "Protein", unit: " g" },
+  { key: "carbs", label: "Carbs", unit: " g" },
+  { key: "fat", label: "Fat", unit: " g" },
 ];
 
 type Props = {
@@ -33,14 +33,15 @@ export function MacroBars({ totals, target, onPress }: Props) {
         opacity: pressed ? pressedOpacity : 1,
       })}
     >
-      {shown.map(({ key, label }) => (
+      {shown.map(({ key, label, unit }) => (
         <View key={key} style={{ flex: 1, gap: space[1] }}>
           <Text variant="caption">{label}</Text>
-          <Text variant="label" numberOfLines={1} style={tabular}>
+          {/* A day's "3289 / 2900" wraps on a phone; flex keeps the bars level across columns. */}
+          <Text variant="label" style={[tabular, { flex: 1 }]}>
             {Math.round(totals[key])}
-            {target?.[key] ? (
-              <Text variant="caption" style={tabular}>{` / ${Math.round(target[key])}`}</Text>
-            ) : null}
+            <Text variant="caption" style={tabular}>
+              {`${target?.[key] ? ` / ${Math.round(target[key])}` : ""}${unit}`}
+            </Text>
           </Text>
           {target?.[key] ? <Progress value={fractionOf(totals, target, key)} /> : null}
         </View>

@@ -40,19 +40,56 @@ describe("CatalogProgramScreen", () => {
     expect(screen.getByText("2. B1")).toBeOnTheScreen();
   });
 
-  it("points at the 1RMs a program needs that the user has not set", async () => {
+  it("sets a missing 1RM in place and shows the preview once all are set", async () => {
     for (const slug of ["squat-barbell", "deadlift-barbell"]) {
       await h.api.exercises.setExerciseData({ data: { slug } });
     }
+    // The mock server has no days for 5/3/1: fail the first preview, then serve GZCLP's days.
+    const { program: gzclp } = await h.api.programs.getCatalogProgram({ slug: "gzclp" });
+    const planned = await h.api.programs.simulateProgram({ script: gzclp!.script, weeks: 4 });
+    jest
+      .spyOn(h.api.programs, "simulateProgram")
+      .mockResolvedValueOnce(
+        create(SimulateProgramResponseSchema, {
+          errors: [{ line: 3, col: 1, message: "week 1 day 1: no 1RM for Squat" }],
+        }),
+      )
+      .mockResolvedValue(planned);
+    const set = jest.spyOn(h.api.exercises, "setExerciseData");
     await renderWith(h, <CatalogProgramScreen slug="531-for-beginners" />);
     expect(
       await screen.findByText(
-        "Needs your 1RM for Squat, Deadlift. Set them under Settings › 1RMs before activating.",
+        "Needs your 1RM for Squat, Deadlift. Set them here or under Settings › 1RMs.",
       ),
     ).toBeOnTheScreen();
-    expect(screen.getByText("3-week cycle, repeats")).toBeOnTheScreen();
-    await fireEvent.press(screen.getByRole("button", { name: "Open 1RMs" }));
-    expect(router.push).toHaveBeenCalledWith("/(tabs)/(settings)/settings/maxes");
+    expect(screen.getByRole("checkbox", { name: "Set Squat 1RM" })).toBeOnTheScreen();
+    expect(screen.getByRole("checkbox", { name: "Set Deadlift 1RM" })).toBeOnTheScreen();
+    expect(screen.queryByRole("checkbox", { name: "Set Bench Press 1RM" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Open 1RMs" })).toBeNull();
+    expect(screen.queryByRole("checkbox", { name: "Week 1" })).toBeNull();
+
+    await fireEvent.press(screen.getByRole("checkbox", { name: "Set Squat 1RM" }));
+    expect(await screen.findByText("Squat")).toBeOnTheScreen();
+    await fireEvent.changeText(screen.getByLabelText("1RM (kg)"), "100");
+    await fireEvent.press(screen.getByRole("button", { name: "Save" }));
+    await waitFor(() =>
+      expect(screen.queryByRole("checkbox", { name: "Set Squat 1RM" })).toBeNull(),
+    );
+    expect(set).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ slug: "squat-barbell", rm1: expect.anything() }),
+      }),
+    );
+    expect(
+      screen.getByText("Needs your 1RM for Deadlift. Set them here or under Settings › 1RMs."),
+    ).toBeOnTheScreen();
+
+    await fireEvent.press(screen.getByRole("checkbox", { name: "Set Deadlift 1RM" }));
+    await fireEvent.changeText(await screen.findByLabelText("1RM (kg)"), "140");
+    await fireEvent.press(screen.getByRole("button", { name: "Save" }));
+    expect(await screen.findByRole("checkbox", { name: "Week 1" })).toBeOnTheScreen();
+    expect(screen.queryByText(/your 1RM/)).toBeNull();
+    expect(router.push).not.toHaveBeenCalled();
   });
 
   it("says nothing about 1RMs the user already has", async () => {
