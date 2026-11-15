@@ -16,11 +16,13 @@ type Props = {
   plans: ResolvedDay[];
   week: number;
   onWeek: (week: number) => void;
+  /** Marks a day the program has moved past, so its old plan is not read as the current one. */
+  past?: (d: ResolvedDay) => boolean;
 };
 
 // One week at a time: a chip per week, then a card per day with its exercises and their sets;
 // a row opens the exercise's plan.
-export function WeekPlan({ programId, unit, weeks, days, plans, week, onWeek }: Props) {
+export function WeekPlan({ programId, unit, weeks, days, plans, week, onWeek, past }: Props) {
   const router = useRouter();
   const numbers = Array.from({ length: weeks }, (_, i) => i + 1);
   return (
@@ -34,17 +36,18 @@ export function WeekPlan({ programId, unit, weeks, days, plans, week, onWeek }: 
       )}
       {days
         .filter((d) => d.week === week)
-        .map((d, i) => (
-          <ListCard key={i}>
-            <ListRow
-              title={d.day ? `${d.day}. ${d.name}` : d.name}
-              subtitle={
-                d.kind !== "training" && !d.name.toLowerCase().includes(d.kind) ? d.kind : undefined
-              }
-            />
-            {plans
-              .find((r) => r.week === d.week && r.day === d.day)
-              ?.exercises.map((e, n) => (
+        .map((d, i) => {
+          const plan = plans.find((r) => r.week === d.week && r.day === d.day);
+          return (
+            <ListCard key={i}>
+              <ListRow
+                title={d.day ? `${d.day}. ${d.name}` : d.name}
+                subtitle={
+                  d.kind !== "training" && !d.name.toLowerCase().includes(d.kind) ? d.kind : undefined
+                }
+                value={plan && past?.(plan) ? "past" : undefined}
+              />
+              {plan?.exercises.map((e, n) => (
                 <ExerciseRow
                   key={n}
                   exercise={{ slug: e.slug, name: e.name }}
@@ -54,8 +57,9 @@ export function WeekPlan({ programId, unit, weeks, days, plans, week, onWeek }: 
                   }
                 />
               ))}
-          </ListCard>
-        ))}
+            </ListCard>
+          );
+        })}
     </>
   );
 }

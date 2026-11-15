@@ -27,6 +27,11 @@ jest.mock("expo-router", () => {
     useFocusEffect: (effect: () => void) => jest.requireActual("react").useEffect(effect, [effect]),
   };
 });
+// The mock server's today; the strength fixture started two weeks earlier, so today is its week 3.
+jest.mock("../../domain/dates", () => ({
+  ...jest.requireActual("../../domain/dates"),
+  today: () => "2026-11-11",
+}));
 
 const strength = "program-strength16";
 // Chips are checkboxes in the merged UI kit, so fall back to the label.
@@ -80,8 +85,19 @@ describe("ProgramDetailScreen", () => {
     }
   });
 
+  it("opens on the current week and marks the days already behind", async () => {
+    const { days } = await h.api.programs.getResolvedDays({ programId: strength, week: 3 });
+    const behind = days.filter((d) => d.date && d.date < "2026-11-11");
+    expect(behind.length).toBeGreaterThan(0);
+    await renderWith(h, <ProgramDetailScreen id={strength} />);
+    expect(await screen.findByRole("checkbox", { name: "Week 3" })).toBeChecked();
+    expect(screen.getAllByLabelText(/, past$/)).toHaveLength(behind.length);
+    await press("Week 8");
+    expect(screen.queryByLabelText(/, past$/)).toBeNull();
+  });
+
   it("lists each day's exercises with their sets and a picture tile, opening the plan", async () => {
-    const { days } = await h.api.programs.getResolvedDays({ programId: strength, week: 1 });
+    const { days } = await h.api.programs.getResolvedDays({ programId: strength, week: 3 });
     const day = days.find((d) => d.kind === "training")!;
     const first = fromProto.resolvedDay(day).payload.exercises[0];
     await renderWith(h, <ProgramDetailScreen id={strength} unit="lb" />);
@@ -99,7 +115,7 @@ describe("ProgramDetailScreen", () => {
     // Each day leads with its name and its planned macros against the target, as labelled values.
     await screen.findByRole("header", { name: "Training day" });
     expect(screen.getByRole("header", { name: "Rest day" })).toBeOnTheScreen();
-    for (const stat of [/^kcal \d+ of 2600$/, /^Protein \d+ of 170 g$/, /^Carbs \d+ of 300 g$/]) {
+    for (const stat of [/^kcal \d+ of 2400$/, /^Protein \d+ of 170 g$/, /^Carbs \d+ of 300 g$/]) {
       expect(screen.getAllByLabelText(stat).length).toBeGreaterThan(0);
     }
     for (const stat of [/^Fat \d+ of 70 g$/, /^Fiber \d+ of 30 g$/, /^Water \d+ of 3500 ml$/]) {
@@ -111,7 +127,7 @@ describe("ProgramDetailScreen", () => {
     });
     expect(breakfast[0]).toHaveAccessibleName(/, \d+ kcal · P \d+$/);
     await fireEvent.press(breakfast[0]);
-    expect(router.push).toHaveBeenCalledWith("/program/program-meals/meal/1/training/1");
+    expect(router.push).toHaveBeenCalledWith("/program/program-meals/meal/5/training/1");
     await press("Week 3");
     expect(screen.getAllByLabelText(/^kcal \d+ of 2500$/).length).toBeGreaterThan(0);
   });
@@ -230,7 +246,7 @@ describe("ProgramDetailScreen", () => {
   });
 
   it("shows the cached days and exercise info when offline", async () => {
-    const { days } = await h.api.programs.getResolvedDays({ programId: strength, week: 1 });
+    const { days } = await h.api.programs.getResolvedDays({ programId: strength, week: 3 });
     resolvedDaysRepo(h.store).upsertFromServer(days.map(fromProto.resolvedDay));
     const first = days.find((d) => d.kind === "training")!.exercises[0];
     rememberExercise(h.store, exerciseNamed(first.name));

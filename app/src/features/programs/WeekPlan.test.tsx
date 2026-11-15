@@ -28,3 +28,21 @@ it("shows a day's kind only when its name does not already say it", async () => 
   expect(screen.getByText("rest")).toBeOnTheScreen();
   expect(screen.queryByText("training")).toBeNull();
 });
+
+it("marks the days the program has moved past", async () => {
+  const plan = { week: 1, day: 1, name: "Mon conditioning", desc: "", kind: "conditioning" as const };
+  await renderThemed(
+    <WeekPlan
+      programId="p"
+      unit="kg"
+      weeks={1}
+      days={days}
+      plans={[{ ...plan, exercises: [] }, { ...plan, day: 3, name: "Upper", kind: "training", exercises: [] }]}
+      week={1}
+      onWeek={() => {}}
+      past={(d) => d.day === 1}
+    />,
+  );
+  expect(screen.getByLabelText("1. Mon conditioning, past")).toBeOnTheScreen();
+  expect(screen.getByLabelText("3. Upper")).toBeOnTheScreen();
+});

@@ -1,5 +1,5 @@
-import { formatDate } from "../../domain/dates";
-import type { ProgramSummary } from "../../domain/types";
+import { daysBetween, formatDate, mondayOf } from "../../domain/dates";
+import type { ProgramSummary, ResolvedDay } from "../../domain/types";
 
 type Status = ProgramSummary["status"];
 
@@ -52,3 +52,23 @@ export function modeLabel(p: ProgramSummary): string {
   }
   return "Not started";
 }
+
+// The week today falls in for an active program, clamped to its span; week 1 otherwise.
+export function currentWeek(p: ProgramSummary, today: string): number {
+  if (p.status !== "active") return 1;
+  if (p.mode === "floating") return p.nextWeek ?? 1;
+  if (!p.startDate) return 1;
+  const week = Math.floor(daysBetween(mondayOf(p.startDate), today) / 7) + 1;
+  return Math.min(Math.max(week, 1), p.weeks || 1);
+}
+
+// Whether a day already lies behind an active program: before today when dated, before the
+// cursor when floating. Past days keep the plan they had then, not the current revision's.
+export const isPast =
+  (p: ProgramSummary, today: string) =>
+  (d: Pick<ResolvedDay, "week" | "day" | "date">): boolean =>
+    p.status === "active" &&
+    (d.date
+      ? d.date < today
+      : p.nextWeek !== undefined &&
+        (d.week < p.nextWeek || (d.week === p.nextWeek && d.day < (p.nextDay ?? 0))));

@@ -9,7 +9,7 @@ import { fromProto } from "../../api/convert";
 import { programsRepo } from "../../data/repositories/programs";
 import { useStore } from "../../data/StoreProvider";
 import { useSync } from "../../data/useSync";
-import { formatDateTime } from "../../domain/dates";
+import { formatDateTime, today } from "../../domain/dates";
 import type { MealDay, ResolvedDay, Unit } from "../../domain/types";
 import {
   ProgramStatus,
@@ -39,7 +39,7 @@ import {
   rememberDays,
   rememberMealDays,
 } from "./programStore";
-import { kindLabel, modeLabel, statusLabel } from "./summary";
+import { currentWeek, isPast, kindLabel, modeLabel, statusLabel } from "./summary";
 import { WeekPlan } from "./WeekPlan";
 
 const PAGE = 20;
@@ -59,7 +59,7 @@ export default function ProgramDetailScreen({ id, unit = "kg" }: { id: string; u
   const [busy, setBusy] = useState(false);
   const [activating, setActivating] = useState(false);
   const [more, setMore] = useState(false);
-  const [week, setWeek] = useState(1);
+  const [week, setWeek] = useState<number>();
   const [days, setDays] = useState<ResolvedDay[]>(() => cachedDays(store, id));
   const [mealDays, setMealDays] = useState<MealDay[]>(() => cachedMealDays(store, id));
 
@@ -156,6 +156,8 @@ export default function ProgramDetailScreen({ id, unit = "kg" }: { id: string; u
 
   const view = program ? fromProto.program(program) : summary;
   const structure = program?.structure;
+  const now = today();
+  const shown = week ?? (view ? currentWeek(view, now) : 1);
 
   return (
     <Screen
@@ -208,7 +210,7 @@ export default function ProgramDetailScreen({ id, unit = "kg" }: { id: string; u
               programId={id}
               weeks={view.weeks}
               days={mealDays}
-              week={week}
+              week={shown}
               onWeek={setWeek}
             />
           ) : (
@@ -219,8 +221,9 @@ export default function ProgramDetailScreen({ id, unit = "kg" }: { id: string; u
                 weeks={view.weeks}
                 days={structure?.days ?? days}
                 plans={days}
-                week={week}
+                week={shown}
                 onWeek={setWeek}
+                past={isPast(view, now)}
               />
             )
           )}
