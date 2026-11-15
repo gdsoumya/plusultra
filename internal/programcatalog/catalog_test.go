@@ -86,7 +86,7 @@ var informational = []string{"rounding_source", "rounding_moved", "double_progre
 
 func TestMaxes(t *testing.T) {
 	e, _ := Get("gzclp")
-	want := []string{"Bench Press", "Deadlift", "Overhead Press", "Squat"}
+	want := []string{"Squat", "Bench Press", "Overhead Press", "Deadlift"}
 	if !slices.Equal(e.Maxes, want) {
 		t.Fatalf("gzclp maxes = %v", e.Maxes)
 	}

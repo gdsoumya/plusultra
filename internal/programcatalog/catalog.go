@@ -79,17 +79,17 @@ func Get(slug string) (Entry, bool) {
 	return entries[i], true
 }
 
-// maxes lists the exercises whose working sets are a percentage of a 1RM.
+// maxes lists the exercises whose working sets are a percentage of a 1RM, in program order.
 func maxes(p *model.Program) []string {
 	var out []string
 	for _, d := range p.Days {
 		for _, ex := range d.Exercises {
 			groups := append(slices.Concat(ex.Variations...), ex.Sets...)
-			if slices.ContainsFunc(groups, func(g model.SetGroup) bool { return g.Load.Kind == model.LoadPercent }) {
+			if slices.ContainsFunc(groups, func(g model.SetGroup) bool { return g.Load.Kind == model.LoadPercent }) &&
+				!slices.Contains(out, ex.Names[0]) {
 				out = append(out, ex.Names[0])
 			}
 		}
 	}
-	slices.Sort(out)
-	return slices.Compact(out)
+	return out
 }
