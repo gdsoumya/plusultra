@@ -1,6 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import { Code, ConnectError } from "@connectrpc/connect";
-import { fireEvent, render, screen, within } from "@testing-library/react-native";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react-native";
 import { Dimensions } from "react-native";
 
 import { createClients, type Api } from "../../api/clients";
@@ -356,7 +356,7 @@ describe("ProgressScreen", () => {
       expect(insights.weightTrend).toHaveBeenLastCalledWith({ dates });
       expect(insights.adherence).toHaveBeenLastCalledWith({ dates });
       expect(insights.weeklyTrend).toHaveBeenLastCalledWith({ dates, daily: false });
-      expect(screen.queryByTestId("progress-range-sheet")).toBeNull();
+      await waitFor(() => expect(screen.queryByTestId("progress-range-sheet")).toBeNull());
     });
   });
 });
