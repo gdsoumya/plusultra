@@ -21,6 +21,8 @@ describe("setsSummary", () => {
     amrap.amrap = true;
     expect(setsSummary([range, amrap], "kg")).toBe("1x8-12 60 kg · 1x12+ 60 kg");
     expect(setsSummary(sets(3, 10, 0), "kg")).toBe("3x10");
+    expect(setsSummary(sets(3, 5, 79.2, { bodyweight: true }), "kg")).toBe("3x5 bw");
+    expect(setsSummary(sets(3, 1, 79.2, { bodyweight: true, work: 30 }), "kg")).toBe("3x0:30 bw");
   });
 
   it("shows a timed set by its time, with a plus when it counts up", () => {

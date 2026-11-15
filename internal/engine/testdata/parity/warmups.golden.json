@@ -42,6 +42,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": true,
+              "Bodyweight": false,
               "Label": ""
             },
             {
@@ -60,6 +61,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": true,
+              "Bodyweight": false,
               "Label": ""
             },
             {
@@ -78,6 +80,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": false,
+              "Bodyweight": false,
               "Label": ""
             },
             {
@@ -96,6 +99,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": false,
+              "Bodyweight": false,
               "Label": ""
             },
             {
@@ -114,6 +118,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": false,
+              "Bodyweight": false,
               "Label": ""
             }
           ]
@@ -145,6 +150,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": true,
+              "Bodyweight": false,
               "Label": ""
             },
             {
@@ -163,6 +169,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": true,
+              "Bodyweight": false,
               "Label": ""
             },
             {
@@ -181,6 +188,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": false,
+              "Bodyweight": false,
               "Label": ""
             },
             {
@@ -199,6 +207,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": false,
+              "Bodyweight": false,
               "Label": ""
             },
             {
@@ -217,6 +226,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": false,
+              "Bodyweight": false,
               "Label": ""
             }
           ]
@@ -248,6 +258,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": false,
+              "Bodyweight": false,
               "Label": ""
             },
             {
@@ -266,6 +277,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": false,
+              "Bodyweight": false,
               "Label": ""
             },
             {
@@ -284,6 +296,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": false,
+              "Bodyweight": false,
               "Label": ""
             }
           ]
@@ -315,6 +328,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": true,
+              "Bodyweight": false,
               "Label": ""
             },
             {
@@ -333,6 +347,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": true,
+              "Bodyweight": false,
               "Label": ""
             },
             {
@@ -351,6 +366,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": true,
+              "Bodyweight": false,
               "Label": ""
             },
             {
@@ -369,6 +385,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": false,
+              "Bodyweight": false,
               "Label": ""
             }
           ]
@@ -409,6 +426,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": true,
+              "Bodyweight": false,
               "Label": ""
             },
             {
@@ -427,6 +445,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": true,
+              "Bodyweight": false,
               "Label": ""
             },
             {
@@ -445,6 +464,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": false,
+              "Bodyweight": false,
               "Label": ""
             },
             {
@@ -463,6 +483,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": false,
+              "Bodyweight": false,
               "Label": ""
             },
             {
@@ -481,6 +502,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": false,
+              "Bodyweight": false,
               "Label": ""
             }
           ]
@@ -512,6 +534,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": true,
+              "Bodyweight": false,
               "Label": ""
             },
             {
@@ -530,6 +553,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": true,
+              "Bodyweight": false,
               "Label": ""
             },
             {
@@ -548,6 +572,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": false,
+              "Bodyweight": false,
               "Label": ""
             },
             {
@@ -566,6 +591,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": false,
+              "Bodyweight": false,
               "Label": ""
             },
             {
@@ -584,6 +610,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": false,
+              "Bodyweight": false,
               "Label": ""
             }
           ]
@@ -615,6 +642,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": false,
+              "Bodyweight": false,
               "Label": ""
             },
             {
@@ -633,6 +661,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": false,
+              "Bodyweight": false,
               "Label": ""
             },
             {
@@ -651,6 +680,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": false,
+              "Bodyweight": false,
               "Label": ""
             }
           ]
@@ -682,6 +712,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": true,
+              "Bodyweight": false,
               "Label": ""
             },
             {
@@ -700,6 +731,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": true,
+              "Bodyweight": false,
               "Label": ""
             },
             {
@@ -718,6 +750,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": true,
+              "Bodyweight": false,
               "Label": ""
             },
             {
@@ -736,6 +769,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": false,
+              "Bodyweight": false,
               "Label": ""
             }
           ]

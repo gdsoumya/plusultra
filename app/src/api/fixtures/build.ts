@@ -19,6 +19,7 @@ export function sets(n: number, reps: number, weight: number, over: Partial<Reso
     auto: false,
     countUp: false,
     warmup: false,
+    bodyweight: false,
     label: "",
     logRpe: false,
     ...over,

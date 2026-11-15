@@ -115,7 +115,7 @@ func resolvedDayPB(d *model.ResolvedDay) *pb.ResolvedDay {
 		for _, s := range e.Sets {
 			x.Sets = append(x.Sets, &pb.ResolvedSet{Reps: i32(s.Reps), MinReps: i32(s.MinReps), Weight: weightPB(s.Weight),
 				Rpe: s.RPE, Rest: i32(s.Rest), Work: i32(s.Work), Amrap: s.Amrap, Ask: s.Ask, LogRpe: s.LogRPE,
-				Auto: s.Auto, CountUp: s.CountUp, Warmup: s.Warmup, Label: s.Label})
+				Auto: s.Auto, CountUp: s.CountUp, Warmup: s.Warmup, Label: s.Label, Bodyweight: s.Bodyweight})
 		}
 		out.Exercises = append(out.Exercises, x)
 	}

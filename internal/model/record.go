@@ -8,31 +8,34 @@ type RecordWeight struct {
 
 // RecordPlanned is the set the program planned.
 type RecordPlanned struct {
-	Reps    int          `json:"reps"`
-	Weight  RecordWeight `json:"weight"`
-	RPE     float64      `json:"rpe"`
-	Rest    int          `json:"rest"`
-	Warmup  bool         `json:"warmup"`
-	MinReps int          `json:"min_reps,omitempty"`
-	Amrap   bool         `json:"amrap,omitempty"`
-	Ask     bool         `json:"ask,omitempty"`
-	Label   string       `json:"label,omitempty"`
-	Work    int          `json:"work,omitempty"`
-	LogRPE  bool         `json:"log_rpe,omitempty"`
-	Auto    bool         `json:"auto,omitempty"`
-	CountUp bool         `json:"count_up,omitempty"`
+	Reps       int          `json:"reps"`
+	Weight     RecordWeight `json:"weight"`
+	RPE        float64      `json:"rpe"`
+	Rest       int          `json:"rest"`
+	Warmup     bool         `json:"warmup"`
+	MinReps    int          `json:"min_reps,omitempty"`
+	Amrap      bool         `json:"amrap,omitempty"`
+	Ask        bool         `json:"ask,omitempty"`
+	Label      string       `json:"label,omitempty"`
+	Work       int          `json:"work,omitempty"`
+	LogRPE     bool         `json:"log_rpe,omitempty"`
+	Auto       bool         `json:"auto,omitempty"`
+	CountUp    bool         `json:"count_up,omitempty"`
+	Bodyweight bool         `json:"bodyweight,omitempty"`
 }
 
 // PlanSet is s as a record stores it.
 func PlanSet(s ResolvedSet) RecordPlanned {
 	return RecordPlanned{Reps: s.Reps, Weight: RecordWeight(s.Weight), RPE: s.RPE, Rest: s.Rest, Warmup: s.Warmup,
-		MinReps: s.MinReps, Amrap: s.Amrap, Ask: s.Ask, Label: s.Label, Work: s.Work, LogRPE: s.LogRPE, Auto: s.Auto, CountUp: s.CountUp}
+		MinReps: s.MinReps, Amrap: s.Amrap, Ask: s.Ask, Label: s.Label, Work: s.Work, LogRPE: s.LogRPE, Auto: s.Auto, CountUp: s.CountUp,
+		Bodyweight: s.Bodyweight}
 }
 
 // Resolved is the planned set in the engine's form.
 func (p RecordPlanned) Resolved() ResolvedSet {
 	return ResolvedSet{Reps: p.Reps, Weight: Weight(p.Weight), RPE: p.RPE, Rest: p.Rest, Warmup: p.Warmup,
-		MinReps: p.MinReps, Amrap: p.Amrap, Ask: p.Ask, Label: p.Label, Work: p.Work, LogRPE: p.LogRPE, Auto: p.Auto, CountUp: p.CountUp}
+		MinReps: p.MinReps, Amrap: p.Amrap, Ask: p.Ask, Label: p.Label, Work: p.Work, LogRPE: p.LogRPE, Auto: p.Auto, CountUp: p.CountUp,
+		Bodyweight: p.Bodyweight}
 }
 
 // RecordSet is one set of a workout record: the plan and what was done.

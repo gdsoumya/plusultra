@@ -59,6 +59,10 @@ func (w *warner) dedupe(key string, x Warning) {
 // percent loads without a 1RM, and one exercise progressing on several days
 // of a week.
 func (w *warner) scan(p *model.Program, st *model.UserState) {
+	for _, m := range pctWithoutRM1(p, st) {
+		w.once("pct_without_rm1", m.week, m.day, m.name,
+			fmt.Sprintf("%s loads with pct() but has no 1RM; set one with exercise_set_data or an rm1 override", m.name))
+	}
 	for week := 1; week <= p.Weeks; week++ {
 		days := map[model.ProgKey][]int{}
 		for _, num := range dayNums(p) {
@@ -68,17 +72,9 @@ func (w *warner) scan(p *model.Program, st *model.UserState) {
 			}
 			for i := range d.Exercises {
 				e := &d.Exercises[i]
-				key := model.ProgKey{Exercise: e.Names[0], Label: e.Label}
 				if e.Progress != nil {
+					key := model.ProgKey{Exercise: e.Names[0], Label: e.Label}
 					days[key] = append(days[key], num)
-				}
-				name := e.Names[nth(cmp.Or(st.Overlay.ExerciseVariation[key], e.Current), len(e.Names))]
-				if _, ok := st.Overlay.RM1[name]; ok {
-					continue
-				}
-				if _, ok := st.RM1[name]; !ok && usesPct(e) {
-					w.once("pct_without_rm1", week, num, name,
-						fmt.Sprintf("%s loads with pct() but has no 1RM; set one with exercise_set_data or an rm1 override", name))
 				}
 			}
 		}
@@ -89,6 +85,41 @@ func (w *warner) scan(p *model.Program, st *model.UserState) {
 			}
 		}
 	}
+}
+
+// noRM1 is an exercise that loads with pct() but has no 1RM, and the first
+// day it is on.
+type noRM1 struct {
+	week, day int
+	name      string
+}
+
+// pctWithoutRM1 lists, in program order, every exercise that loads with
+// pct() but has no 1RM.
+func pctWithoutRM1(p *model.Program, st *model.UserState) []noRM1 {
+	var out []noRM1
+	seen := map[string]bool{}
+	for week := 1; week <= p.Weeks; week++ {
+		for _, num := range dayNums(p) {
+			d := p.DayAt(week, num)
+			if d == nil {
+				continue
+			}
+			for i := range d.Exercises {
+				e := &d.Exercises[i]
+				key := model.ProgKey{Exercise: e.Names[0], Label: e.Label}
+				name := e.Names[nth(cmp.Or(st.Overlay.ExerciseVariation[key], e.Current), len(e.Names))]
+				if _, ok := st.Overlay.RM1[name]; ok || seen[name] || !usesPct(e) {
+					continue
+				}
+				if _, ok := st.RM1[name]; !ok {
+					seen[name] = true
+					out = append(out, noRM1{week, num, name})
+				}
+			}
+		}
+	}
+	return out
 }
 
 func usesPct(e *model.Exercise) bool {
@@ -104,6 +135,11 @@ func dayList(nums []int) string {
 	for i, n := range nums {
 		s[i] = strconv.Itoa(n)
 	}
+	return andList(s)
+}
+
+// andList is "a, b and c".
+func andList(s []string) string {
 	if len(s) > 1 {
 		return strings.Join(s[:len(s)-1], ", ") + " and " + s[len(s)-1]
 	}

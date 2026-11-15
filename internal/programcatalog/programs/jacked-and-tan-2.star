@@ -58,7 +58,7 @@ def t1(name):
         if n:
             drop = pct(p) if wk <= 6 else pct(RM_PCT[rm] * p / 100)
             sets += [s(n - 1, reps, drop, rest=180, label="Drop"), s(1, reps, drop, rest=180, amrap=True, label="Drop")]
-        ex(name, label="t1", weeks=[wk], desc=T1_DESC.get(wk), sets=sets,
+        ex(name, label="T1", weeks=[wk], desc=T1_DESC.get(wk), sets=sets,
            progress=custom(t1_progress) if wk == 1 else None, update=custom(rebase) if wk == 1 else None)
 
 def t2a_progress(ctx):
@@ -68,7 +68,7 @@ def t2a_progress(ctx):
 
 def t2a(name):
     for wk, (p, reps, n) in T2A.items():
-        ex(name, label="t2a", weeks=[wk], sets=[s(n, reps, kg(T2A_TM[name] * p / 100), rest=150)],
+        ex(name, label="T2a", weeks=[wk], sets=[s(n, reps, kg(T2A_TM[name] * p / 100), rest=150)],
            desc="T2a. Percentages of this lift's training max; set it in T2A_TM at the top of the script." if wk == 1 else None,
            progress=custom(t2a_progress) if wk == 1 else None)
 
@@ -87,7 +87,7 @@ def same_weight(ctx):
         ctx.weights = ctx.completed_weights[1]
 
 def mrs(name, label, table, weight, **kw):
-    desc = "%s. Work up to the week's rep max, log it, then three max rep sets at that weight with 1-2 reps left. Set your first weight by editing the program." % label.upper()
+    desc = "%s. Work up to the week's rep max, log it, then three max rep sets at that weight with 1-2 reps left. Set your first weight by editing the program." % label
     for i, (wk, rm) in enumerate(table.items()):
         ex(name, label=label, weeks=[wk], desc=desc if i == 0 else None,
            sets=[s(1, rm, kg(weight), rest=60, amrap=True, label="%dRM" % rm), s(3, (rm // 2, rm), kg(weight), rest=60, label="MRS")],
@@ -100,31 +100,31 @@ for wk, (rm, p, reps, n) in T1.items():
 day(1, 1, "Squat", weeks="1-12")
 t1("Squat")
 t2a("Romanian Deadlift")
-mrs("Lat Pulldown", "t2b", T2B_RM, 50)
-mrs("Lying Leg Curl", "t3", T3_RM, 35)
-mrs("Leg Extension", "t3", T3_RM, 35)
-mrs("Hammer Curl", "t3", T3_RM, 12.5, eq="Dumbbell", warmup=[])
+mrs("Lat Pulldown", "T2b", T2B_RM, 50)
+mrs("Lying Leg Curl", "T3", T3_RM, 35)
+mrs("Leg Extension", "T3", T3_RM, 35)
+mrs("Hammer Curl", "T3", T3_RM, 12.5, eq="Dumbbell", warmup=[])
 
 day(1, 2, "Bench", weeks="1-12")
 t1("Bench Press")
 t2a("Incline Bench Press")
-mrs("Seated Row", "t2b", T2B_RM, 50)
-mrs("Triceps Pushdown", "t3", T3_RM, 25)
-mrs("Lateral Raise", "t3", T3_RM, 10, eq="Dumbbell", warmup=[])
-mrs("Chest Fly", "t3", T3_RM, 15, eq="Dumbbell", warmup=[])
+mrs("Seated Row", "T2b", T2B_RM, 50)
+mrs("Triceps Pushdown", "T3", T3_RM, 25)
+mrs("Lateral Raise", "T3", T3_RM, 10, eq="Dumbbell", warmup=[])
+mrs("Chest Fly", "T3", T3_RM, 15, eq="Dumbbell", warmup=[])
 
 day(1, 4, "Deadlift", weeks="1-12")
 t1("Deadlift")
 t2a("Front Squat")
-mrs("Incline Row", "t2b", T2B_RM, 20, eq="Dumbbell")
-mrs("Back Extension, Leverage Machine", "t3", T3_RM, 20)
-mrs("Crunch, Cable", "t3", T3_RM, 30)
-mrs("Bicep Curl, EZ Bar", "t3", T3_RM, 20)
+mrs("Incline Row", "T2b", T2B_RM, 20, eq="Dumbbell")
+mrs("Back Extension, Leverage Machine", "T3", T3_RM, 20)
+mrs("Crunch, Cable", "T3", T3_RM, 30)
+mrs("Bicep Curl, EZ Bar", "T3", T3_RM, 20)
 
 day(1, 5, "Press", weeks="1-12")
 t1("Overhead Press")
 t2a("Bench Press Close Grip")
-mrs("T Bar Row", "t2b", T2B_RM, 40)
-mrs("Skullcrusher", "t3", T3_RM, 20)
-mrs("Face Pull", "t3", T3_RM, 20)
-mrs("Reverse Fly", "t3", T3_RM, 7.5, eq="Dumbbell", warmup=[])
+mrs("T Bar Row", "T2b", T2B_RM, 40)
+mrs("Skullcrusher", "T3", T3_RM, 20)
+mrs("Face Pull", "T3", T3_RM, 20)
+mrs("Reverse Fly", "T3", T3_RM, 7.5, eq="Dumbbell", warmup=[])

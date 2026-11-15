@@ -68,11 +68,39 @@ func TestPercentWithout1RMErrors(t *testing.T) {
 	}
 }
 
+func TestPercentWithout1RMNamesEveryLift(t *testing.T) {
+	src := `program("P", weeks=1)
+day(1, 1, "A")
+ex("Squat", sets=[s(3, 5, pct(75))])
+ex("Bench Press", sets=[s(3, 5, pct(75))])
+ex("Row", sets=[s(3, 5, kg(60))])
+day(1, 2, "B")
+ex("Deadlift", sets=[s(1, 5, pct(75))])
+ex("Overhead Press", sets=[s(3, 5, pct(75))])
+ex("Squat", sets=[s(3, 5, pct(75))])
+`
+	_, err := ResolveDay(evalSrc(t, src), newState(), 1, 1)
+	want := "week 1 day 1: no 1RM for Squat, Bench Press, Deadlift and Overhead Press"
+	if err == nil || err.Error() != want {
+		t.Fatalf("got %v, want %q", err, want)
+	}
+	if _, err := Resolve(evalSrc(t, src), newState()); err == nil || err.Error() != want {
+		t.Fatalf("Resolve got %v, want %q", err, want)
+	}
+}
+
 func TestBodyweightLoad(t *testing.T) {
 	st := newState()
 	st.Bodyweight = kgW(81.3)
 	e := resolveEx(t, squatDay+`ex("Pull Up", sets=[s(3, 5, bw(10))])`, st, 1, 1, 0)
 	assertWeights(t, e.Sets, 91.3, 91.3, 91.3) // not rounded, and no default warmup
+	if !e.Sets[0].Bodyweight {
+		t.Fatal("bodyweight flag not set")
+	}
+	e = resolveEx(t, squatDay+`ex("Squat", warmup=[], sets=[s(3, 5, kg(100))])`, st, 1, 1, 0)
+	if e.Sets[0].Bodyweight {
+		t.Fatal("bodyweight flag set on a barbell load")
+	}
 }
 
 func TestAskSetWithRPE(t *testing.T) {

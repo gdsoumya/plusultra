@@ -45,6 +45,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": false,
+              "Bodyweight": true,
               "Label": ""
             },
             {
@@ -63,6 +64,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": false,
+              "Bodyweight": true,
               "Label": ""
             },
             {
@@ -81,6 +83,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": false,
+              "Bodyweight": true,
               "Label": ""
             }
           ]
@@ -124,6 +127,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": false,
+              "Bodyweight": true,
               "Label": ""
             },
             {
@@ -142,6 +146,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": false,
+              "Bodyweight": true,
               "Label": ""
             },
             {
@@ -160,6 +165,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": false,
+              "Bodyweight": true,
               "Label": ""
             }
           ]
@@ -208,6 +214,7 @@
                 "Auto": false,
                 "CountUp": false,
                 "Warmup": false,
+                "Bodyweight": true,
                 "Label": ""
               },
               {
@@ -226,6 +233,7 @@
                 "Auto": false,
                 "CountUp": false,
                 "Warmup": false,
+                "Bodyweight": true,
                 "Label": ""
               },
               {
@@ -244,6 +252,7 @@
                 "Auto": false,
                 "CountUp": false,
                 "Warmup": false,
+                "Bodyweight": true,
                 "Label": ""
               }
             ]
@@ -287,6 +296,7 @@
                 "Auto": false,
                 "CountUp": false,
                 "Warmup": false,
+                "Bodyweight": true,
                 "Label": ""
               },
               {
@@ -305,6 +315,7 @@
                 "Auto": false,
                 "CountUp": false,
                 "Warmup": false,
+                "Bodyweight": true,
                 "Label": ""
               },
               {
@@ -323,6 +334,7 @@
                 "Auto": false,
                 "CountUp": false,
                 "Warmup": false,
+                "Bodyweight": true,
                 "Label": ""
               }
             ]

@@ -144,6 +144,8 @@ message ResolvedSet {
   bool warmup = 12;
   // Set group label, for example "Work" or "Backoff".
   string label = 13;
+  // True when the load is the lifter's bodyweight, plus weight for an added load.
+  bool bodyweight = 14;
 }
 
 // ResolvedExercise is an exercise on a resolved day.

@@ -8,6 +8,7 @@ type ResolvedSet struct {
 	Rest, Work                        int // seconds
 	Amrap, Ask, LogRPE, Auto, CountUp bool
 	Warmup                            bool
+	Bodyweight                        bool // the load is the lifter's bodyweight, plus Weight for an added load
 	Label                             string
 }
 

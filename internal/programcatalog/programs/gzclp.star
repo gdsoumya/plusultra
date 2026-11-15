@@ -53,21 +53,21 @@ def t3_progress(ctx):
 
 def t1(name, increase):
     weight = pct(75)
-    ex(name, label="t1", desc=T1_DESC, variations=[
-        [s(4, 3, weight), s(1, 3, weight, amrap=True)],
-        [s(5, 2, weight), s(1, 2, weight, amrap=True)],
-        [s(9, 1, weight), s(1, 1, weight, amrap=True)],
-        [s(1, 5, weight, label="5RM Test")],
+    ex(name, label="T1", desc=T1_DESC, variations=[
+        [s(4, 3, weight, rest=180), s(1, 3, weight, rest=180, amrap=True)],
+        [s(5, 2, weight, rest=180), s(1, 2, weight, rest=180, amrap=True)],
+        [s(9, 1, weight, rest=180), s(1, 1, weight, rest=180, amrap=True)],
+        [s(1, 5, weight, rest=180, label="5RM Test")],
     ], progress=custom(t1_progress, increase=increase))
 
 def t2(name, increase, stage3increase):
     weight = pct(62)
-    ex(name, label="t2", desc=T2_DESC,
-       variations=[[s(3, 10, weight)], [s(3, 8, weight)], [s(3, 6, weight)]],
+    ex(name, label="T2", desc=T2_DESC,
+       variations=[[s(3, 10, weight, rest=120)], [s(3, 8, weight, rest=120)], [s(3, 6, weight, rest=120)]],
        progress=custom(t2_progress, stage1weight=kg(0), increase=increase, stage3increase=stage3increase))
 
 def t3(name, weight):
-    ex(name, label="t3", desc="T3.", sets=[s(2, 15, weight, rest=90), s(1, 15, weight, rest=90, amrap=True)],
+    ex(name, label="T3", desc="T3. Add weight once the last set reaches 25 reps.", sets=[s(2, 15, weight, rest=90), s(1, 15, weight, rest=90, amrap=True)],
        progress=custom(t3_progress, increase=kg(2.5)))
 
 day(1, 1, "A1")

@@ -43,6 +43,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": false,
+              "Bodyweight": false,
               "Label": ""
             },
             {
@@ -61,6 +62,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": false,
+              "Bodyweight": false,
               "Label": ""
             }
           ]
@@ -102,6 +104,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": false,
+              "Bodyweight": false,
               "Label": ""
             },
             {
@@ -120,6 +123,7 @@
               "Auto": false,
               "CountUp": false,
               "Warmup": false,
+              "Bodyweight": false,
               "Label": ""
             }
           ]
@@ -166,6 +170,7 @@
                 "Auto": false,
                 "CountUp": false,
                 "Warmup": false,
+                "Bodyweight": false,
                 "Label": ""
               },
               {
@@ -184,6 +189,7 @@
                 "Auto": false,
                 "CountUp": false,
                 "Warmup": false,
+                "Bodyweight": false,
                 "Label": ""
               }
             ]
@@ -225,6 +231,7 @@
                 "Auto": false,
                 "CountUp": false,
                 "Warmup": false,
+                "Bodyweight": false,
                 "Label": ""
               },
               {
@@ -243,6 +250,7 @@
                 "Auto": false,
                 "CountUp": false,
                 "Warmup": false,
+                "Bodyweight": false,
                 "Label": ""
               }
             ]

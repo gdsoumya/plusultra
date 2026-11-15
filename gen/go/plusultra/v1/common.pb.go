@@ -430,7 +430,9 @@ type ResolvedSet struct {
 	// True for a warmup set; warmups come before working sets.
 	Warmup bool `protobuf:"varint,12,opt,name=warmup,proto3" json:"warmup,omitempty"`
 	// Set group label, for example "Work" or "Backoff".
-	Label         string `protobuf:"bytes,13,opt,name=label,proto3" json:"label,omitempty"`
+	Label string `protobuf:"bytes,13,opt,name=label,proto3" json:"label,omitempty"`
+	// True when the load is the lifter's bodyweight, plus weight for an added load.
+	Bodyweight    bool `protobuf:"varint,14,opt,name=bodyweight,proto3" json:"bodyweight,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -554,6 +556,13 @@ func (x *ResolvedSet) GetLabel() string {
 		return x.Label
 	}
 	return ""
+}
+
+func (x *ResolvedSet) GetBodyweight() bool {
+	if x != nil {
+		return x.Bodyweight
+	}
+	return false
 }
 
 // ResolvedExercise is an exercise on a resolved day.
@@ -825,7 +834,7 @@ const file_plusultra_v1_common_proto_rawDesc = "" +
 	"\tDateRange\x12\x1d\n" +
 	"\x04from\x18\x01 \x01(\tB\t\xbaH\x06r\x04\x88\x8dO\x01R\x04from\x12\x19\n" +
 	"\x02to\x18\x02 \x01(\tB\t\xbaH\x06r\x04\x88\x8dO\x01R\x02to:I\xbaHF\x1aD\n" +
-	"\x10date_range.order\x12\x1ato must not be before from\x1a\x14this.to >= this.from\"\xc2\x02\n" +
+	"\x10date_range.order\x12\x1ato must not be before from\x1a\x14this.to >= this.from\"\xe2\x02\n" +
 	"\vResolvedSet\x12\x12\n" +
 	"\x04reps\x18\x01 \x01(\x05R\x04reps\x12\x19\n" +
 	"\bmin_reps\x18\x02 \x01(\x05R\aminReps\x12,\n" +
@@ -840,7 +849,10 @@ const file_plusultra_v1_common_proto_rawDesc = "" +
 	" \x01(\bR\x04auto\x12\x19\n" +
 	"\bcount_up\x18\v \x01(\bR\acountUp\x12\x16\n" +
 	"\x06warmup\x18\f \x01(\bR\x06warmup\x12\x14\n" +
-	"\x05label\x18\r \x01(\tR\x05label\"\xc9\x02\n" +
+	"\x05label\x18\r \x01(\tR\x05label\x12\x1e\n" +
+	"\n" +
+	"bodyweight\x18\x0e \x01(\bR\n" +
+	"bodyweight\"\xc9\x02\n" +
 	"\x10ResolvedExercise\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1c\n" +
 	"\tequipment\x18\x02 \x01(\tR\tequipment\x12\x14\n" +

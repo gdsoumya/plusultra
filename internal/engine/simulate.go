@@ -99,7 +99,7 @@ func Simulate(ctx context.Context, p *model.Program, st *model.UserState, opts S
 			}
 			rd, raw, err := resolveDay(d, &sim)
 			if err != nil {
-				return res, err
+				return res, widenNoRM1(err, d, p, &sim)
 			}
 			res.Days = append(res.Days, *rd)
 			w.rounding(rd, raw, &sim)

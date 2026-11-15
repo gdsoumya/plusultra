@@ -30,6 +30,9 @@ export interface ResolvedSet {
   auto: boolean;
   countUp: boolean;
   warmup: boolean;
+  // The load is the lifter's bodyweight, plus weight for an added load. Optional so hand-built sets
+  // elsewhere in the app need not spell it out.
+  bodyweight?: boolean;
   label: string;
   logRpe: boolean;
 }

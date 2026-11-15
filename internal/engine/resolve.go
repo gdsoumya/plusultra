@@ -2,6 +2,7 @@ package engine
 
 import (
 	"cmp"
+	"errors"
 	"fmt"
 	"maps"
 	"math/bits"
@@ -25,7 +26,7 @@ func Resolve(p *model.Program, st *model.UserState) ([]model.ResolvedDay, error)
 			}
 			rd, _, err := resolveDay(d, st)
 			if err != nil {
-				return nil, err
+				return nil, widenNoRM1(err, d, p, st)
 			}
 			days = append(days, *rd)
 		}
@@ -53,11 +54,34 @@ func ResolveDay(p *model.Program, st *model.UserState, week, day int) (*model.Re
 	switch {
 	case d != nil:
 		rd, _, err := resolveDay(d, st)
-		return rd, err
+		return rd, widenNoRM1(err, d, p, st)
 	case week < 1 || week > p.Weeks || day < 1 || day > 7: // only floating programs declare days above 7
 		return nil, fmt.Errorf("week %d day %d is outside the program", week, day)
 	}
 	return &model.ResolvedDay{Week: week, Day: day, Kind: "rest"}, nil
+}
+
+// noRM1Error names exercises that load with pct() but have no 1RM.
+type noRM1Error struct{ names []string }
+
+func (e *noRM1Error) Error() string { return "no 1RM for " + andList(e.names) }
+
+// widenNoRM1 makes a noRM1Error from resolving d name every such exercise
+// of p, not just the one that failed, so the user sets all their maxes in
+// one go.
+func widenNoRM1(err error, d *model.Day, p *model.Program, st *model.UserState) error {
+	var e *noRM1Error
+	if !errors.As(err, &e) {
+		return err
+	}
+	var names []string
+	for _, m := range pctWithoutRM1(p, st) {
+		names = append(names, m.name)
+	}
+	if len(names) == 0 {
+		return err
+	}
+	return fmt.Errorf("week %d day %d: %w", d.Week, d.Num, &noRM1Error{names})
 }
 
 // resolveDay also returns each exercise's working weights before rounding.
@@ -116,8 +140,9 @@ func resolveExercise(e *model.Exercise, week, day int, st *model.UserState) (mod
 		switch {
 		case ok && o.Abs != nil:
 			raw[i] = convert(*o.Abs, l.units)
+			s.Bodyweight = false
 		case ld.Kind == model.LoadPercent && !hasRM1:
-			return out, nil, fmt.Errorf("no 1RM for %s", out.Name)
+			return out, nil, &noRM1Error{names: []string{out.Name}}
 		default:
 			raw[i] = l.weight(ld, rm1)
 			if ok {

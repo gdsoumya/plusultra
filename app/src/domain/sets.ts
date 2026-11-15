@@ -17,12 +17,17 @@ export const targetLabel = (s: ResolvedSet) =>
         : `${s.reps}`;
 
 // Work sets as "4x5 75 kg · 1x3+ 60 kg · rest 3:00" or "3x0:45": runs of equal sets collapsed, warmups
-// skipped, the weight left out for bodyweight work, the rest shown once when every set shares it.
+// skipped, "bw" for bodyweight work (its weight is the lifter), no weight when there is none, the
+// rest shown once when every set shares it.
 export function setsSummary(sets: ResolvedSet[], unit: Unit): string {
   const work = sets.filter((s) => !s.warmup);
   const parts = runs(
     work.map((s) =>
-      s.weight.value ? `${targetLabel(s)} ${formatWeight(s.weight, unit)}` : targetLabel(s),
+      s.bodyweight
+        ? `${targetLabel(s)} bw`
+        : s.weight.value
+          ? `${targetLabel(s)} ${formatWeight(s.weight, unit)}`
+          : targetLabel(s),
     ),
   );
   const rest = work[0]?.rest;

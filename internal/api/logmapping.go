@@ -223,13 +223,13 @@ func optInt(v *int32) *int {
 func resolvedSetDB(s *pb.ResolvedSet, unit model.Unit) model.ResolvedSet {
 	return model.ResolvedSet{Reps: int(s.GetReps()), MinReps: int(s.GetMinReps()), Weight: weightDB(s.GetWeight(), unit), RPE: s.GetRpe(),
 		Rest: int(s.GetRest()), Work: int(s.GetWork()), Amrap: s.GetAmrap(), Ask: s.GetAsk(), LogRPE: s.GetLogRpe(), Auto: s.GetAuto(),
-		CountUp: s.GetCountUp(), Warmup: s.GetWarmup(), Label: s.GetLabel()}
+		CountUp: s.GetCountUp(), Warmup: s.GetWarmup(), Label: s.GetLabel(), Bodyweight: s.GetBodyweight()}
 }
 
 func plannedPB(p model.RecordPlanned) *pb.ResolvedSet {
 	return &pb.ResolvedSet{Reps: i32(p.Reps), MinReps: i32(p.MinReps), Weight: weightPB(model.Weight(p.Weight)), Rpe: p.RPE,
 		Rest: i32(p.Rest), Work: i32(p.Work), Amrap: p.Amrap, Ask: p.Ask, LogRpe: p.LogRPE, Auto: p.Auto, CountUp: p.CountUp,
-		Warmup: p.Warmup, Label: p.Label}
+		Warmup: p.Warmup, Label: p.Label, Bodyweight: p.Bodyweight}
 }
 
 func entryPB(e model.RecordEntry) *pb.ExerciseEntry {

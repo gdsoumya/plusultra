@@ -73,5 +73,6 @@ func DefaultWarmup(first model.ResolvedSet) []model.ResolvedSet {
 
 func resolvedSet(g model.SetGroup, w model.Weight) model.ResolvedSet {
 	return model.ResolvedSet{Reps: g.MaxReps, MinReps: g.MinReps, Weight: w, RPE: g.RPE, Rest: g.Rest, Work: g.Work,
-		Amrap: g.Amrap, Ask: g.Ask, LogRPE: g.LogRPE, Auto: g.Auto, CountUp: g.CountUp, Label: g.Label}
+		Amrap: g.Amrap, Ask: g.Ask, LogRPE: g.LogRPE, Auto: g.Auto, CountUp: g.CountUp, Label: g.Label,
+		Bodyweight: g.Load.Kind == model.LoadBodyweight}
 }
