@@ -89,6 +89,7 @@ const modifiedChips = () => screen.queryAllByText("Modified");
 // The pane shows one exercise; its tile brings it up.
 const show = (i: number) => fireEvent.press(screen.getByTestId(`tile-${i}`));
 const finishTile = () => fireEvent.press(screen.getByTestId("finish-workout"));
+const confirmFinish = () => fireEvent.press(screen.getByRole("button", { name: "Finish workout" }));
 
 // Registered once when the notifications module loads, before any test clears the mocks.
 const [[timerNotices]] = jest.mocked(Notifications.setNotificationHandler).mock.calls;
@@ -169,6 +170,7 @@ describe("WorkoutScreen", () => {
     await show(last);
     expect(screen.getByTestId("next-exercise")).toHaveAccessibleName("Finish");
     await fireEvent.press(screen.getByTestId("next-exercise"));
+    await confirmFinish();
     expect(saved(store).finalizeRequested).toBe(true);
     expect(mockRouter.back).toHaveBeenCalledTimes(1);
   });
@@ -631,12 +633,12 @@ describe("WorkoutScreen", () => {
     await waitFor(() => expect(screen.queryByText("Primary muscles")).toBeNull());
   });
 
-  it("lists warmups as rows of their own and counts them in the totals", async () => {
+  it("lists warmups as rows of their own and leaves them out of the totals", async () => {
     const store = await seed();
     const { sets } = saved(store).entries[0];
     const warmups = sets.filter((s) => s.planned.warmup);
     expect(warmups.length).toBeGreaterThan(0);
-    const reps = sets.reduce((t, s) => t + s.planned.reps, 0);
+    const reps = sets.filter((s) => !s.planned.warmup).reduce((t, s) => t + s.planned.reps, 0);
     await mount(store);
     expect(screen.getByTestId("set-0-0-caption")).toHaveTextContent(/^Warmup/);
     expect(screen.getByTestId(`set-0-${warmups.length}-caption`)).toHaveTextContent(/^Work/);
@@ -648,8 +650,9 @@ describe("WorkoutScreen", () => {
       completed: true,
       reps: warmups[0].planned.reps,
     });
+    // A done warmup counts on the tile, not in the reps against the plan.
     expect(screen.getByTestId("exercise-0-summary")).toHaveTextContent(
-      new RegExp(`^${warmups[0].planned.reps} / ${reps} reps`),
+      new RegExp(`^0 / ${reps} reps`),
     );
     expect(screen.getByTestId("tile-0")).toHaveAccessibleName(/, 1 of /);
   });
@@ -793,7 +796,7 @@ describe("WorkoutScreen", () => {
     await mount(store);
     await show(i);
     expect(screen.getByTestId(`set-${i}-0-done`)).toHaveAccessibleName("Start set 1");
-    expect(screen.getByTestId(`set-${i}-0`)).toHaveTextContent(/work 0:30 · rest 1:00/);
+    expect(screen.getByTestId(`set-${i}-0`)).toHaveTextContent(/for 0:30 · rest 1:00/);
 
     await fireEvent.press(screen.getByTestId(`set-${i}-0-done`));
     await fireEvent.press(screen.getByRole("button", { name: "Skip" }));
@@ -886,6 +889,7 @@ describe("WorkoutScreen", () => {
     expect(screen.getByTestId("set-1-1-done")).toHaveAccessibleName("Stop set 2");
 
     await finishTile();
+    await confirmFinish();
     await act(async () => {});
     expect(screen.queryByTestId("set-timer")).toBeNull();
     expect(Notifications.cancelScheduledNotificationAsync).toHaveBeenCalledWith("n1");
@@ -999,6 +1003,13 @@ describe("WorkoutScreen", () => {
     await show(1);
     await fireEvent.press(screen.getByTestId("set-1-0-done"));
     await finishTile();
+    // Work sets are still unticked, so Finish asks first; warmups do not count.
+    const workSets = saved(store)
+      .entries.flatMap((e) => e.sets)
+      .filter((s) => !s.planned.warmup).length;
+    expect(screen.getByText(`Finish with ${workSets - 1} sets left?`)).toBeOnTheScreen();
+    expect(saved(store).finishedAt).toBeUndefined();
+    await confirmFinish();
     expect(saved(store)).toMatchObject({
       finishedAt: "2026-11-11T08:30:00.000Z",
       finalizeRequested: true,
@@ -1009,6 +1020,25 @@ describe("WorkoutScreen", () => {
     expect(saved(store).entries[1].sets[1].completed).toBe(false);
     expect(mockRouter.back).toHaveBeenCalledTimes(1);
     jest.useRealTimers();
+  });
+
+  it("finishes without asking once every work set is ticked", async () => {
+    const store = await seed();
+    const r = saved(store);
+    workoutRecordsRepo(store).upsertFromServer([
+      {
+        ...r,
+        entries: r.entries.map((e) => ({
+          ...e,
+          sets: e.sets.map((s) => ({ ...s, completed: !s.planned.warmup })),
+        })),
+      },
+    ]);
+    await mount(store);
+    await finishTile();
+    expect(screen.queryByText(/^Finish with/)).toBeNull();
+    expect(saved(store).finalizeRequested).toBe(true);
+    expect(mockRouter.back).toHaveBeenCalledTimes(1);
   });
 
   it("leaves out an empty equipment line and the tonnage of a bodyweight exercise", async () => {

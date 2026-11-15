@@ -129,6 +129,7 @@ export default function DayScreen({ date, today, unit, userId }: Props) {
       {record ? (
         <WorkoutCard
           record={record}
+          today={today}
           onPress={() => router.push(`/day/${date}/workout/${record.id}`)}
           menu={[resetItem(() => setResetting("workout"))]}
         />
@@ -149,6 +150,7 @@ export default function DayScreen({ date, today, unit, userId }: Props) {
         <WeightCard
           checkins={store.list("checkins", { dateTo: date })}
           today={today}
+          date={date}
           unit={unit}
           onSave={saveCheckin}
         />

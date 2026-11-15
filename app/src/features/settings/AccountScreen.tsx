@@ -4,7 +4,7 @@ import { useApi } from "../../api/useApi";
 import { useSession } from "../../data/session";
 import { useStore } from "../../data/StoreProvider";
 import { formatWeight } from "../../domain/units";
-import { Button, Card, Chip, ChipStrip, ErrorLine, Field, Text } from "../../ui";
+import { Button, Card, Chip, ChipStrip, ConfirmSheet, ErrorLine, Field, Text } from "../../ui";
 import { DetailLine, SubScreen } from "./parts";
 import { useCall } from "./useRemote";
 import { signOut } from "./useServer";
@@ -27,6 +27,7 @@ export default function AccountScreen() {
   const [current, setCurrent] = useState("");
   const [next, setNext] = useState("");
   const [changed, setChanged] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
   const { call, busy, error } = useCall();
 
   const changePassword = () =>
@@ -101,10 +102,18 @@ export default function AccountScreen() {
         />
       </Card>
       <Button
-        title="Log out"
+        title="Sign out"
         variant="danger"
         icon="log-out-outline"
-        onPress={() => void signOut(session, store)}
+        onPress={() => setSigningOut(true)}
+      />
+      <ConfirmSheet
+        open={signingOut}
+        title="Sign out?"
+        message="This device's copy of your data is removed. Changes that have not synced yet are lost."
+        action="Sign out"
+        onConfirm={() => void signOut(session, store)}
+        onClose={() => setSigningOut(false)}
       />
     </SubScreen>
   );

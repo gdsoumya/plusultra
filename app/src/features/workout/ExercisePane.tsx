@@ -54,7 +54,12 @@ type Props = {
 // 200 kg". A bodyweight exercise moves no logged weight, so it gets no tonnage. A timed exercise
 // counts sets and time instead: "1 / 3 sets · 0:50 / 3:00". Meeting the plan is a badge.
 function summary(entry: ExerciseEntry, unit: Unit) {
-  const t = exerciseTarget(entry.sets, entry.unilateral, unit);
+  // Warm-ups are not part of the work the plan asks for.
+  const t = exerciseTarget(
+    entry.sets.filter((s) => !s.planned.warmup),
+    entry.unilateral,
+    unit,
+  );
   if (t.plannedWork && entry.sets.every((s) => isHold(s.planned))) {
     const done = entry.sets.filter((s) => s.completed).length;
     return `${done} / ${entry.sets.length} sets · ${clock(t.work)} / ${clock(t.plannedWork)}`;

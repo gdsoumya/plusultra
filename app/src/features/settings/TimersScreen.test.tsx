@@ -15,6 +15,20 @@ const stored = (store: ReturnType<typeof createMemoryStore>) =>
   store.getKv<UserSettings>(SETTINGS_KEY);
 
 describe("TimersScreen", () => {
+  beforeEach(() => {
+    Platform.OS = "android";
+  });
+
+  it("hides the phone-only switches on the web", async () => {
+    Platform.OS = "web";
+    await renderSettings(<TimersScreen />, createMemoryStore());
+    expect(screen.queryByTestId("keep-awake")).toBeNull();
+    expect(screen.queryByTestId("alert-in-dnd")).toBeNull();
+    expect(screen.getByTestId("vibrate")).toBeOnTheScreen();
+    expect(screen.getByRole("checkbox", { name: "Loud" })).toBeOnTheScreen();
+    expect(screen.queryByText(/notification volume of the phone/)).toBeNull();
+  });
+
   it("starts from the defaults and flips each switch", async () => {
     const store = createMemoryStore();
     await renderSettings(<TimersScreen />, store);
@@ -35,7 +49,6 @@ describe("TimersScreen", () => {
   });
 
   it("opens the system's DND access page when alerts in DND are turned on", async () => {
-    Platform.OS = "android";
     const intent = jest.spyOn(Linking, "sendIntent").mockResolvedValue(undefined);
     const store = createMemoryStore();
     await renderSettings(<TimersScreen />, store);

@@ -53,6 +53,10 @@ export default function MaxesScreen() {
     [api, call],
   );
   useDebouncedSearch(query, search);
+  const changeQuery = (q: string) => {
+    setQuery(q);
+    if (!q.trim()) setResults([]);
+  };
 
   const edit = (slug: string, name: string) => {
     setTarget({ slug, name });
@@ -63,8 +67,13 @@ export default function MaxesScreen() {
   const save = (data: ExerciseData) =>
     call(async () => {
       const r = await api.exercises.setExerciseData({ data });
-      rememberExerciseData(store, r.data!);
-      setData([...items.filter((d) => d.slug !== data.slug), r.data!]);
+      const saved = r.data ?? data;
+      rememberExerciseData(store, saved);
+      setData((prev = []) =>
+        [...prev.filter((d) => d.slug !== saved.slug), saved].sort((a, b) =>
+          a.slug.localeCompare(b.slug),
+        ),
+      );
       setOpen(false);
     });
 
@@ -75,7 +84,7 @@ export default function MaxesScreen() {
         placeholder="Bench press"
         returnKeyType="search"
         value={query}
-        onChangeText={setQuery}
+        onChangeText={changeQuery}
         onSubmitEditing={() => search(query)}
       />
       {query.trim() && searched === query && results.length === 0 && (

@@ -90,6 +90,31 @@ describe("MaxesScreen", () => {
     jest.useRealTimers();
   });
 
+  it("drops the results when the search box is cleared", async () => {
+    await renderSettings(<MaxesScreen />);
+    jest.useFakeTimers();
+    await fireEvent.changeText(screen.getByLabelText("Find an exercise"), "incline bench");
+    await act(() => jest.advanceTimersByTime(250));
+    expect(await screen.findByRole("button", { name: /^Incline Bench Press/ })).toBeOnTheScreen();
+    await fireEvent.changeText(screen.getByLabelText("Find an exercise"), "");
+    expect(screen.queryByRole("button", { name: /^Incline Bench Press/ })).toBeNull();
+    jest.useRealTimers();
+  });
+
+  it("lists a lift under Your lifts right after its first save", async () => {
+    await renderSettings(<MaxesScreen />);
+    expect(await screen.findByText("102.5 kg")).toBeOnTheScreen();
+    jest.useFakeTimers();
+    await fireEvent.changeText(screen.getByLabelText("Find an exercise"), "incline bench");
+    await act(() => jest.advanceTimersByTime(250));
+    await fireEvent.press(await screen.findByRole("button", { name: /^Incline Bench Press/ }));
+    jest.useRealTimers();
+    await fireEvent.changeText(screen.getByLabelText("1RM (kg)"), "80");
+    await fireEvent.press(screen.getByRole("button", { name: "Save" }));
+    expect(await screen.findByText("80 kg")).toBeOnTheScreen();
+    expect(screen.getByRole("button", { name: /^Incline Bench Press Barbell/ })).toBeOnTheScreen();
+  });
+
   it("finds an exercise and works in the user's unit", async () => {
     const store = createMemoryStore();
     store.setKv(SETTINGS_KEY, { displayName: "Demo", units: "lb", measurementUnit: "cm" });

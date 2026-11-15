@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { View } from "react-native";
 
 import type { Store } from "../../data/store";
-import { addDays, mondayOf, shortDate } from "../../domain/dates";
+import { addDays, daysBetween, mondayOf, shortDate } from "../../domain/dates";
 import { Card, stroke, Text, typography, useTheme } from "../../ui";
 import { StatTiles } from "../../ui/charts/StatTiles";
 import { DAILY_UP_TO, type SectionProps } from "./shared";
@@ -34,8 +34,10 @@ export function TrainingSection({ store, range, today, width }: Props) {
   const { from, to } = range;
   const trained = useMemo(() => new Set(finishedDates(store, from, to)), [store, from, to]);
   const streak = useMemo(() => weekStreak(store, today), [store, today]);
-  // Finished workouts in the range over its length in weeks; days counts the span, so add one.
-  const perWeek = trained.size / ((range.days + 1) / 7);
+  // Finished workouts over the weeks since the first one in the range (a new user's empty weeks
+  // before it would drag the rate down); days counts the span, so add one.
+  const first = [...trained].sort()[0] ?? from;
+  const perWeek = trained.size / ((daysBetween(first, to) + 1) / 7);
   // The grid takes the card's real width once laid out; the screen's estimate serves until then.
   const [measured, setMeasured] = useState<number>();
   const avail = measured ?? width;

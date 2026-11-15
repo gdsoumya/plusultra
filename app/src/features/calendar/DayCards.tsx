@@ -35,15 +35,24 @@ const MenuRow = ({
 
 export function WorkoutCard({
   record,
+  today,
   onPress,
   menu,
 }: {
   record: WorkoutRecord;
+  today: string;
   onPress: () => void;
   menu: MenuItem[];
 }) {
   const sets = record.entries.flatMap((e) => e.sets);
   const done = sets.filter((s) => s.completed).length;
+  const state = record.finalized
+    ? "Done"
+    : record.finishedAt
+      ? "Finished"
+      : record.date < today
+        ? "Not finished"
+        : "In progress";
   return (
     <Card>
       <MenuRow title="Workout" menu={menu}>
@@ -51,7 +60,7 @@ export function WorkoutCard({
           icon="barbell-outline"
           title={record.dayName || "Workout"}
           titleLines={2}
-          subtitle={`${done} of ${sets.length} sets done · ${record.finalized ? "Done" : record.finishedAt ? "Finished" : "In progress"}`}
+          subtitle={`${done} of ${sets.length} sets done · ${state}`}
           onPress={onPress}
         />
       </MenuRow>

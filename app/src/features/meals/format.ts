@@ -3,10 +3,11 @@ import type { Item, Macros } from "../../domain/types";
 const round1 = (n: number) => Math.round(n * 10) / 10;
 
 export const macroLine = (m: Macros) =>
-  `${Math.round(m.kcal)} kcal · P ${round1(m.protein)} · C ${round1(m.carbs)} · F ${round1(m.fat)}`;
+  `${Math.round(m.kcal)} kcal · P ${round1(m.protein)} g · C ${round1(m.carbs)} g · F ${round1(m.fat)} g`;
 
 // Fiber and water join only when the target sets them.
-export const kcalProtein = (m: Macros) => `${Math.round(m.kcal)} kcal · P ${Math.round(m.protein)}`;
+export const kcalProtein = (m: Macros) =>
+  `${Math.round(m.kcal)} kcal · P ${Math.round(m.protein)} g`;
 
 // "Oats, rolled 80 g · Egg, whole, raw 3": a food counted in its own unit drops the unit.
 export const itemsSummary = (items: Item[]) =>

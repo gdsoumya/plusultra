@@ -68,7 +68,7 @@ describe("SetRow", () => {
   it("always shows the planned rest, work, RPE, AMRAP and ask before anything is pressed", async () => {
     await row(set({ amrap: true, ask: true, work: 45 }));
     expect(screen.getByTestId("set-0-0-caption")).toHaveTextContent(
-      "Work · work 0:45 · auto · rest 1:30 · RPE 8 · AMRAP · ask",
+      "Work · for 0:45 · auto · rest 1:30 · RPE 8 · AMRAP · ask",
     );
     expect(screen.getByTestId("set-0-0-weight")).toHaveTextContent("?");
   });
@@ -121,7 +121,7 @@ describe("SetRow", () => {
     expect(screen.getByTestId("set-0-0-reps")).toHaveTextContent(/^5$/);
     expect(screen.getByTestId("set-0-0-weight")).toHaveTextContent("80 kg");
     expect(screen.getByTestId("set-0-0-done")).toHaveTextContent(glyph("play-circle"));
-    expect(screen.getByText(/work 1:00/)).toBeOnTheScreen();
+    expect(screen.getByText(/for 1:00/)).toBeOnTheScreen();
   });
 
   it("shows a timed set by its time", async () => {

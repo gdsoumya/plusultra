@@ -63,11 +63,17 @@ describe("TrainingSection", () => {
 
   it("shows workouts per week over the range, with a decimal only when not whole", async () => {
     // Two finished workouts over the eight days from Nov 4 to Nov 11.
-    const first = await mount();
+    const first = await mount(storeWith(["2026-11-04", "2026-11-09"]));
     expect(screen.getByLabelText("Workouts per week: 1.8")).toBeOnTheScreen();
     expect(screen.getByLabelText("Week streak: 2")).toBeOnTheScreen();
     await first.unmount();
     await mount(storeWith(["2026-11-05", "2026-11-09"]), rangeOf("2026-11-05", today));
+    expect(screen.getByLabelText("Workouts per week: 2")).toBeOnTheScreen();
+  });
+
+  it("counts the weeks from the first workout when the range starts before it", async () => {
+    // Signed up a week ago: two workouts in the last 7 days of a 30-day range.
+    await mount(storeWith(["2026-11-05", "2026-11-09"]), rangeOf("2026-10-13", today));
     expect(screen.getByLabelText("Workouts per week: 2")).toBeOnTheScreen();
   });
 });

@@ -79,11 +79,18 @@ describe("AccountScreen", () => {
     expect(await screen.findByText(/Could not reach the server/)).toBeOnTheScreen();
   });
 
-  it("logs out through the session and clears the store", async () => {
+  it("signs out through the session and clears the store once confirmed", async () => {
     const store = createMemoryStore();
     store.setKv(SETTINGS_KEY, { displayName: "Demo", units: "lb", measurementUnit: "cm" });
     await renderSettings(<AccountScreen />, store);
-    await fireEvent.press(screen.getByRole("button", { name: "Log out" }));
+    await fireEvent.press(screen.getByRole("button", { name: "Sign out" }));
+    expect(screen.getByText("Sign out?")).toBeOnTheScreen();
+    expect(mockSession.logout).not.toHaveBeenCalled();
+    await fireEvent.press(screen.getByRole("button", { name: "Cancel" }));
+    expect(screen.getByRole("button", { name: "Sign out" })).toBeOnTheScreen();
+    await fireEvent.press(screen.getByRole("button", { name: "Sign out" }));
+    const [, confirm] = screen.getAllByRole("button", { name: "Sign out" });
+    await fireEvent.press(confirm);
     await waitFor(() => expect(mockSession.logout).toHaveBeenCalled());
     expect(store.getKv(SETTINGS_KEY)).toBeUndefined();
   });

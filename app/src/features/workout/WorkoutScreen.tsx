@@ -111,6 +111,7 @@ export default function WorkoutScreen({ id, unit }: { id: string; unit: Unit }) 
   const [removing, setRemoving] = useState<number>();
   const [adding, setAdding] = useState(false);
   const [listing, setListing] = useState(false);
+  const [confirmingFinish, setConfirmingFinish] = useState(false);
   useBackToClose(() => setEditing(undefined), editing !== undefined);
   const count = record?.entries.length ?? 0;
   const show = (i: number) => setShown(Math.max(0, Math.min(count - 1, i)));
@@ -228,7 +229,16 @@ export default function WorkoutScreen({ id, unit }: { id: string; unit: Unit }) 
     complete(exercise, set);
   };
 
+  // Unticked work sets are easy to miss; the program moves on once the workout is finished.
+  const unticked = record.entries
+    .flatMap((e) => e.sets)
+    .filter((s) => !s.planned.warmup && !s.completed).length;
   const finishWorkout = () => {
+    if (unticked > 0) return setConfirmingFinish(true);
+    doFinish();
+  };
+  const doFinish = () => {
+    setConfirmingFinish(false);
     timer.stop();
     update((r) => finish(r, new Date().toISOString()));
     // Back to the screen that opened it (Today, or a past day in the Calendar tab); a deep link
@@ -395,6 +405,15 @@ export default function WorkoutScreen({ id, unit }: { id: string; unit: Unit }) 
           setRemoving(undefined);
         }}
         onClose={() => setRemoving(undefined)}
+      />
+      <ConfirmSheet
+        open={confirmingFinish}
+        title={`Finish with ${unticked} ${unticked === 1 ? "set" : "sets"} left?`}
+        message="Unticked sets count as not done and the program moves on to the next day."
+        action="Finish workout"
+        variant="primary"
+        onConfirm={doFinish}
+        onClose={() => setConfirmingFinish(false)}
       />
       <AddExerciseSheet
         open={adding}

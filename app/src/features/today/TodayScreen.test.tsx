@@ -218,6 +218,14 @@ describe("Today", () => {
     expect(workoutRecordsRepo(store).byDate(today)).toHaveLength(1);
   });
 
+  it("opens the workout from a tap on an exercise row", async () => {
+    const started = todaysRecord();
+    const first = todaysPlan().payload.exercises[0];
+    await renderToday();
+    await fireEvent.press(screen.getByRole("button", { name: new RegExp(`^${first.name}, `) }));
+    expect(mockPush).toHaveBeenCalledWith(`/workout/${started.id}`);
+  });
+
   it("done as planned completes every set and asks the server to finalize", async () => {
     clearToday();
     await renderToday();

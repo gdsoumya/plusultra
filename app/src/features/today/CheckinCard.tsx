@@ -7,9 +7,11 @@ import { formatWeight, inUnit, toKg } from "../../domain/units";
 import { Button, Card, Field, Icon, Numeral, Text, iconSize, space } from "../../ui";
 
 type Props = {
-  // Oldest first, up to today.
+  // Oldest first, up to the viewed date.
   checkins: Checkin[];
   today: string;
+  /** The day on screen; today unless the calendar shows a past day. */
+  date?: string;
   unit: Unit;
   onSave: (weight: Weight) => void;
 };
@@ -36,7 +38,7 @@ function Trend({ delta, unit }: { delta: number; unit: Unit }) {
   );
 }
 
-export function CheckinCard({ checkins, today, unit, onSave }: Props) {
+export function CheckinCard({ checkins, today, date = today, unit, onSave }: Props) {
   const [text, setText] = useState("");
   const [error, setError] = useState<string>();
   const weighed = checkins.filter((c) => c.weight);
@@ -58,11 +60,15 @@ export function CheckinCard({ checkins, today, unit, onSave }: Props) {
   return (
     <Card>
       <Text variant="caption">
-        {latest
-          ? latest.date === today
+        {latest?.date === date
+          ? date === today
             ? "Weight today"
-            : `Last weighed ${weekdayDate(latest.date)}, not today`
-          : "Weight"}
+            : "Weight"
+          : date < today
+            ? "No weigh-in this day"
+            : latest
+              ? `Last weighed ${weekdayDate(latest.date)}, not today`
+              : "Weight"}
       </Text>
       {latest && (
         <View style={{ flexDirection: "row", alignItems: "baseline", gap: space[3] }}>

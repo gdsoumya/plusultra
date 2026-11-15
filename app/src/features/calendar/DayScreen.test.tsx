@@ -241,6 +241,16 @@ describe("DayScreen", () => {
     expect(mockPush).toHaveBeenCalledWith("/day/2026-01-05/workout/log-new");
   });
 
+  it("calls a past workout that was never finished Not finished", async () => {
+    const record = workoutRecordsRepo(store)
+      .range("2026-11-01", "2026-11-10")
+      .find((r) => r.finalized)!;
+    workoutRecordsRepo(store).save({ ...record, finalized: false, finishedAt: undefined });
+    await renderDay(record.date);
+    expect(screen.getByRole("button", { name: new RegExp(`^${record.dayName}, .*Not finished$`) }));
+    expect(screen.queryByText(/In progress/)).toBeNull();
+  });
+
   it("says a workout finished here is finished before the server finalizes it", async () => {
     const record = workoutRecordsRepo(store)
       .range("2026-11-01", "2026-11-10")
@@ -403,7 +413,7 @@ describe("DayScreen", () => {
     expect(screen.getByText("80.5 kg")).toBeOnTheScreen();
   });
 
-  it("names the day of an earlier weigh-in like the rest of the app", async () => {
+  it("says a past day has no weigh-in, and shows the weight on the day it was taken", async () => {
     store.put("checkins", {
       id: "checkin-earlier",
       userId: "user-1",
@@ -415,8 +425,13 @@ describe("DayScreen", () => {
       deviceId: "device-1",
       dirty: false,
     });
-    await renderDay("2026-01-05");
-    expect(screen.getByText("Last weighed Sat 3 Jan, not today")).toBeOnTheScreen();
+    const past = await renderDay("2026-01-05");
+    expect(screen.getByText("No weigh-in this day")).toBeOnTheScreen();
+    expect(screen.getByText("80 kg")).toBeOnTheScreen();
+    await past.unmount();
+    await renderDay("2026-01-03");
+    expect(screen.getByText("Weight")).toBeOnTheScreen();
+    expect(screen.queryByText(/not today/)).toBeNull();
   });
 
   it("sets a past day's status through the repository", async () => {

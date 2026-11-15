@@ -72,7 +72,7 @@ function caption(set: SetEntry) {
   const fromPlan = !set.edited && !set.completed;
   return [
     isRange(set) ? `${p.minReps}-${p.reps} reps · aim ${p.reps}` : "",
-    p.work ? `work ${clock(p.work)}${p.auto ? " · auto" : ""}` : "",
+    p.work ? `for ${clock(p.work)}${p.auto ? " · auto" : ""}` : "",
     p.rest ? `rest ${clock(p.rest)}` : "",
     set.rpe ? `RPE ${set.rpe}` : p.rpe ? `RPE ${p.rpe}` : "",
     p.amrap ? "AMRAP" : "",

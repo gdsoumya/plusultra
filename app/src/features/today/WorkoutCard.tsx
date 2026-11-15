@@ -1,8 +1,8 @@
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 
 import { setsSummary } from "../../domain/sets";
 import type { DayLog, ProgramSummary, ResolvedDay, Unit, WorkoutRecord } from "../../domain/types";
-import { Button, Card, Text, space, tabular } from "../../ui";
+import { Button, Card, Text, pressedOpacity, space, tabular } from "../../ui";
 import { CardMenu, type MenuItem } from "../calendar/CardMenu";
 import { ExerciseThumb } from "../exercises/ExerciseRow";
 
@@ -75,7 +75,19 @@ export function WorkoutCard({ program, plan, record, dayLog, unit, onOpen, onDon
       {lines.length > 0 ? (
         <View style={{ gap: space[2] }}>
           {lines.map((e, i) => (
-            <View key={i} style={{ flexDirection: "row", alignItems: "center", gap: space[3] }}>
+            <Pressable
+              key={i}
+              accessibilityRole="button"
+              accessibilityLabel={`${e.name}, ${e.summary}`}
+              accessibilityHint="Opens the workout"
+              onPress={onOpen}
+              style={({ pressed }) => ({
+                flexDirection: "row",
+                alignItems: "center",
+                gap: space[3],
+                opacity: pressed ? pressedOpacity : 1,
+              })}
+            >
               <ExerciseThumb exercise={{ slug: e.slug, name: e.name }} />
               {/* Name and summary each take one truncated line, so nothing leaves the card. */}
               <View style={{ flex: 1 }} testID={`exercise-line-${i}`}>
@@ -84,7 +96,7 @@ export function WorkoutCard({ program, plan, record, dayLog, unit, onOpen, onDon
                   {e.summary}
                 </Text>
               </View>
-            </View>
+            </Pressable>
           ))}
         </View>
       ) : (

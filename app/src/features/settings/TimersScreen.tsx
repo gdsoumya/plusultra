@@ -18,18 +18,22 @@ const openDndAccess = () =>
 
 export default function TimersScreen() {
   const [settings, update] = useSettings();
+  // Screen, DND and notification settings mean nothing in a browser tab.
+  const phone = Platform.OS === "android";
   const onOff = (on: boolean) => (on ? "On" : "Off");
   return (
     <SubScreen title="Timers and screen" testID="timers-screen">
       <ListCard>
-        <ListRow
-          icon="sunny-outline"
-          title="Keep screen on"
-          subtitle="While the app is in front; never in the background"
-          value={onOff(settings.keepAwake)}
-          onPress={() => update({ keepAwake: !settings.keepAwake })}
-          testID="keep-awake"
-        />
+        {phone && (
+          <ListRow
+            icon="sunny-outline"
+            title="Keep screen on"
+            subtitle="While the app is in front; never in the background"
+            value={onOff(settings.keepAwake)}
+            onPress={() => update({ keepAwake: !settings.keepAwake })}
+            testID="keep-awake"
+          />
+        )}
         <ListRow
           icon="phone-portrait-outline"
           title="Vibration"
@@ -38,17 +42,19 @@ export default function TimersScreen() {
           onPress={() => update({ vibrate: !settings.vibrate })}
           testID="vibrate"
         />
-        <ListRow
-          icon="notifications-outline"
-          title="Alert in Do Not Disturb"
-          subtitle="Timer notifications get through DND once the app has DND access"
-          value={onOff(settings.alertInDnd)}
-          onPress={() => {
-            update({ alertInDnd: !settings.alertInDnd });
-            if (!settings.alertInDnd) void openDndAccess();
-          }}
-          testID="alert-in-dnd"
-        />
+        {phone && (
+          <ListRow
+            icon="notifications-outline"
+            title="Alert in Do Not Disturb"
+            subtitle="Timer notifications get through DND once the app has DND access"
+            value={onOff(settings.alertInDnd)}
+            onPress={() => {
+              update({ alertInDnd: !settings.alertInDnd });
+              if (!settings.alertInDnd) void openDndAccess();
+            }}
+            testID="alert-in-dnd"
+          />
+        )}
       </ListCard>
       <Text variant="label" color="textMuted">
         Timer volume
@@ -64,8 +70,7 @@ export default function TimersScreen() {
         ))}
       </ChipStrip>
       <Text variant="caption">
-        Beeps and vibration play while the workout is on screen. With the screen off, the end of a
-        timer comes as a notification with the same sound, at the notification volume of the phone.
+        {`Beeps and vibration play while the workout is on screen.${phone ? " With the screen off, the end of a timer comes as a notification with the same sound, at the notification volume of the phone." : ""}`}
       </Text>
     </SubScreen>
   );

@@ -72,6 +72,25 @@ describe("ExercisePane", () => {
     });
   });
 
+  it("leaves warm-ups out of the planned reps and load", async () => {
+    const plan = [...sets(2, 5, 40, { warmup: true }), ...sets(3, 5, 100)];
+    const mixed = plan.map((planned, i) => ({
+      planned,
+      completed: i < 3,
+      reps: i < 3 ? 5 : 0,
+      weight: planned.weight,
+      rpe: 0,
+    }));
+    await render(entry({ sets: mixed }));
+    // One work set done: the two warm-ups add nothing to either side.
+    expect(screen.getByTestId("exercise-0-summary")).toHaveTextContent(
+      "5 / 15 reps · 500 / 1500 kg",
+      {
+        exact: true,
+      },
+    );
+  });
+
   it("lets a long tonnage line wrap instead of cutting the unit off", async () => {
     const heavy = sets(3, 5, 100).map((planned) => ({
       planned,

@@ -6,7 +6,7 @@ import type { Unit as UnitName } from "../../domain/types";
 import { inUnit } from "../../domain/units";
 import { Unit, type Weight } from "../../gen/plusultra/v1/common_pb";
 import { ExerciseDataSchema, type ExerciseData } from "../../gen/plusultra/v1/exercise_pb";
-import { Button, Chip, ChipStrip, ErrorLine, Field, Sheet } from "../../ui";
+import { Button, Chip, ChipStrip, ErrorLine, Field, Sheet, Text } from "../../ui";
 import { draftOf, parseRounding } from "./rounding";
 import { RoundingFields } from "./RoundingFields";
 
@@ -90,12 +90,9 @@ export function MaxSheet({
       />
       <ChipStrip>
         <Chip label="Custom rounding" selected={custom} onPress={() => setCustom((c) => !c)} />
-        <Chip
-          label="Unilateral (log left and right reps)"
-          selected={unilateral}
-          onPress={() => setUnilateral((u) => !u)}
-        />
+        <Chip label="Unilateral" selected={unilateral} onPress={() => setUnilateral((u) => !u)} />
       </ChipStrip>
+      <Text variant="caption">Unilateral exercises log left and right reps separately.</Text>
       {custom && <RoundingFields value={draft} unit={unit} onChange={setDraft} />}
       <ErrorLine message={problem ?? error} />
     </Sheet>
