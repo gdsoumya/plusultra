@@ -1,3 +1,5 @@
+import { Code } from "@connectrpc/connect";
+
 import { ProgramKind, ProgramMode, ProgramStatus } from "../../gen/plusultra/v1/program_pb";
 import { createClients } from "../clients";
 import { fromProto } from "../convert";
@@ -90,6 +92,22 @@ describe("mock fixtures", () => {
       expect(names).toContain(food);
     expect(items.every((i) => i.food!.ref && i.food!.per100g)).toBe(true);
     expect(mealDays[0].totals!.kcal).toBeGreaterThan(2000);
+  });
+
+  it("ship a catalog of three programs, beginners first, with scripts only on fetch", async () => {
+    const client = api();
+    const { programs } = await client.programs.listCatalog({});
+    expect(programs.map((p) => [p.slug, p.level, p.script])).toEqual([
+      ["gzclp", "beginner", ""],
+      ["531-for-beginners", "beginner", ""],
+      ["strength16-bulk", "intermediate", ""],
+    ]);
+    const { program } = await client.programs.getCatalogProgram({ slug: "531-for-beginners" });
+    expect(program?.script).toContain('program("5/3/1 for Beginners", weeks=3, units="kg")');
+    expect(program?.maxes).toEqual(["Squat", "Bench Press", "Deadlift", "Overhead Press"]);
+    await expect(client.programs.getCatalogProgram({ slug: "nope" })).rejects.toMatchObject({
+      code: Code.NotFound,
+    });
   });
 
   it("search about 40 foods and 60 exercises", async () => {

@@ -1,14 +1,20 @@
 import { router, useFocusEffect } from "expo-router";
-import { useReducer } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { View } from "react-native";
 
+import { errorMessage } from "../../api/errors";
+import { useApi } from "../../api/useApi";
 import { programsRepo } from "../../data/repositories/programs";
 import { useStore } from "../../data/StoreProvider";
 import { useRefresh } from "../../data/useRefresh";
 import { useSync } from "../../data/useSync";
+import type { CatalogProgram } from "../../gen/plusultra/v1/program_pb";
 import {
   Button,
+  Chip,
+  ChipStrip,
   EmptyState,
+  ErrorLine,
   IconButton,
   ListCard,
   ListRow,
@@ -18,20 +24,43 @@ import {
   useWide,
 } from "../../ui";
 import { SyncBadge } from "../sync/SyncBadge";
-import { kindLabel, modeLabel, sections } from "./summary";
+import { kindLabel, levelLabel, modeLabel, sections } from "./summary";
 
 const openEditor = () => router.push("/program/edit");
 
+const CATALOG_KEY = "programCatalog";
+
 export default function ProgramsScreen() {
+  const api = useApi();
   const store = useStore();
   // A finished sync re-renders with what it stored, such as a program made over MCP; focus and
   // pull-to-refresh read the store again too.
   useSync();
-  const [, reload] = useReducer((n: number) => n + 1, 0);
+  const [tick, reload] = useReducer((n: number) => n + 1, 0);
   useFocusEffect(reload);
   const refresh = useRefresh(reload);
   const programs = programsRepo(store).all();
   const wide = useWide();
+  const [tab, setTab] = useState<"mine" | "catalog">("mine");
+  const [catalog, setCatalog] = useState(() => store.getKv<CatalogProgram[]>(CATALOG_KEY) ?? []);
+  const [catalogError, setCatalogError] = useState<string>();
+
+  // The cached list shows at once; the server's replaces it when the catalog is in view.
+  useEffect(() => {
+    if (tab !== "catalog") return;
+    api.programs.listCatalog({}).then(
+      ({ programs: fresh }) => {
+        store.setKv(CATALOG_KEY, fresh);
+        setCatalog(fresh);
+        setCatalogError(undefined);
+      },
+      (e) => setCatalogError(errorMessage(e)),
+    );
+  }, [api, store, tab, tick]);
+
+  const levels = Object.entries(levelLabel)
+    .map(([level, title]) => ({ title, programs: catalog.filter((p) => p.level === level) }))
+    .filter((l) => l.programs.length > 0);
 
   return (
     <Screen
@@ -49,12 +78,37 @@ export default function ProgramsScreen() {
       }
       refresh={refresh}
     >
-      {programs.length === 0 ? (
+      <ChipStrip>
+        <Chip label="Mine" selected={tab === "mine"} onPress={() => setTab("mine")} />
+        <Chip label="Catalog" selected={tab === "catalog"} onPress={() => setTab("catalog")} />
+      </ChipStrip>
+      {tab === "catalog" ? (
+        <>
+          <ErrorLine message={catalogError} />
+          {levels.map((level) => (
+            <View key={level.title} style={{ gap: space[2] }}>
+              <Text variant="heading">{level.title}</Text>
+              <ListCard>
+                {level.programs.map((p) => (
+                  <ListRow
+                    key={p.slug}
+                    icon="barbell-outline"
+                    title={p.name}
+                    subtitle={`${p.author} · ${p.daysPerWeek} days a week`}
+                    value={`${p.weeks} wk`}
+                    onPress={() => router.push(`/catalog/${p.slug}`)}
+                  />
+                ))}
+              </ListCard>
+            </View>
+          ))}
+        </>
+      ) : programs.length === 0 ? (
         <EmptyState
           icon="barbell-outline"
           title="No programs yet"
-          message="Write a program as a script, check it, then activate it."
-          action={{ title: "Write a program", onPress: openEditor }}
+          message="Pick one from the catalog or write your own."
+          action={{ title: "Browse the catalog", onPress: () => setTab("catalog") }}
         />
       ) : (
         sections(programs).map((section) => (

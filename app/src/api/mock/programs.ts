@@ -14,12 +14,13 @@ import {
   type Program,
 } from "../../gen/plusultra/v1/program_pb";
 import { toProto } from "../convert";
+import { catalog } from "../fixtures/catalog";
 import { addDays, mondayOf } from "../fixtures/dates";
-import { newId, nowStamp, page, precondition, program, type MockDb } from "./db";
+import { newId, notFound, nowStamp, page, precondition, program, type MockDb } from "./db";
 import { activeProgram } from "./plans";
 import { nameOf, scriptErrors, structureOf } from "./scripts";
 
-const listed = (p: Program) => ({ ...p, script: "" });
+const listed = <P extends { script: string }>(p: P) => ({ ...p, script: "" });
 
 function checked(script: string) {
   const errors = scriptErrors(script);
@@ -170,6 +171,12 @@ export function programs(db: MockDb): ServiceImpl<typeof ProgramService> {
       const all = db.revisions[programId].map((r) => (includeScript ? r : { ...r, script: "" }));
       const { items, ...more } = page(all, cursor, limit);
       return { revisions: items, ...more };
+    },
+    listCatalog: () => ({ programs: catalog.map(listed) }),
+    getCatalogProgram({ slug }) {
+      const found = catalog.find((p) => p.slug === slug);
+      if (!found) throw notFound(`catalog program ${slug}`);
+      return { program: found };
     },
     getResolvedDays({ programId, week }) {
       const p = program(db, programId);

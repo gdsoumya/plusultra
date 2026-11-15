@@ -1,3 +1,4 @@
+import { create } from "@bufbuild/protobuf";
 import { Code, ConnectError } from "@connectrpc/connect";
 import { act, fireEvent, screen, waitFor } from "@testing-library/react-native";
 import { router } from "expo-router";
@@ -10,7 +11,7 @@ import { resolvedDaysRepo } from "../../data/repositories/resolvedDays";
 import { fromProto } from "../../api/convert";
 import { nextMonday, today as localToday } from "../../domain/dates";
 import { setsSummary } from "../../domain/sets";
-import { ProgramKind } from "../../gen/plusultra/v1/program_pb";
+import { ProgramKind, SimulateProgramResponseSchema } from "../../gen/plusultra/v1/program_pb";
 import ProgramDetailScreen from "./ProgramDetailScreen";
 import type { Api } from "../../api/clients";
 import { draftScript, renderWith, setup, type Harness } from "./test-utils";
@@ -34,6 +35,8 @@ jest.mock("../../domain/dates", () => ({
 }));
 
 const strength = "program-strength16";
+const draftLine =
+  "A draft has no dates yet. Edit it if you like, then Activate to pick a start date or run it floating.";
 // Chips are checkboxes in the merged UI kit, so fall back to the label.
 const press = (name: string) =>
   fireEvent.press(screen.queryByRole("button", { name }) ?? screen.getByLabelText(name));
@@ -157,13 +160,33 @@ describe("ProgramDetailScreen", () => {
     expect(await screen.findByText("Floating, next week 1 day 1")).toBeOnTheScreen();
   });
 
-  it("renders a draft as not started", async () => {
+  it("renders a draft as not started, with what a draft is", async () => {
     const id = await draft();
     await renderWith(h, <ProgramDetailScreen id={id} />);
     expect(await screen.findByText("Workout, Draft")).toBeOnTheScreen();
     expect(screen.getByText("Not started")).toBeOnTheScreen();
+    expect(screen.getByText(draftLine)).toBeOnTheScreen();
     expect(screen.getByRole("button", { name: "Activate" })).toBeOnTheScreen();
     expect(screen.queryByRole("button", { name: "Finish" })).toBeNull();
+  });
+
+  it("does not explain drafts on an active program", async () => {
+    await renderWith(h, <ProgramDetailScreen id={strength} />);
+    await screen.findByText("Workout, Active");
+    expect(screen.queryByText(draftLine)).toBeNull();
+  });
+
+  it("shows a draft's script error, pointing a missing 1RM at the maxes", async () => {
+    const id = await draft();
+    jest.spyOn(h.api.programs, "simulateProgram").mockResolvedValue(
+      create(SimulateProgramResponseSchema, {
+        errors: [{ line: 3, col: 1, message: "Squat needs a 1RM." }],
+      }),
+    );
+    await renderWith(h, <ProgramDetailScreen id={id} />);
+    expect(
+      await screen.findByText("Squat needs a 1RM. Set it under Settings › Maxes."),
+    ).toBeOnTheScreen();
   });
 
   it("lists revisions newest first and pages them", async () => {

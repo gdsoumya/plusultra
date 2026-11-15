@@ -18,6 +18,13 @@ export const statusLabel: Record<Status, string> = {
   archived: "Archived",
 };
 
+// Catalog levels in listing order.
+export const levelLabel: Record<string, string> = {
+  beginner: "Beginner",
+  intermediate: "Intermediate",
+  advanced: "Advanced",
+};
+
 export const sortPrograms = (all: ProgramSummary[]) =>
   [...all].sort(
     (a, b) =>

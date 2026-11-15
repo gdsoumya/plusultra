@@ -7,7 +7,8 @@ import { Chip, ChipStrip, ListCard, ListRow } from "../../ui";
 import { ExerciseRow } from "../exercises/ExerciseRow";
 
 type Props = {
-  programId: string;
+  /** The program whose plan an exercise row opens; a preview without one has static rows. */
+  programId?: string;
   unit: Unit;
   weeks: number;
   /** The declared days; offline, the cached resolved days stand in. */
@@ -43,7 +44,9 @@ export function WeekPlan({ programId, unit, weeks, days, plans, week, onWeek, pa
               <ListRow
                 title={d.day ? `${d.day}. ${d.name}` : d.name}
                 subtitle={
-                  d.kind !== "training" && !d.name.toLowerCase().includes(d.kind) ? d.kind : undefined
+                  d.kind !== "training" && !d.name.toLowerCase().includes(d.kind)
+                    ? d.kind
+                    : undefined
                 }
                 value={plan && past?.(plan) ? "past" : undefined}
               />
@@ -52,8 +55,10 @@ export function WeekPlan({ programId, unit, weeks, days, plans, week, onWeek, pa
                   key={n}
                   exercise={{ slug: e.slug, name: e.name }}
                   subtitle={setsSummary(e.sets, unit) + (e.unilateral ? " · per side" : "")}
-                  onPress={() =>
-                    router.push(`/program/${programId}/plan/${d.week}/${d.day}/${n + 1}`)
+                  onPress={
+                    programId
+                      ? () => router.push(`/program/${programId}/plan/${d.week}/${d.day}/${n + 1}`)
+                      : null
                   }
                 />
               ))}

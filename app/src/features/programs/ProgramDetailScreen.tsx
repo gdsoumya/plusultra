@@ -44,6 +44,10 @@ import { WeekPlan } from "./WeekPlan";
 
 const PAGE = 20;
 
+// A missing 1RM is fixed in Settings, not in the script.
+const withMaxesHint = (message: string) =>
+  message.includes("1RM") ? `${message} Set it under Settings › Maxes.` : message;
+
 type Confirm = { title: string; message: string; action: string; run: () => Promise<void> };
 
 export default function ProgramDetailScreen({ id, unit = "kg" }: { id: string; unit?: Unit }) {
@@ -89,6 +93,7 @@ export default function ProgramDetailScreen({ id, unit = "kg" }: { id: string; u
       } else {
         api.programs.simulateProgram({ script: p.script, weeks: p.structure?.weeks || 1 }).then(
           (r) => {
+            if (r.errors.length) setMessage(withMaxesHint(r.errors[0].message));
             const loaded = r.days.map((d) => fromProto.resolvedDay(d).payload);
             rememberDays(store, id, loaded);
             setDays(loaded);
@@ -184,6 +189,12 @@ export default function ProgramDetailScreen({ id, unit = "kg" }: { id: string; u
               <Text color="textMuted">{`${structure.weeks} weeks, ${structure.days.length} days`}</Text>
             )}
           </Card>
+          {view.status === "draft" && (
+            <Text color="textMuted">
+              A draft has no dates yet. Edit it if you like, then Activate to pick a start date or
+              run it floating.
+            </Text>
+          )}
           {view.status === "active" ? (
             <Button
               title="Finish"

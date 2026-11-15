@@ -1,3 +1,4 @@
+import { Code, ConnectError } from "@connectrpc/connect";
 import { fireEvent, screen } from "@testing-library/react-native";
 import { router } from "expo-router";
 
@@ -99,10 +100,46 @@ describe("ProgramsScreen", () => {
     expect(screen.getByRole("button", { name: /^Made over MCP/ })).toBeOnTheScreen();
   });
 
-  it("shows an empty state that opens the editor", async () => {
+  it("shows an empty state that switches to the catalog", async () => {
     for (const p of h.store.list("programs")) h.store.delete("programs", p.id);
     await renderWith(h, <ProgramsScreen />);
-    await fireEvent.press(screen.getByRole("button", { name: "Write a program" }));
-    expect(router.push).toHaveBeenCalledWith("/program/edit");
+    expect(screen.getByText("Pick one from the catalog or write your own.")).toBeOnTheScreen();
+    await fireEvent.press(screen.getByRole("button", { name: "Browse the catalog" }));
+    expect(await screen.findByText("Beginner")).toBeOnTheScreen();
+    expect(screen.getByRole("checkbox", { name: "Catalog" })).toBeChecked();
+    expect(screen.getByRole("button", { name: "New" })).toBeOnTheScreen();
+  });
+
+  it("lists the catalog by level and opens a program", async () => {
+    await renderWith(h, <ProgramsScreen />);
+    expect(screen.getByRole("checkbox", { name: "Mine" })).toBeChecked();
+    expect(screen.queryByText("Beginner")).toBeNull();
+    await fireEvent.press(screen.getByRole("checkbox", { name: "Catalog" }));
+    expect(await screen.findByText("Beginner")).toBeOnTheScreen();
+    expect(screen.getByText("Intermediate")).toBeOnTheScreen();
+    expect(screen.queryByText("Advanced")).toBeNull();
+    expect(screen.queryByText("Active")).toBeNull();
+    expect(rowNames()).toEqual([
+      "GZCLP 4-week, Cody Lefever · 3 days a week, 4 wk",
+      "5/3/1 for Beginners, Jim Wendler · 3 days a week, 3 wk",
+      "16-Week Strength & Recomp — Bulk block, plusultra · 4 days a week, 8 wk",
+    ]);
+    await fireEvent.press(screen.getByRole("button", { name: /^GZCLP 4-week/ }));
+    expect(router.push).toHaveBeenCalledWith("/catalog/gzclp");
+    expect(h.store.getKv("programCatalog")).toHaveLength(3);
+    await fireEvent.press(screen.getByRole("checkbox", { name: "Mine" }));
+    expect(screen.getByText("Active")).toBeOnTheScreen();
+  });
+
+  it("shows the cached catalog with the error when the server is unreachable", async () => {
+    const { programs } = await h.api.programs.listCatalog({});
+    h.store.setKv("programCatalog", programs.slice(0, 1));
+    h.mock.failNext("programs.listCatalog", new ConnectError("down", Code.Unavailable));
+    await renderWith(h, <ProgramsScreen />);
+    await fireEvent.press(screen.getByRole("checkbox", { name: "Catalog" }));
+    expect(
+      await screen.findByText("Could not reach the server. Check your connection and try again."),
+    ).toBeOnTheScreen();
+    expect(rowNames()).toEqual(["GZCLP 4-week, Cody Lefever · 3 days a week, 4 wk"]);
   });
 });

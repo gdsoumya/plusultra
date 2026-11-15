@@ -20,8 +20,8 @@ type Props = {
   /** Defaults to the muscles and equipment line. */
   subtitle?: string;
   value?: string;
-  /** Defaults to opening the exercise detail once the catalog entry is known. */
-  onPress?: () => void;
+  /** Defaults to opening the exercise detail once the catalog entry is known; null keeps the row static. */
+  onPress?: (() => void) | null;
 };
 
 // A list row for an exercise: thumbnail, name and what it works; tapping opens the detail.
@@ -35,7 +35,7 @@ export function ExerciseRow({ exercise, subtitle, value, onPress }: Props) {
       title={exercise.name ?? info?.name ?? ""}
       subtitle={subtitle ?? infoLine(info)}
       value={value}
-      onPress={onPress ?? open}
+      onPress={onPress === null ? undefined : (onPress ?? open)}
     />
   );
 }
