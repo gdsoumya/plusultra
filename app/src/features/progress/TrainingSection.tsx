@@ -1,16 +1,15 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { View } from "react-native";
 
 import type { Store } from "../../data/store";
 import { addDays, mondayOf, shortDate } from "../../domain/dates";
 import { Card, stroke, Text, typography, useTheme } from "../../ui";
 import { StatTiles } from "../../ui/charts/StatTiles";
-import type { SectionProps } from "./shared";
+import { DAILY_UP_TO, type SectionProps } from "./shared";
 
 type Props = Pick<SectionProps, "store" | "range" | "today" | "width">;
 
-const gap = 2;
-// Room for the weekday initials.
+// Room for the weekday initials beside the week columns.
 const labelColumn = 16;
 const weekdays = ["M", "T", "W", "T", "F", "S", "S"];
 const finishedDates = (store: Store, from?: string, to?: string) =>
@@ -37,13 +36,22 @@ export function TrainingSection({ store, range, today, width }: Props) {
   const streak = useMemo(() => weekStreak(store, today), [store, today]);
   // Finished workouts in the range over its length in weeks; days counts the span, so add one.
   const perWeek = trained.size / ((range.days + 1) / 7);
+  // The grid takes the card's real width once laid out; the screen's estimate serves until then.
+  const [measured, setMeasured] = useState<number>();
+  const avail = measured ?? width;
   const weeks: string[] = [];
   for (let w = mondayOf(from); w <= to; w = addDays(w, 7)) weeks.push(w);
-  // Squares shrink so the weeks always fit one row; a year on a phone is about 4 px.
-  const size = Math.max(
-    4,
-    Math.min(16, Math.floor((width - labelColumn - (weeks.length - 1) * gap) / weeks.length)),
-  );
+  // Up to four weeks the weeks are rows under the weekday initials, like a calendar; beyond that
+  // they are columns beside them, shrinking so a year still fits one row (about 4 px on a phone).
+  const calendar = range.days <= DAILY_UP_TO;
+  const gap = weeks.length > 30 ? 1 : 2;
+  const size = calendar
+    ? Math.min(28, Math.floor((avail - 6 * gap) / 7))
+    : Math.max(
+        4,
+        Math.min(16, Math.floor((avail - labelColumn - weeks.length * gap) / weeks.length)),
+      );
+  const along = calendar ? "row" : "column";
   const outside = (date: string) => date < from || date > to;
   const square = (date: string) => ({
     width: size,
@@ -68,17 +76,20 @@ export function TrainingSection({ store, range, today, width }: Props) {
       <View
         accessible
         accessibilityLabel={`${trained.size} training days from ${shortDate(from)} to ${shortDate(to)}.`}
-        style={{ flexDirection: "row", gap }}
+        onLayout={(e) => setMeasured(e.nativeEvent.layout.width)}
+        style={{ flexDirection: calendar ? "column" : "row", gap }}
       >
-        <View style={{ width: labelColumn, gap }}>
+        <View style={{ flexDirection: along, gap }}>
           {weekdays.map((name, i) => (
             <Text
               key={i}
               variant="caption"
               style={{
+                width: calendar ? size : labelColumn,
                 height: size,
                 lineHeight: size,
                 fontSize: Math.min(typography.caption.fontSize, size),
+                textAlign: calendar ? "center" : "left",
               }}
             >
               {name}
@@ -86,7 +97,7 @@ export function TrainingSection({ store, range, today, width }: Props) {
           ))}
         </View>
         {weeks.map((monday) => (
-          <View key={monday} style={{ gap }}>
+          <View key={monday} style={{ flexDirection: along, gap }}>
             {Array.from({ length: 7 }, (_, d) => addDays(monday, d)).map((date) => (
               <View
                 key={date}

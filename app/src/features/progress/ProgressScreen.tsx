@@ -6,7 +6,7 @@ import type { Store } from "../../data/store";
 import { useRefresh } from "../../data/useRefresh";
 import { mondayOf } from "../../domain/dates";
 import type { Unit } from "../../domain/types";
-import { maxWidth, Screen, space } from "../../ui";
+import { maxWidth, Screen, space, stroke } from "../../ui";
 import { SyncBadge } from "../sync/SyncBadge";
 import { AdherenceSection } from "./AdherenceSection";
 import { LiftSection } from "./LiftSection";
@@ -38,7 +38,9 @@ export default function ProgressScreen({ insights, store, today, unit }: Progres
   };
   const range = useMemo(() => rangeFor(choice, today), [choice, today]);
   // The chart fills a card in the screen column, which stops growing at maxWidth.wide.
-  const width = Math.min(useWindowDimensions().width - 2 * space[4], maxWidth.wide) - 2 * space[4];
+  const width =
+    Math.min(useWindowDimensions().width - 2 * space[4], maxWidth.wide) -
+    2 * (space[4] + stroke.control);
   const section = { insights, store, range, unit, today, width };
   const trend = useWeeklyTrend(store, insights, range);
   // The insights are the server's; remounting the sections fetches them again after the sync.
