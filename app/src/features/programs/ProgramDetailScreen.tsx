@@ -39,14 +39,19 @@ import {
   rememberDays,
   rememberMealDays,
 } from "./programStore";
-import { currentWeek, isPast, kindLabel, modeLabel, statusLabel } from "./summary";
+import {
+  createdByLabel,
+  currentWeek,
+  isPast,
+  kindLabel,
+  modeLabel,
+  plural,
+  statusLabel,
+  withMaxesHint,
+} from "./summary";
 import { WeekPlan } from "./WeekPlan";
 
 const PAGE = 20;
-
-// A missing 1RM is fixed in Settings, not in the script.
-const withMaxesHint = (message: string) =>
-  message.includes("1RM") ? `${message} Set it under Settings › Maxes.` : message;
 
 type Confirm = { title: string; message: string; action: string; run: () => Promise<void> };
 
@@ -62,6 +67,7 @@ export default function ProgramDetailScreen({ id, unit = "kg" }: { id: string; u
   const [confirm, setConfirm] = useState<Confirm>();
   const [busy, setBusy] = useState(false);
   const [activating, setActivating] = useState(false);
+  const [activated, setActivated] = useState(false);
   const [more, setMore] = useState(false);
   const [week, setWeek] = useState<number>();
   const [days, setDays] = useState<ResolvedDay[]>(() => cachedDays(store, id));
@@ -184,15 +190,20 @@ export default function ProgramDetailScreen({ id, unit = "kg" }: { id: string; u
         <>
           <Card>
             <Text variant="label">{`${kindLabel[view.kind]}, ${statusLabel[view.status]}`}</Text>
-            <Text>{modeLabel(view)}</Text>
+            <Text>{modeLabel(view, now)}</Text>
             {structure && (
-              <Text color="textMuted">{`${structure.weeks} weeks, ${structure.days.length} days`}</Text>
+              <Text color="textMuted">
+                {`${plural(structure.weeks, "week")}, ${plural(structure.days.length, "planned day")}`}
+              </Text>
             )}
           </Card>
+          {activated && view.status === "active" && (
+            <Button title="Go to Today" variant="ghost" onPress={() => router.navigate("/")} />
+          )}
           {view.status === "draft" && (
             <Text color="textMuted">
-              A draft has no dates yet. Edit it if you like, then Activate to pick a start date or
-              run it floating.
+              A draft has no dates yet. Edit it from the ⋯ menu if you like, then Activate to pick a
+              start date, or run it floating: one day after another, no dates.
             </Text>
           )}
           {view.status === "active" ? (
@@ -246,7 +257,7 @@ export default function ProgramDetailScreen({ id, unit = "kg" }: { id: string; u
                   <ListRow
                     key={r.revision}
                     title={`Revision ${r.revision}`}
-                    subtitle={`${r.createdBy}, ${r.createdAt ? formatDateTime(timestampDate(r.createdAt)) : ""}`}
+                    subtitle={`${createdByLabel[r.createdBy] ?? r.createdBy}, ${r.createdAt ? formatDateTime(timestampDate(r.createdAt)) : ""}`}
                     value={r.structure && `${r.structure.weeks} wk`}
                   />
                 ))}
@@ -261,6 +272,7 @@ export default function ProgramDetailScreen({ id, unit = "kg" }: { id: string; u
             onActivated={(p) => {
               apply(p);
               setActivating(false);
+              setActivated(true);
               // The server resolved the new plan; pull it so Today and the calendar show it.
               void syncNow();
             }}

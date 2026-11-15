@@ -11,6 +11,13 @@ import type { ProgramSummary } from "../../domain/types";
 import type { Program } from "../../gen/plusultra/v1/program_pb";
 import { Button, Chip, ErrorLine, Field, Sheet, space, Text } from "../../ui";
 import { remember } from "./programStore";
+import { withMaxesHint } from "./summary";
+
+// This Monday when today is one, else the next.
+const defaultStart = () => {
+  const t = today();
+  return weekday(t) === 1 ? t : nextMonday(t);
+};
 
 type Props = {
   program: ProgramSummary;
@@ -23,7 +30,7 @@ export function ActivateSheet({ program, open, onClose, onActivated }: Props) {
   const api = useApi();
   const store = useStore();
   const [anchored, setAnchored] = useState(true);
-  const [date, setDate] = useState(() => nextMonday(today()));
+  const [date, setDate] = useState(defaultStart);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string>();
   // The active program of the same kind that the server refused to run alongside.
@@ -48,13 +55,13 @@ export function ActivateSheet({ program, open, onClose, onActivated }: Props) {
       });
       onActivated(active!);
     } catch (e) {
-      setMessage(errorMessage(e));
+      setMessage(withMaxesHint(errorMessage(e)));
       if (e instanceof ConnectError && e.code === Code.FailedPrecondition) {
-        setBlocker(
-          programsRepo(store)
-            .all()
-            .find((p) => p.kind === program.kind && p.status === "active" && p.id !== program.id),
-        );
+        const other = programsRepo(store)
+          .all()
+          .find((p) => p.kind === program.kind && p.status === "active" && p.id !== program.id);
+        setBlocker(other);
+        if (other) setMessage(`"${other.name}" is active. Finish it to start this one.`);
       }
     } finally {
       setBusy(false);
@@ -83,7 +90,12 @@ export function ActivateSheet({ program, open, onClose, onActivated }: Props) {
       footer={
         <>
           {blocker && (
-            <Button title="Finish it" variant="secondary" loading={busy} onPress={finishBlocker} />
+            <Button
+              title={`Finish "${blocker.name}" and start`}
+              variant="secondary"
+              loading={busy}
+              onPress={finishBlocker}
+            />
           )}
           <Button
             title="Start program"

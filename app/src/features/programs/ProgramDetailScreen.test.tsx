@@ -21,7 +21,13 @@ jest.mock("../../api/useApi", () => ({ useApi: () => mockApi }));
 const mockSyncNow = jest.fn(async () => {});
 jest.mock("../../data/useSync", () => ({ useSync: () => ({ syncNow: mockSyncNow }) }));
 jest.mock("expo-router", () => {
-  const router = { push: jest.fn(), replace: jest.fn(), back: jest.fn(), canGoBack: () => true };
+  const router = {
+    push: jest.fn(),
+    replace: jest.fn(),
+    navigate: jest.fn(),
+    back: jest.fn(),
+    canGoBack: () => true,
+  };
   return {
     router,
     useRouter: () => router,
@@ -29,14 +35,15 @@ jest.mock("expo-router", () => {
   };
 });
 // The mock server's today; the strength fixture started two weeks earlier, so today is its week 3.
+let mockToday = "2026-11-11";
 jest.mock("../../domain/dates", () => ({
   ...jest.requireActual("../../domain/dates"),
-  today: () => "2026-11-11",
+  today: () => mockToday,
 }));
 
 const strength = "program-strength16";
 const draftLine =
-  "A draft has no dates yet. Edit it if you like, then Activate to pick a start date or run it floating.";
+  "A draft has no dates yet. Edit it from the ⋯ menu if you like, then Activate to pick a start date, or run it floating: one day after another, no dates.";
 // Chips are checkboxes in the merged UI kit, so fall back to the label.
 const press = (name: string) =>
   fireEvent.press(screen.queryByRole("button", { name }) ?? screen.getByLabelText(name));
@@ -44,6 +51,7 @@ const press = (name: string) =>
 let h: Harness;
 beforeEach(async () => {
   jest.clearAllMocks();
+  mockToday = "2026-11-11";
   h = await setup();
   mockApi = h.api;
 });
@@ -64,10 +72,9 @@ describe("ProgramDetailScreen", () => {
       await screen.findByRole("header", { name: "16-Week Strength & Recomp — Bulk block" }),
     ).toBeOnTheScreen();
     expect(screen.getByText("Workout, Active")).toBeOnTheScreen();
-    expect(
-      screen.getByText("Anchored, 26\u00a0Oct\u00a02026 to 20\u00a0Dec\u00a02026"),
-    ).toBeOnTheScreen();
-    expect(screen.getByText("8 weeks, 51 days")).toBeOnTheScreen();
+    expect(screen.getByText("26\u00a0Oct\u00a02026 to 20\u00a0Dec\u00a02026")).toBeOnTheScreen();
+    expect(screen.getByText("8 weeks, 51 planned days")).toBeOnTheScreen();
+    expect(screen.queryByRole("button", { name: "Go to Today" })).toBeNull();
     await press("Week 8");
     expect(screen.getByText("2. Tue test singles")).toBeOnTheScreen();
     for (const name of ["Back", "Finish", "More"]) {
@@ -128,7 +135,7 @@ describe("ProgramDetailScreen", () => {
     const breakfast = screen.getAllByRole("button", {
       name: /^Breakfast, 07:30 · Oats, rolled 80 g · /,
     });
-    expect(breakfast[0]).toHaveAccessibleName(/, \d+ kcal · P \d+$/);
+    expect(breakfast[0]).toHaveAccessibleName(/, \d+ kcal · P \d+ g$/);
     await fireEvent.press(breakfast[0]);
     expect(router.push).toHaveBeenCalledWith("/program/program-meals/meal/5/training/1");
     await press("Week 3");
@@ -157,7 +164,7 @@ describe("ProgramDetailScreen", () => {
     await h.api.programs.activateProgram({ id: "program-gzclp" });
     await h.seed();
     await renderWith(h, <ProgramDetailScreen id="program-gzclp" />);
-    expect(await screen.findByText("Floating, next week 1 day 1")).toBeOnTheScreen();
+    expect(await screen.findByText("Next up: week 1, day 1")).toBeOnTheScreen();
   });
 
   it("renders a draft as not started, with what a draft is", async () => {
@@ -176,26 +183,27 @@ describe("ProgramDetailScreen", () => {
     expect(screen.queryByText(draftLine)).toBeNull();
   });
 
-  it("shows a draft's script error, pointing a missing 1RM at the maxes", async () => {
+  it("shows a draft's script error, pointing a missing 1RM at the 1RMs", async () => {
     const id = await draft();
     jest.spyOn(h.api.programs, "simulateProgram").mockResolvedValue(
       create(SimulateProgramResponseSchema, {
-        errors: [{ line: 3, col: 1, message: "Squat needs a 1RM." }],
+        errors: [{ line: 3, col: 1, message: "week 1 day 1: no 1RM for Squat" }],
       }),
     );
     await renderWith(h, <ProgramDetailScreen id={id} />);
     expect(
-      await screen.findByText("Squat needs a 1RM. Set it under Settings › Maxes."),
+      await screen.findByText("week 1 day 1: no 1RM for Squat. Set it under Settings › 1RMs."),
     ).toBeOnTheScreen();
   });
 
-  it("lists revisions newest first and pages them", async () => {
+  it("lists revisions newest first, saying where each came from, and pages them", async () => {
     const id = await draft();
     for (let i = 0; i < 21; i++) {
       await h.api.programs.updateProgram({ id, script: `${draftScript}# ${i}\n` });
     }
     await renderWith(h, <ProgramDetailScreen id={id} />);
     expect(await screen.findByText("Revision 22")).toBeOnTheScreen();
+    expect(screen.getAllByText(/^saved in the app, /).length).toBeGreaterThan(0);
     expect(screen.getByText("Revision 3")).toBeOnTheScreen();
     expect(screen.queryByText("Revision 1")).toBeNull();
     await press("Load more");
@@ -263,9 +271,7 @@ describe("ProgramDetailScreen", () => {
       await screen.findByText("Could not reach the server. Check your connection and try again."),
     ).toBeOnTheScreen();
     expect(screen.getByRole("header", { name: "16-Week Strength & Recomp — Bulk block" }));
-    expect(
-      screen.getByText("Anchored, 26\u00a0Oct\u00a02026 to 20\u00a0Dec\u00a02026"),
-    ).toBeOnTheScreen();
+    expect(screen.getByText("26\u00a0Oct\u00a02026 to 20\u00a0Dec\u00a02026")).toBeOnTheScreen();
   });
 
   it("shows the cached days and exercise info when offline", async () => {
@@ -287,7 +293,7 @@ describe("ProgramDetailScreen", () => {
 describe("activation", () => {
   const monday = nextMonday(localToday());
 
-  it("anchors to next Monday by default", async () => {
+  it("anchors to next Monday by default and then points at Today", async () => {
     await h.api.programs.finishProgram({ id: strength });
     const id = await draft();
     const activate = jest.spyOn(h.api.programs, "activateProgram");
@@ -299,9 +305,36 @@ describe("activation", () => {
     await press("Start program");
     expect(activate).toHaveBeenCalledWith({ id, startDate: monday });
     expect(await screen.findByText("Workout, Active")).toBeOnTheScreen();
-    expect(screen.getByText(/^Anchored, /)).toBeOnTheScreen();
+    expect(screen.getByText("16\u00a0Nov\u00a02026 to 29\u00a0Nov\u00a02026")).toBeOnTheScreen();
     expect(h.store.get("programs", id)?.mode).toBe("anchored");
     expect(mockSyncNow).toHaveBeenCalledTimes(1);
+    await press("Go to Today");
+    expect(router.navigate).toHaveBeenCalledWith("/");
+  });
+
+  it("anchors to today when today is a Monday", async () => {
+    mockToday = "2026-11-16";
+    const id = await draft();
+    await renderWith(h, <ProgramDetailScreen id={id} />);
+    await screen.findByText("Workout, Draft");
+    await press("Activate");
+    expect(screen.getByLabelText("Start date")).toHaveDisplayValue("2026-11-16");
+  });
+
+  it("points a 1RM the activation needs at Settings", async () => {
+    await h.api.programs.finishProgram({ id: strength });
+    const id = await draft();
+    h.mock.failNext(
+      "programs.activateProgram",
+      new ConnectError("week 1 day 1: no 1RM for Squat", Code.InvalidArgument),
+    );
+    await renderWith(h, <ProgramDetailScreen id={id} />);
+    await screen.findByText("Workout, Draft");
+    await press("Activate");
+    await press("Start program");
+    expect(
+      await screen.findByText("week 1 day 1: no 1RM for Squat. Set it under Settings › 1RMs."),
+    ).toBeOnTheScreen();
   });
 
   it("explains a mid-week start and rejects a malformed date", async () => {
@@ -333,7 +366,7 @@ describe("activation", () => {
     expect(stored?.startDate).toBeUndefined();
   });
 
-  it("shows the server's refusal and offers to finish the other program", async () => {
+  it("names the active program in the way and offers to finish it", async () => {
     const id = await draft();
     await renderWith(h, <ProgramDetailScreen id={id} />);
     await screen.findByText("Workout, Draft");
@@ -341,10 +374,10 @@ describe("activation", () => {
     await press("Start program");
     expect(
       await screen.findByText(
-        'finish "16-Week Strength & Recomp — Bulk block" first: only one program of a kind can be active',
+        '"16-Week Strength & Recomp — Bulk block" is active. Finish it to start this one.',
       ),
     ).toBeOnTheScreen();
-    await act(() => press("Finish it"));
+    await act(() => press('Finish "16-Week Strength & Recomp — Bulk block" and start'));
     expect(await screen.findByText("Workout, Active")).toBeOnTheScreen();
     expect(h.store.get("programs", strength)?.status).toBe("finished");
     expect(h.store.get("programs", id)?.status).toBe("active");

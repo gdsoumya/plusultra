@@ -50,15 +50,34 @@ export const sections = (all: ProgramSummary[]) =>
 // A date never wraps mid-way; a long range breaks at "to".
 const date = (d: string) => formatDate(d).replaceAll(" ", "\u00a0");
 
-export function modeLabel(p: ProgramSummary): string {
+export function modeLabel(p: ProgramSummary, today: string): string {
   if (p.mode === "anchored" && p.startDate && p.endDate) {
-    return `Anchored, ${date(p.startDate)} to ${date(p.endDate)}`;
+    if (p.endDate < today) return `Ended ${date(p.endDate)}`;
+    return `${date(p.startDate)} to ${date(p.endDate)}`;
   }
   if (p.mode === "floating") {
-    return p.nextWeek ? `Floating, next week ${p.nextWeek} day ${p.nextDay}` : "Floating";
+    return p.nextWeek ? `Next up: week ${p.nextWeek}, day ${p.nextDay}` : "Floating, not started";
   }
   return "Not started";
 }
+
+export const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
+
+// A looping program is a cycle, a fixed one a span.
+export const spanLabel = (weeks: number, loop: boolean) =>
+  loop ? `${weeks}-week cycle` : plural(weeks, "week");
+
+export const createdByLabel: Record<string, string> = {
+  user: "saved in the app",
+  api: "over the API",
+  mcp: "by an assistant",
+};
+
+// A missing 1RM is fixed in Settings, not in the script; the server's text ends without a period.
+export const withMaxesHint = (message: string) =>
+  message.includes("1RM")
+    ? `${message.replace(/\.$/, "")}. Set it under Settings › 1RMs.`
+    : message;
 
 // The week today falls in for an active program, clamped to its span; week 1 otherwise.
 export function currentWeek(p: ProgramSummary, today: string): number {

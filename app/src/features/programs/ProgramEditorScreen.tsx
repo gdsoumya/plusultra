@@ -44,10 +44,32 @@ type Preview = { days: ResolvedDay[]; output: string[] };
 
 const DEBOUNCE_MS = 800;
 
-export default function ProgramEditorScreen({ id, unit = "kg" }: { id?: string; unit?: Unit }) {
+// A new program opens on a valid script to edit rather than an empty box.
+export const starters = {
+  workout: `# A small start: rename it, add days and lifts.
+# The search button above inserts a catalog exercise name at the cursor.
+program("My program", weeks=1, units="kg")
+
+day(1, 1, "Full body")
+ex("Squat", sets=[s(3, 5, kg(60), rest=180)], progress=lp(kg(2.5)))
+`,
+  meal: `# A small start: rename it, add foods, days and meals.
+meal_program("My meals", weeks=1)
+
+egg = food("Egg, whole", per100g={"kcal": 143, "protein": 12.6, "fat": 9.5})
+
+day(1, kind="training", name="Training day", target=target(kcal=2400, protein=180))
+meal("Breakfast", egg(150))
+`,
+};
+
+type Props = { id?: string; unit?: Unit; kind?: keyof typeof starters };
+
+export default function ProgramEditorScreen({ id, unit = "kg", kind = "workout" }: Props) {
   const api = useApi();
   const store = useStore();
-  const [script, setScript] = useState("");
+  const starter = id ? "" : starters[kind];
+  const [script, setScript] = useState(starter);
   const [loaded, setLoaded] = useState(!id);
   const [errors, setErrors] = useState<LineError[]>([]);
   const [structure, setStructure] = useState<ProgramStructure>();
@@ -60,14 +82,14 @@ export default function ProgramEditorScreen({ id, unit = "kg" }: { id?: string; 
   const [finding, setFinding] = useState(false);
   const [leaving, setLeaving] = useState(false);
   // What was loaded or last saved, so Back knows whether there is anything to lose.
-  const [saved, setSaved] = useState("");
+  const [saved, setSaved] = useState(starter);
   // Set only to move the cursor; cleared on the next selection event so typing stays uncontrolled.
   const [selection, setSelection] = useState<{ start: number; end: number }>();
   const inputRef = useRef<ComponentRef<typeof TextInput>>(null);
   // Where the cursor is, so a found exercise lands there.
   const cursor = useRef<Cursor>({ start: 0, end: 0 });
   // What the input holds now, so a slow validation of older text is ignored.
-  const latest = useRef("");
+  const latest = useRef(starter);
 
   const change = (text: string) => {
     latest.current = text;
@@ -230,7 +252,14 @@ export default function ProgramEditorScreen({ id, unit = "kg" }: { id?: string; 
         </>
       }
     >
-      <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ gap: space[3] }}>
+      {/* Bounded to the space under the header, so a long script scrolls here instead of
+          squeezing the title out (flex-basis 0, not the content's height). */}
+      <ScrollView
+        style={{ flex: 1 }}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{ gap: space[3] }}
+        testID="program-editor-scroll"
+      >
         <ErrorLine message={message} />
         <View style={{ flexDirection: "row", gap: space[2] }}>
           <Button

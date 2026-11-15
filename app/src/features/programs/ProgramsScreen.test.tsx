@@ -58,7 +58,7 @@ describe("ProgramsScreen", () => {
     expect(screen.getByText("Drafts")).toBeOnTheScreen();
     expect(screen.getByText("Finished")).toBeOnTheScreen();
     expect(
-      screen.getByText("Meals, Anchored, 12\u00a0Oct\u00a02026 to 22\u00a0Nov\u00a02026"),
+      screen.getByText("Meals, 12\u00a0Oct\u00a02026 to 22\u00a0Nov\u00a02026"),
     ).toBeOnTheScreen();
   });
 
@@ -67,7 +67,11 @@ describe("ProgramsScreen", () => {
     await fireEvent.press(screen.getByRole("button", { name: /^GZCLP 4-week/ }));
     expect(router.push).toHaveBeenCalledWith("/program/program-gzclp");
     await fireEvent.press(screen.getByRole("button", { name: "New" }));
+    await fireEvent.press(await screen.findByRole("button", { name: /^Workout program/ }));
     expect(router.push).toHaveBeenCalledWith("/program/edit");
+    await fireEvent.press(screen.getByRole("button", { name: "New" }));
+    await fireEvent.press(await screen.findByRole("button", { name: /^Meal plan/ }));
+    expect(router.push).toHaveBeenCalledWith("/program/edit?kind=meal");
   });
 
   it("syncs on pull-to-refresh and shows what the sync stored", async () => {
@@ -100,12 +104,14 @@ describe("ProgramsScreen", () => {
     expect(screen.getByRole("button", { name: /^Made over MCP/ })).toBeOnTheScreen();
   });
 
-  it("shows an empty state that switches to the catalog", async () => {
+  it("opens on the catalog without programs, with an empty state under Mine", async () => {
     for (const p of h.store.list("programs")) h.store.delete("programs", p.id);
     await renderWith(h, <ProgramsScreen />);
+    expect(await screen.findByText("Beginner")).toBeOnTheScreen();
+    expect(screen.getByRole("checkbox", { name: "Catalog" })).toBeChecked();
+    await fireEvent.press(screen.getByRole("checkbox", { name: "Mine" }));
     expect(screen.getByText("Pick one from the catalog or write your own.")).toBeOnTheScreen();
     await fireEvent.press(screen.getByRole("button", { name: "Browse the catalog" }));
-    expect(await screen.findByText("Beginner")).toBeOnTheScreen();
     expect(screen.getByRole("checkbox", { name: "Catalog" })).toBeChecked();
     expect(screen.getByRole("button", { name: "New" })).toBeOnTheScreen();
   });
@@ -120,9 +126,9 @@ describe("ProgramsScreen", () => {
     expect(screen.queryByText("Advanced")).toBeNull();
     expect(screen.queryByText("Active")).toBeNull();
     expect(rowNames()).toEqual([
-      "GZCLP 4-week, Cody Lefever · 3 days a week, 4 wk",
-      "5/3/1 for Beginners, Jim Wendler · 3 days a week, 3 wk",
-      "16-Week Strength & Recomp — Bulk block, plusultra · 4 days a week, 8 wk",
+      "GZCLP 4-week, Cody Lefever · 3 days a week, 4-week cycle",
+      "5/3/1 for Beginners, Jim Wendler · 3 days a week, 3-week cycle",
+      "16-Week Strength & Recomp — Bulk block, plusultra · 4 days a week, 8 weeks",
     ]);
     await fireEvent.press(screen.getByRole("button", { name: /^GZCLP 4-week/ }));
     expect(router.push).toHaveBeenCalledWith("/catalog/gzclp");
@@ -140,6 +146,6 @@ describe("ProgramsScreen", () => {
     expect(
       await screen.findByText("Could not reach the server. Check your connection and try again."),
     ).toBeOnTheScreen();
-    expect(rowNames()).toEqual(["GZCLP 4-week, Cody Lefever · 3 days a week, 4 wk"]);
+    expect(rowNames()).toEqual(["GZCLP 4-week, Cody Lefever · 3 days a week, 4-week cycle"]);
   });
 });

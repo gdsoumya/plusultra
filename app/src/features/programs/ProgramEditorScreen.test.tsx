@@ -8,7 +8,7 @@ import { gzclpScript } from "../../api/fixtures/gzclp";
 import { OFFLINE } from "../../api/errors";
 import { recentPicks } from "../exercises/ExerciseSearchSheet";
 import { ValidateProgramResponseSchema } from "../../gen/plusultra/v1/program_pb";
-import ProgramEditorScreen from "./ProgramEditorScreen";
+import ProgramEditorScreen, { starters } from "./ProgramEditorScreen";
 import type { Api } from "../../api/clients";
 import { draftScript, renderWith, setup, type Harness } from "./test-utils";
 
@@ -64,6 +64,32 @@ describe("ProgramEditorScreen", () => {
     await press("Discard");
     expect(router.back).toHaveBeenCalledTimes(2);
     jest.restoreAllMocks();
+  });
+
+  it("starts a new program from a valid starter script that Back leaves without asking", async () => {
+    jest.useFakeTimers();
+    await renderWith(h, <ProgramEditorScreen />);
+    expect(input()).toHaveDisplayValue(starters.workout);
+    expect(screen.getByRole("header", { name: "New program" })).toBeOnTheScreen();
+    await press("Check now");
+    expect(await screen.findByText("No errors. 1 week, 1 day.")).toBeOnTheScreen();
+    await press("Back");
+    expect(router.back).toHaveBeenCalledTimes(1);
+  });
+
+  it("starts a new meal program from a meal starter, without the workout-only actions", async () => {
+    await renderWith(h, <ProgramEditorScreen kind="meal" />);
+    expect(input()).toHaveDisplayValue(starters.meal);
+    expect(screen.queryByRole("button", { name: "Find exercise" })).toBeNull();
+    expect(screen.queryByRole("button", { name: /^Preview week/ })).toBeNull();
+  });
+
+  it("keeps the header whole over a long script by scrolling the editor under it", async () => {
+    await renderWith(h, <ProgramEditorScreen />);
+    const long = Array.from({ length: 300 }, (_, i) => `# line ${i + 1}`).join("\n");
+    await fireEvent.changeText(input(), long);
+    expect(screen.getByRole("header", { name: "New program" })).toBeOnTheScreen();
+    expect(screen.getByTestId("program-editor-scroll")).toHaveStyle({ flex: 1 });
   });
 
   it("lists validation errors 800 ms after typing stops and moves the cursor on tap", async () => {

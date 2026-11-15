@@ -1,5 +1,13 @@
 import type { ProgramSummary } from "../../domain/types";
-import { currentWeek, isPast, modeLabel, sections, sortPrograms } from "./summary";
+import {
+  currentWeek,
+  isPast,
+  modeLabel,
+  sections,
+  sortPrograms,
+  spanLabel,
+  withMaxesHint,
+} from "./summary";
 
 const at = (over: Partial<ProgramSummary>): ProgramSummary => ({
   id: over.name ?? "p",
@@ -41,15 +49,38 @@ describe("sortPrograms", () => {
 });
 
 describe("modeLabel", () => {
+  const today = "2026-11-11";
+  const anchored = at({ mode: "anchored", startDate: "2026-10-26", endDate: "2026-12-20" });
+
   it("describes anchored, floating and unstarted programs", () => {
-    expect(
-      modeLabel(at({ mode: "anchored", startDate: "2026-10-26", endDate: "2026-12-20" })),
-    ).toBe("Anchored, 26\u00a0Oct\u00a02026 to 20\u00a0Dec\u00a02026");
-    expect(modeLabel(at({ mode: "floating", nextWeek: 2, nextDay: 3 }))).toBe(
-      "Floating, next week 2 day 3",
+    expect(modeLabel(anchored, today)).toBe("26\u00a0Oct\u00a02026 to 20\u00a0Dec\u00a02026");
+    expect(modeLabel(anchored, "2026-12-21")).toBe("Ended 20\u00a0Dec\u00a02026");
+    expect(modeLabel(at({ mode: "floating", nextWeek: 2, nextDay: 3 }), today)).toBe(
+      "Next up: week 2, day 3",
     );
-    expect(modeLabel(at({ mode: "floating" }))).toBe("Floating");
-    expect(modeLabel(at({}))).toBe("Not started");
+    expect(modeLabel(at({ mode: "floating" }), today)).toBe("Floating, not started");
+    expect(modeLabel(at({}), today)).toBe("Not started");
+  });
+});
+
+describe("spanLabel", () => {
+  it("calls a looping program a cycle and pluralises a fixed one", () => {
+    expect(spanLabel(1, true)).toBe("1-week cycle");
+    expect(spanLabel(4, true)).toBe("4-week cycle");
+    expect(spanLabel(1, false)).toBe("1 week");
+    expect(spanLabel(12, false)).toBe("12 weeks");
+  });
+});
+
+describe("withMaxesHint", () => {
+  it("adds the 1RMs pointer as a sentence and leaves other errors alone", () => {
+    expect(withMaxesHint("week 1 day 1: no 1RM for Squat")).toBe(
+      "week 1 day 1: no 1RM for Squat. Set it under Settings › 1RMs.",
+    );
+    expect(withMaxesHint("Squat needs a 1RM.")).toBe(
+      "Squat needs a 1RM. Set it under Settings › 1RMs.",
+    );
+    expect(withMaxesHint("unknown exercise Squatt")).toBe("unknown exercise Squatt");
   });
 });
 

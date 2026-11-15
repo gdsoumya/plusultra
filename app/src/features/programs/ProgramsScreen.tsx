@@ -8,6 +8,7 @@ import { programsRepo } from "../../data/repositories/programs";
 import { useStore } from "../../data/StoreProvider";
 import { useRefresh } from "../../data/useRefresh";
 import { useSync } from "../../data/useSync";
+import { today } from "../../domain/dates";
 import type { CatalogProgram } from "../../gen/plusultra/v1/program_pb";
 import {
   Button,
@@ -19,14 +20,13 @@ import {
   ListCard,
   ListRow,
   Screen,
+  Sheet,
   space,
   Text,
   useWide,
 } from "../../ui";
 import { SyncBadge } from "../sync/SyncBadge";
-import { kindLabel, levelLabel, modeLabel, sections } from "./summary";
-
-const openEditor = () => router.push("/program/edit");
+import { kindLabel, levelLabel, modeLabel, sections, spanLabel } from "./summary";
 
 const CATALOG_KEY = "programCatalog";
 
@@ -41,7 +41,9 @@ export default function ProgramsScreen() {
   const refresh = useRefresh(reload);
   const programs = programsRepo(store).all();
   const wide = useWide();
-  const [tab, setTab] = useState<"mine" | "catalog">("mine");
+  // With nothing of their own yet, the user lands on the catalog.
+  const [creating, setCreating] = useState(false);
+  const [tab, setTab] = useState<"mine" | "catalog">(programs.length ? "mine" : "catalog");
   const [catalog, setCatalog] = useState(() => store.getKv<CatalogProgram[]>(CATALOG_KEY) ?? []);
   const [catalogError, setCatalogError] = useState<string>();
 
@@ -70,9 +72,9 @@ export default function ProgramsScreen() {
         <>
           <SyncBadge />
           {wide ? (
-            <Button title="New" icon="add" variant="secondary" onPress={openEditor} />
+            <Button title="New" icon="add" variant="secondary" onPress={() => setCreating(true)} />
           ) : (
-            <IconButton icon="add" label="New" onPress={openEditor} />
+            <IconButton icon="add" label="New" onPress={() => setCreating(true)} />
           )}
         </>
       }
@@ -94,8 +96,9 @@ export default function ProgramsScreen() {
                     key={p.slug}
                     icon="barbell-outline"
                     title={p.name}
+                    titleLines={2}
                     subtitle={`${p.author} · ${p.daysPerWeek} days a week`}
-                    value={`${p.weeks} wk`}
+                    value={spanLabel(p.weeks, p.loop)}
                     onPress={() => router.push(`/catalog/${p.slug}`)}
                   />
                 ))}
@@ -120,7 +123,7 @@ export default function ProgramsScreen() {
                   key={p.id}
                   icon={p.kind === "meal" ? "restaurant-outline" : "barbell-outline"}
                   title={p.name}
-                  subtitle={`${kindLabel[p.kind]}, ${modeLabel(p)}`}
+                  subtitle={`${kindLabel[p.kind]}, ${modeLabel(p, today())}`}
                   value={`${p.weeks} wk`}
                   onPress={() => router.push(`/program/${p.id}`)}
                 />
@@ -129,6 +132,33 @@ export default function ProgramsScreen() {
           </View>
         ))
       )}
+      <Sheet
+        open={creating}
+        onClose={() => setCreating(false)}
+        title="New program"
+        snapPoints={[0.3]}
+      >
+        <ListCard>
+          <ListRow
+            title="Workout program"
+            subtitle="Days, lifts and progressions as a script"
+            icon="barbell-outline"
+            onPress={() => {
+              setCreating(false);
+              router.push("/program/edit");
+            }}
+          />
+          <ListRow
+            title="Meal plan"
+            subtitle="Foods, meals and daily targets as a script"
+            icon="restaurant-outline"
+            onPress={() => {
+              setCreating(false);
+              router.push("/program/edit?kind=meal");
+            }}
+          />
+        </ListCard>
+      </Sheet>
     </Screen>
   );
 }
