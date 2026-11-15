@@ -176,14 +176,19 @@ func TestSmoke(t *testing.T) {
 		t.Fatalf("register = %+v", reg)
 	}
 
-	// The image ships the catalog and serve seeded it before listening.
+	// The image ships the catalog; serve seeds it after it starts listening, so wait for it.
 	var found struct {
 		Exercises []named `json:"exercises"`
 		Foods     []named `json:"foods"`
 	}
-	s.connectJSON(reg.Token, "ExerciseService/SearchExercises", map[string]any{"query": "squat"}, &found)
-	if !slices.ContainsFunc(found.Exercises, func(n named) bool { return n.Name == "Squat" }) {
-		t.Fatalf("SearchExercises(squat) = %+v", found.Exercises)
+	for deadline := time.Now().Add(3 * time.Minute); ; time.Sleep(2 * time.Second) {
+		s.connectJSON(reg.Token, "ExerciseService/SearchExercises", map[string]any{"query": "squat"}, &found)
+		if slices.ContainsFunc(found.Exercises, func(n named) bool { return n.Name == "Squat" }) {
+			break
+		}
+		if time.Now().After(deadline) {
+			t.Fatalf("SearchExercises(squat) = %+v", found.Exercises)
+		}
 	}
 	s.connectJSON(reg.Token, "FoodService/SearchFoods", map[string]any{"query": "paneer"}, &found)
 	if len(found.Foods) == 0 || !strings.Contains(strings.ToLower(found.Foods[0].Name), "paneer") {
