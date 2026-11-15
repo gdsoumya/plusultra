@@ -66,6 +66,12 @@ const (
 	// ProgramServiceGetResolvedDaysProcedure is the fully-qualified name of the ProgramService's
 	// GetResolvedDays RPC.
 	ProgramServiceGetResolvedDaysProcedure = "/plusultra.v1.ProgramService/GetResolvedDays"
+	// ProgramServiceListCatalogProcedure is the fully-qualified name of the ProgramService's
+	// ListCatalog RPC.
+	ProgramServiceListCatalogProcedure = "/plusultra.v1.ProgramService/ListCatalog"
+	// ProgramServiceGetCatalogProgramProcedure is the fully-qualified name of the ProgramService's
+	// GetCatalogProgram RPC.
+	ProgramServiceGetCatalogProgramProcedure = "/plusultra.v1.ProgramService/GetCatalogProgram"
 )
 
 // ProgramServiceClient is a client for the plusultra.v1.ProgramService service.
@@ -92,6 +98,10 @@ type ProgramServiceClient interface {
 	ListRevisions(context.Context, *connect.Request[v1.ListRevisionsRequest]) (*connect.Response[v1.ListRevisionsResponse], error)
 	// GetResolvedDays returns an active program's days with concrete sets or meals for the user.
 	GetResolvedDays(context.Context, *connect.Request[v1.GetResolvedDaysRequest]) (*connect.Response[v1.GetResolvedDaysResponse], error)
+	// ListCatalog lists the built-in programs shipped with the server, without scripts.
+	ListCatalog(context.Context, *connect.Request[v1.ListCatalogRequest]) (*connect.Response[v1.ListCatalogResponse], error)
+	// GetCatalogProgram returns one built-in program with its script.
+	GetCatalogProgram(context.Context, *connect.Request[v1.GetCatalogProgramRequest]) (*connect.Response[v1.GetCatalogProgramResponse], error)
 }
 
 // NewProgramServiceClient constructs a client for the plusultra.v1.ProgramService service. By
@@ -171,22 +181,36 @@ func NewProgramServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(programServiceMethods.ByName("GetResolvedDays")),
 			connect.WithClientOptions(opts...),
 		),
+		listCatalog: connect.NewClient[v1.ListCatalogRequest, v1.ListCatalogResponse](
+			httpClient,
+			baseURL+ProgramServiceListCatalogProcedure,
+			connect.WithSchema(programServiceMethods.ByName("ListCatalog")),
+			connect.WithClientOptions(opts...),
+		),
+		getCatalogProgram: connect.NewClient[v1.GetCatalogProgramRequest, v1.GetCatalogProgramResponse](
+			httpClient,
+			baseURL+ProgramServiceGetCatalogProgramProcedure,
+			connect.WithSchema(programServiceMethods.ByName("GetCatalogProgram")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // programServiceClient implements ProgramServiceClient.
 type programServiceClient struct {
-	listPrograms    *connect.Client[v1.ListProgramsRequest, v1.ListProgramsResponse]
-	getProgram      *connect.Client[v1.GetProgramRequest, v1.GetProgramResponse]
-	createProgram   *connect.Client[v1.CreateProgramRequest, v1.CreateProgramResponse]
-	updateProgram   *connect.Client[v1.UpdateProgramRequest, v1.UpdateProgramResponse]
-	deleteProgram   *connect.Client[v1.DeleteProgramRequest, v1.DeleteProgramResponse]
-	validateProgram *connect.Client[v1.ValidateProgramRequest, v1.ValidateProgramResponse]
-	simulateProgram *connect.Client[v1.SimulateProgramRequest, v1.SimulateProgramResponse]
-	activateProgram *connect.Client[v1.ActivateProgramRequest, v1.ActivateProgramResponse]
-	finishProgram   *connect.Client[v1.FinishProgramRequest, v1.FinishProgramResponse]
-	listRevisions   *connect.Client[v1.ListRevisionsRequest, v1.ListRevisionsResponse]
-	getResolvedDays *connect.Client[v1.GetResolvedDaysRequest, v1.GetResolvedDaysResponse]
+	listPrograms      *connect.Client[v1.ListProgramsRequest, v1.ListProgramsResponse]
+	getProgram        *connect.Client[v1.GetProgramRequest, v1.GetProgramResponse]
+	createProgram     *connect.Client[v1.CreateProgramRequest, v1.CreateProgramResponse]
+	updateProgram     *connect.Client[v1.UpdateProgramRequest, v1.UpdateProgramResponse]
+	deleteProgram     *connect.Client[v1.DeleteProgramRequest, v1.DeleteProgramResponse]
+	validateProgram   *connect.Client[v1.ValidateProgramRequest, v1.ValidateProgramResponse]
+	simulateProgram   *connect.Client[v1.SimulateProgramRequest, v1.SimulateProgramResponse]
+	activateProgram   *connect.Client[v1.ActivateProgramRequest, v1.ActivateProgramResponse]
+	finishProgram     *connect.Client[v1.FinishProgramRequest, v1.FinishProgramResponse]
+	listRevisions     *connect.Client[v1.ListRevisionsRequest, v1.ListRevisionsResponse]
+	getResolvedDays   *connect.Client[v1.GetResolvedDaysRequest, v1.GetResolvedDaysResponse]
+	listCatalog       *connect.Client[v1.ListCatalogRequest, v1.ListCatalogResponse]
+	getCatalogProgram *connect.Client[v1.GetCatalogProgramRequest, v1.GetCatalogProgramResponse]
 }
 
 // ListPrograms calls plusultra.v1.ProgramService.ListPrograms.
@@ -244,6 +268,16 @@ func (c *programServiceClient) GetResolvedDays(ctx context.Context, req *connect
 	return c.getResolvedDays.CallUnary(ctx, req)
 }
 
+// ListCatalog calls plusultra.v1.ProgramService.ListCatalog.
+func (c *programServiceClient) ListCatalog(ctx context.Context, req *connect.Request[v1.ListCatalogRequest]) (*connect.Response[v1.ListCatalogResponse], error) {
+	return c.listCatalog.CallUnary(ctx, req)
+}
+
+// GetCatalogProgram calls plusultra.v1.ProgramService.GetCatalogProgram.
+func (c *programServiceClient) GetCatalogProgram(ctx context.Context, req *connect.Request[v1.GetCatalogProgramRequest]) (*connect.Response[v1.GetCatalogProgramResponse], error) {
+	return c.getCatalogProgram.CallUnary(ctx, req)
+}
+
 // ProgramServiceHandler is an implementation of the plusultra.v1.ProgramService service.
 type ProgramServiceHandler interface {
 	// ListPrograms lists the user's programs without their scripts.
@@ -268,6 +302,10 @@ type ProgramServiceHandler interface {
 	ListRevisions(context.Context, *connect.Request[v1.ListRevisionsRequest]) (*connect.Response[v1.ListRevisionsResponse], error)
 	// GetResolvedDays returns an active program's days with concrete sets or meals for the user.
 	GetResolvedDays(context.Context, *connect.Request[v1.GetResolvedDaysRequest]) (*connect.Response[v1.GetResolvedDaysResponse], error)
+	// ListCatalog lists the built-in programs shipped with the server, without scripts.
+	ListCatalog(context.Context, *connect.Request[v1.ListCatalogRequest]) (*connect.Response[v1.ListCatalogResponse], error)
+	// GetCatalogProgram returns one built-in program with its script.
+	GetCatalogProgram(context.Context, *connect.Request[v1.GetCatalogProgramRequest]) (*connect.Response[v1.GetCatalogProgramResponse], error)
 }
 
 // NewProgramServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -343,6 +381,18 @@ func NewProgramServiceHandler(svc ProgramServiceHandler, opts ...connect.Handler
 		connect.WithSchema(programServiceMethods.ByName("GetResolvedDays")),
 		connect.WithHandlerOptions(opts...),
 	)
+	programServiceListCatalogHandler := connect.NewUnaryHandler(
+		ProgramServiceListCatalogProcedure,
+		svc.ListCatalog,
+		connect.WithSchema(programServiceMethods.ByName("ListCatalog")),
+		connect.WithHandlerOptions(opts...),
+	)
+	programServiceGetCatalogProgramHandler := connect.NewUnaryHandler(
+		ProgramServiceGetCatalogProgramProcedure,
+		svc.GetCatalogProgram,
+		connect.WithSchema(programServiceMethods.ByName("GetCatalogProgram")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/plusultra.v1.ProgramService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case ProgramServiceListProgramsProcedure:
@@ -367,6 +417,10 @@ func NewProgramServiceHandler(svc ProgramServiceHandler, opts ...connect.Handler
 			programServiceListRevisionsHandler.ServeHTTP(w, r)
 		case ProgramServiceGetResolvedDaysProcedure:
 			programServiceGetResolvedDaysHandler.ServeHTTP(w, r)
+		case ProgramServiceListCatalogProcedure:
+			programServiceListCatalogHandler.ServeHTTP(w, r)
+		case ProgramServiceGetCatalogProgramProcedure:
+			programServiceGetCatalogProgramHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -418,4 +472,12 @@ func (UnimplementedProgramServiceHandler) ListRevisions(context.Context, *connec
 
 func (UnimplementedProgramServiceHandler) GetResolvedDays(context.Context, *connect.Request[v1.GetResolvedDaysRequest]) (*connect.Response[v1.GetResolvedDaysResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("plusultra.v1.ProgramService.GetResolvedDays is not implemented"))
+}
+
+func (UnimplementedProgramServiceHandler) ListCatalog(context.Context, *connect.Request[v1.ListCatalogRequest]) (*connect.Response[v1.ListCatalogResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("plusultra.v1.ProgramService.ListCatalog is not implemented"))
+}
+
+func (UnimplementedProgramServiceHandler) GetCatalogProgram(context.Context, *connect.Request[v1.GetCatalogProgramRequest]) (*connect.Response[v1.GetCatalogProgramResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("plusultra.v1.ProgramService.GetCatalogProgram is not implemented"))
 }

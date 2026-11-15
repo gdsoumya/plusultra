@@ -190,6 +190,29 @@ func TestSmoke(t *testing.T) {
 		t.Fatalf("SearchFoods(paneer) = %+v", found.Foods)
 	}
 
+	// Every catalog program names exercises the shipped catalog knows.
+	var cat struct {
+		Programs []struct{ Slug, Name string } `json:"programs"`
+	}
+	s.connectJSON(reg.Token, "ProgramService/ListCatalog", map[string]any{}, &cat)
+	if len(cat.Programs) < 3 {
+		t.Fatalf("ListCatalog = %+v", cat)
+	}
+	for _, p := range cat.Programs {
+		var got struct {
+			Program struct{ Script string } `json:"program"`
+		}
+		s.connectJSON(reg.Token, "ProgramService/GetCatalogProgram", map[string]any{"slug": p.Slug}, &got)
+		var v struct {
+			Errors     []json.RawMessage `json:"errors"`
+			NameErrors []json.RawMessage `json:"nameErrors"`
+		}
+		s.connectJSON(reg.Token, "ProgramService/ValidateProgram", map[string]any{"kind": "PROGRAM_KIND_WORKOUT", "script": got.Program.Script}, &v)
+		if len(v.Errors)+len(v.NameErrors) > 0 {
+			t.Errorf("catalog program %s: %s %s", p.Slug, v.Errors, v.NameErrors)
+		}
+	}
+
 	code := strings.TrimSpace(s.run("server", "invite"))
 	if !inviteCode.MatchString(code) {
 		t.Fatalf("invite printed %q", code)

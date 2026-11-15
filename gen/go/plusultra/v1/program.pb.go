@@ -3221,6 +3221,308 @@ func (x *GetResolvedDaysResponse) GetMealDays() []*ResolvedMealDay {
 	return nil
 }
 
+// CatalogProgram is a built-in program shipped with the server.
+type CatalogProgram struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Stable id, such as "gzclp".
+	Slug string `protobuf:"bytes,1,opt,name=slug,proto3" json:"slug,omitempty"`
+	// Name, as the script declares it.
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// Whose method the program follows, such as "Jim Wendler".
+	Author string `protobuf:"bytes,3,opt,name=author,proto3" json:"author,omitempty"`
+	// "beginner", "intermediate" or "advanced".
+	Level string `protobuf:"bytes,4,opt,name=level,proto3" json:"level,omitempty"`
+	// Training days a week.
+	DaysPerWeek int32 `protobuf:"varint,5,opt,name=days_per_week,json=daysPerWeek,proto3" json:"days_per_week,omitempty"`
+	// Weeks the script declares.
+	Weeks int32 `protobuf:"varint,6,opt,name=weeks,proto3" json:"weeks,omitempty"`
+	// True when a floating run starts again at week 1 after the last week.
+	Loop bool `protobuf:"varint,7,opt,name=loop,proto3" json:"loop,omitempty"`
+	// One or two sentences on how the program works.
+	Summary string `protobuf:"bytes,8,opt,name=summary,proto3" json:"summary,omitempty"`
+	// The Starlark script; empty in lists.
+	Script string `protobuf:"bytes,9,opt,name=script,proto3" json:"script,omitempty"`
+	// Exercises loaded as a percentage of a 1RM, which the user must set before activating.
+	Maxes         []string `protobuf:"bytes,10,rep,name=maxes,proto3" json:"maxes,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CatalogProgram) Reset() {
+	*x = CatalogProgram{}
+	mi := &file_plusultra_v1_program_proto_msgTypes[42]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CatalogProgram) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CatalogProgram) ProtoMessage() {}
+
+func (x *CatalogProgram) ProtoReflect() protoreflect.Message {
+	mi := &file_plusultra_v1_program_proto_msgTypes[42]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CatalogProgram.ProtoReflect.Descriptor instead.
+func (*CatalogProgram) Descriptor() ([]byte, []int) {
+	return file_plusultra_v1_program_proto_rawDescGZIP(), []int{42}
+}
+
+func (x *CatalogProgram) GetSlug() string {
+	if x != nil {
+		return x.Slug
+	}
+	return ""
+}
+
+func (x *CatalogProgram) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *CatalogProgram) GetAuthor() string {
+	if x != nil {
+		return x.Author
+	}
+	return ""
+}
+
+func (x *CatalogProgram) GetLevel() string {
+	if x != nil {
+		return x.Level
+	}
+	return ""
+}
+
+func (x *CatalogProgram) GetDaysPerWeek() int32 {
+	if x != nil {
+		return x.DaysPerWeek
+	}
+	return 0
+}
+
+func (x *CatalogProgram) GetWeeks() int32 {
+	if x != nil {
+		return x.Weeks
+	}
+	return 0
+}
+
+func (x *CatalogProgram) GetLoop() bool {
+	if x != nil {
+		return x.Loop
+	}
+	return false
+}
+
+func (x *CatalogProgram) GetSummary() string {
+	if x != nil {
+		return x.Summary
+	}
+	return ""
+}
+
+func (x *CatalogProgram) GetScript() string {
+	if x != nil {
+		return x.Script
+	}
+	return ""
+}
+
+func (x *CatalogProgram) GetMaxes() []string {
+	if x != nil {
+		return x.Maxes
+	}
+	return nil
+}
+
+// ListCatalogRequest is the input of ListCatalog.
+type ListCatalogRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListCatalogRequest) Reset() {
+	*x = ListCatalogRequest{}
+	mi := &file_plusultra_v1_program_proto_msgTypes[43]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListCatalogRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListCatalogRequest) ProtoMessage() {}
+
+func (x *ListCatalogRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_plusultra_v1_program_proto_msgTypes[43]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListCatalogRequest.ProtoReflect.Descriptor instead.
+func (*ListCatalogRequest) Descriptor() ([]byte, []int) {
+	return file_plusultra_v1_program_proto_rawDescGZIP(), []int{43}
+}
+
+// ListCatalogResponse is the output of ListCatalog.
+type ListCatalogResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Every built-in program, beginners first.
+	Programs      []*CatalogProgram `protobuf:"bytes,1,rep,name=programs,proto3" json:"programs,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListCatalogResponse) Reset() {
+	*x = ListCatalogResponse{}
+	mi := &file_plusultra_v1_program_proto_msgTypes[44]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListCatalogResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListCatalogResponse) ProtoMessage() {}
+
+func (x *ListCatalogResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_plusultra_v1_program_proto_msgTypes[44]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListCatalogResponse.ProtoReflect.Descriptor instead.
+func (*ListCatalogResponse) Descriptor() ([]byte, []int) {
+	return file_plusultra_v1_program_proto_rawDescGZIP(), []int{44}
+}
+
+func (x *ListCatalogResponse) GetPrograms() []*CatalogProgram {
+	if x != nil {
+		return x.Programs
+	}
+	return nil
+}
+
+// GetCatalogProgramRequest is the input of GetCatalogProgram.
+type GetCatalogProgramRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Slug from ListCatalog.
+	Slug          string `protobuf:"bytes,1,opt,name=slug,proto3" json:"slug,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCatalogProgramRequest) Reset() {
+	*x = GetCatalogProgramRequest{}
+	mi := &file_plusultra_v1_program_proto_msgTypes[45]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCatalogProgramRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCatalogProgramRequest) ProtoMessage() {}
+
+func (x *GetCatalogProgramRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_plusultra_v1_program_proto_msgTypes[45]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCatalogProgramRequest.ProtoReflect.Descriptor instead.
+func (*GetCatalogProgramRequest) Descriptor() ([]byte, []int) {
+	return file_plusultra_v1_program_proto_rawDescGZIP(), []int{45}
+}
+
+func (x *GetCatalogProgramRequest) GetSlug() string {
+	if x != nil {
+		return x.Slug
+	}
+	return ""
+}
+
+// GetCatalogProgramResponse is the output of GetCatalogProgram.
+type GetCatalogProgramResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The program, with its script.
+	Program       *CatalogProgram `protobuf:"bytes,1,opt,name=program,proto3" json:"program,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCatalogProgramResponse) Reset() {
+	*x = GetCatalogProgramResponse{}
+	mi := &file_plusultra_v1_program_proto_msgTypes[46]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCatalogProgramResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCatalogProgramResponse) ProtoMessage() {}
+
+func (x *GetCatalogProgramResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_plusultra_v1_program_proto_msgTypes[46]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCatalogProgramResponse.ProtoReflect.Descriptor instead.
+func (*GetCatalogProgramResponse) Descriptor() ([]byte, []int) {
+	return file_plusultra_v1_program_proto_rawDescGZIP(), []int{46}
+}
+
+func (x *GetCatalogProgramResponse) GetProgram() *CatalogProgram {
+	if x != nil {
+		return x.Program
+	}
+	return nil
+}
+
 var File_plusultra_v1_program_proto protoreflect.FileDescriptor
 
 const file_plusultra_v1_program_proto_rawDesc = "" +
@@ -3486,7 +3788,26 @@ const file_plusultra_v1_program_proto_rawDesc = "" +
 	"\x04week\x18\x02 \x01(\x05B\a\xbaH\x04\x1a\x02(\x00R\x04week\"\x84\x01\n" +
 	"\x17GetResolvedDaysResponse\x12-\n" +
 	"\x04days\x18\x01 \x03(\v2\x19.plusultra.v1.ResolvedDayR\x04days\x12:\n" +
-	"\tmeal_days\x18\x02 \x03(\v2\x1d.plusultra.v1.ResolvedMealDayR\bmealDays*\\\n" +
+	"\tmeal_days\x18\x02 \x03(\v2\x1d.plusultra.v1.ResolvedMealDayR\bmealDays\"\xfc\x01\n" +
+	"\x0eCatalogProgram\x12\x12\n" +
+	"\x04slug\x18\x01 \x01(\tR\x04slug\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x16\n" +
+	"\x06author\x18\x03 \x01(\tR\x06author\x12\x14\n" +
+	"\x05level\x18\x04 \x01(\tR\x05level\x12\"\n" +
+	"\rdays_per_week\x18\x05 \x01(\x05R\vdaysPerWeek\x12\x14\n" +
+	"\x05weeks\x18\x06 \x01(\x05R\x05weeks\x12\x12\n" +
+	"\x04loop\x18\a \x01(\bR\x04loop\x12\x18\n" +
+	"\asummary\x18\b \x01(\tR\asummary\x12\x16\n" +
+	"\x06script\x18\t \x01(\tR\x06script\x12\x14\n" +
+	"\x05maxes\x18\n" +
+	" \x03(\tR\x05maxes\"\x14\n" +
+	"\x12ListCatalogRequest\"O\n" +
+	"\x13ListCatalogResponse\x128\n" +
+	"\bprograms\x18\x01 \x03(\v2\x1c.plusultra.v1.CatalogProgramR\bprograms\"9\n" +
+	"\x18GetCatalogProgramRequest\x12\x1d\n" +
+	"\x04slug\x18\x01 \x01(\tB\t\xbaH\x06r\x04\x10\x01\x18dR\x04slug\"S\n" +
+	"\x19GetCatalogProgramResponse\x126\n" +
+	"\aprogram\x18\x01 \x01(\v2\x1c.plusultra.v1.CatalogProgramR\aprogram*\\\n" +
 	"\vProgramKind\x12\x1c\n" +
 	"\x18PROGRAM_KIND_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14PROGRAM_KIND_WORKOUT\x10\x01\x12\x15\n" +
@@ -3500,7 +3821,7 @@ const file_plusultra_v1_program_proto_rawDesc = "" +
 	"\vProgramMode\x12\x1c\n" +
 	"\x18PROGRAM_MODE_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15PROGRAM_MODE_ANCHORED\x10\x01\x12\x19\n" +
-	"\x15PROGRAM_MODE_FLOATING\x10\x022\xfa#\n" +
+	"\x15PROGRAM_MODE_FLOATING\x10\x022\xcb*\n" +
 	"\x0eProgramService\x12\xfc\x02\n" +
 	"\fListPrograms\x12!.plusultra.v1.ListProgramsRequest\x1a\".plusultra.v1.ListProgramsResponse\"\xa4\x02\x8a\xb5\x18\x9f\x02\n" +
 	"\x04list\x12\rList Programs\x1a\x83\x02Lists the user's workout and meal programs without scripts, most recently changed first, optionally filtered by kind and status (draft, active, finished, archived). Pages: pass nextCursor back as cursor while hasMore is true. Use program_get to read a script. \x01(\x01\x12\xc8\x02\n" +
@@ -3524,7 +3845,11 @@ const file_plusultra_v1_program_proto_rawDesc = "" +
 	"\rListRevisions\x12\".plusultra.v1.ListRevisionsRequest\x1a#.plusultra.v1.ListRevisionsResponse\"\x95\x02\x8a\xb5\x18\x90\x02\n" +
 	"\x0elist_revisions\x12\x16List Program Revisions\x1a\xe1\x01Lists a program's saved script revisions, newest first, with who saved each (user, api or mcp) and its structure. Scripts are left out unless includeScript is true. Pages: pass nextCursor back as cursor while hasMore is true. \x01(\x01\x12\xa3\x03\n" +
 	"\x0fGetResolvedDays\x12$.plusultra.v1.GetResolvedDaysRequest\x1a%.plusultra.v1.GetResolvedDaysResponse\"\xc2\x02\x8a\xb5\x18\xbd\x02\n" +
-	"\x11get_resolved_days\x12\x11Get Resolved Days\x1a\x90\x02Returns an active program's days with concrete sets, reps and weights (or meals with quantities and macros), resolved from the user's 1RMs, equipment rounding and progression state. Pass week for one week, or 0 for all. For what is planned on a date, use calendar_get_day. \x01(\x01\x1a\x0e\x92\xb5\x18\n" +
+	"\x11get_resolved_days\x12\x11Get Resolved Days\x1a\x90\x02Returns an active program's days with concrete sets, reps and weights (or meals with quantities and macros), resolved from the user's 1RMs, equipment rounding and progression state. Pass week for one week, or 0 for all. For what is planned on a date, use calendar_get_day. \x01(\x01\x12\xd9\x03\n" +
+	"\vListCatalog\x12 .plusultra.v1.ListCatalogRequest\x1a!.plusultra.v1.ListCatalogResponse\"\x84\x03\x8a\xb5\x18\xff\x02\n" +
+	"\fcatalog_list\x12\x14List Program Catalog\x1a\xd4\x02Lists the built-in workout programs shipped with the server: slug, name, author, level (beginner, intermediate or advanced), training days a week, weeks and a summary, without scripts. To give the user one, read it with program_catalog_get and save it with program_create; it becomes a draft the user activates with dates of their choosing. \x01(\x01\x12\xf2\x02\n" +
+	"\x11GetCatalogProgram\x12&.plusultra.v1.GetCatalogProgramRequest\x1a'.plusultra.v1.GetCatalogProgramResponse\"\x8b\x02\x8a\xb5\x18\x86\x02\n" +
+	"\vcatalog_get\x12\x13Get Catalog Program\x1a\xdd\x01Returns one built-in program by slug (from program_catalog_list) with its full Starlark script. Save it for the user with program_create, adapting weights or exercises first when asked; it starts as a draft with no dates. \x01(\x01\x1a\x0e\x92\xb5\x18\n" +
 	"\n" +
 	"\bprogram_B?Z=github.com/gdsoumya/plusultra/gen/go/plusultra/v1;plusultrav1b\x06proto3"
 
@@ -3541,78 +3866,83 @@ func file_plusultra_v1_program_proto_rawDescGZIP() []byte {
 }
 
 var file_plusultra_v1_program_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_plusultra_v1_program_proto_msgTypes = make([]protoimpl.MessageInfo, 48)
+var file_plusultra_v1_program_proto_msgTypes = make([]protoimpl.MessageInfo, 53)
 var file_plusultra_v1_program_proto_goTypes = []any{
-	(ProgramKind)(0),                // 0: plusultra.v1.ProgramKind
-	(ProgramStatus)(0),              // 1: plusultra.v1.ProgramStatus
-	(ProgramMode)(0),                // 2: plusultra.v1.ProgramMode
-	(*Program)(nil),                 // 3: plusultra.v1.Program
-	(*ProgramStructure)(nil),        // 4: plusultra.v1.ProgramStructure
-	(*StructureDay)(nil),            // 5: plusultra.v1.StructureDay
-	(*ProgramCursor)(nil),           // 6: plusultra.v1.ProgramCursor
-	(*ProgramRevision)(nil),         // 7: plusultra.v1.ProgramRevision
-	(*ScriptError)(nil),             // 8: plusultra.v1.ScriptError
-	(*NameError)(nil),               // 9: plusultra.v1.NameError
-	(*SimulateAssumptions)(nil),     // 10: plusultra.v1.SimulateAssumptions
-	(*ListProgramsRequest)(nil),     // 11: plusultra.v1.ListProgramsRequest
-	(*ListProgramsResponse)(nil),    // 12: plusultra.v1.ListProgramsResponse
-	(*GetProgramRequest)(nil),       // 13: plusultra.v1.GetProgramRequest
-	(*GetProgramResponse)(nil),      // 14: plusultra.v1.GetProgramResponse
-	(*CreateProgramRequest)(nil),    // 15: plusultra.v1.CreateProgramRequest
-	(*CreateProgramResponse)(nil),   // 16: plusultra.v1.CreateProgramResponse
-	(*UpdateProgramRequest)(nil),    // 17: plusultra.v1.UpdateProgramRequest
-	(*UpdateProgramResponse)(nil),   // 18: plusultra.v1.UpdateProgramResponse
-	(*DeleteProgramRequest)(nil),    // 19: plusultra.v1.DeleteProgramRequest
-	(*DeleteProgramResponse)(nil),   // 20: plusultra.v1.DeleteProgramResponse
-	(*ValidateProgramRequest)(nil),  // 21: plusultra.v1.ValidateProgramRequest
-	(*ValidateProgramResponse)(nil), // 22: plusultra.v1.ValidateProgramResponse
-	(*SimulateProgramRequest)(nil),  // 23: plusultra.v1.SimulateProgramRequest
-	(*SimulatePosition)(nil),        // 24: plusultra.v1.SimulatePosition
-	(*SimulateOverrides)(nil),       // 25: plusultra.v1.SimulateOverrides
-	(*SimulateSession)(nil),         // 26: plusultra.v1.SimulateSession
-	(*SimulateSet)(nil),             // 27: plusultra.v1.SimulateSet
-	(*SimulateFilter)(nil),          // 28: plusultra.v1.SimulateFilter
-	(*SimulateExpectation)(nil),     // 29: plusultra.v1.SimulateExpectation
-	(*SimulateProgramResponse)(nil), // 30: plusultra.v1.SimulateProgramResponse
-	(*SessionTrace)(nil),            // 31: plusultra.v1.SessionTrace
-	(*OverlayWrite)(nil),            // 32: plusultra.v1.OverlayWrite
-	(*SimulateWarning)(nil),         // 33: plusultra.v1.SimulateWarning
-	(*SimulateAssertion)(nil),       // 34: plusultra.v1.SimulateAssertion
-	(*SimulateDiff)(nil),            // 35: plusultra.v1.SimulateDiff
-	(*SimulateMealDay)(nil),         // 36: plusultra.v1.SimulateMealDay
-	(*ActivateProgramRequest)(nil),  // 37: plusultra.v1.ActivateProgramRequest
-	(*ActivateProgramResponse)(nil), // 38: plusultra.v1.ActivateProgramResponse
-	(*FinishProgramRequest)(nil),    // 39: plusultra.v1.FinishProgramRequest
-	(*FinishProgramResponse)(nil),   // 40: plusultra.v1.FinishProgramResponse
-	(*ListRevisionsRequest)(nil),    // 41: plusultra.v1.ListRevisionsRequest
-	(*ListRevisionsResponse)(nil),   // 42: plusultra.v1.ListRevisionsResponse
-	(*GetResolvedDaysRequest)(nil),  // 43: plusultra.v1.GetResolvedDaysRequest
-	(*GetResolvedDaysResponse)(nil), // 44: plusultra.v1.GetResolvedDaysResponse
-	nil,                             // 45: plusultra.v1.SimulateAssumptions.RepsEntry
-	nil,                             // 46: plusultra.v1.SimulateOverrides.RoundingEntry
-	nil,                             // 47: plusultra.v1.SimulateOverrides.Rm1Entry
-	nil,                             // 48: plusultra.v1.SimulateSession.PromptsEntry
-	nil,                             // 49: plusultra.v1.SessionTrace.StateBeforeEntry
-	nil,                             // 50: plusultra.v1.SessionTrace.StateAfterEntry
-	(*timestamppb.Timestamp)(nil),   // 51: google.protobuf.Timestamp
-	(*Weight)(nil),                  // 52: plusultra.v1.Weight
-	(*ResolvedDay)(nil),             // 53: plusultra.v1.ResolvedDay
-	(*ResolvedMealDay)(nil),         // 54: plusultra.v1.ResolvedMealDay
-	(*Macros)(nil),                  // 55: plusultra.v1.Macros
-	(*Rounding)(nil),                // 56: plusultra.v1.Rounding
+	(ProgramKind)(0),                  // 0: plusultra.v1.ProgramKind
+	(ProgramStatus)(0),                // 1: plusultra.v1.ProgramStatus
+	(ProgramMode)(0),                  // 2: plusultra.v1.ProgramMode
+	(*Program)(nil),                   // 3: plusultra.v1.Program
+	(*ProgramStructure)(nil),          // 4: plusultra.v1.ProgramStructure
+	(*StructureDay)(nil),              // 5: plusultra.v1.StructureDay
+	(*ProgramCursor)(nil),             // 6: plusultra.v1.ProgramCursor
+	(*ProgramRevision)(nil),           // 7: plusultra.v1.ProgramRevision
+	(*ScriptError)(nil),               // 8: plusultra.v1.ScriptError
+	(*NameError)(nil),                 // 9: plusultra.v1.NameError
+	(*SimulateAssumptions)(nil),       // 10: plusultra.v1.SimulateAssumptions
+	(*ListProgramsRequest)(nil),       // 11: plusultra.v1.ListProgramsRequest
+	(*ListProgramsResponse)(nil),      // 12: plusultra.v1.ListProgramsResponse
+	(*GetProgramRequest)(nil),         // 13: plusultra.v1.GetProgramRequest
+	(*GetProgramResponse)(nil),        // 14: plusultra.v1.GetProgramResponse
+	(*CreateProgramRequest)(nil),      // 15: plusultra.v1.CreateProgramRequest
+	(*CreateProgramResponse)(nil),     // 16: plusultra.v1.CreateProgramResponse
+	(*UpdateProgramRequest)(nil),      // 17: plusultra.v1.UpdateProgramRequest
+	(*UpdateProgramResponse)(nil),     // 18: plusultra.v1.UpdateProgramResponse
+	(*DeleteProgramRequest)(nil),      // 19: plusultra.v1.DeleteProgramRequest
+	(*DeleteProgramResponse)(nil),     // 20: plusultra.v1.DeleteProgramResponse
+	(*ValidateProgramRequest)(nil),    // 21: plusultra.v1.ValidateProgramRequest
+	(*ValidateProgramResponse)(nil),   // 22: plusultra.v1.ValidateProgramResponse
+	(*SimulateProgramRequest)(nil),    // 23: plusultra.v1.SimulateProgramRequest
+	(*SimulatePosition)(nil),          // 24: plusultra.v1.SimulatePosition
+	(*SimulateOverrides)(nil),         // 25: plusultra.v1.SimulateOverrides
+	(*SimulateSession)(nil),           // 26: plusultra.v1.SimulateSession
+	(*SimulateSet)(nil),               // 27: plusultra.v1.SimulateSet
+	(*SimulateFilter)(nil),            // 28: plusultra.v1.SimulateFilter
+	(*SimulateExpectation)(nil),       // 29: plusultra.v1.SimulateExpectation
+	(*SimulateProgramResponse)(nil),   // 30: plusultra.v1.SimulateProgramResponse
+	(*SessionTrace)(nil),              // 31: plusultra.v1.SessionTrace
+	(*OverlayWrite)(nil),              // 32: plusultra.v1.OverlayWrite
+	(*SimulateWarning)(nil),           // 33: plusultra.v1.SimulateWarning
+	(*SimulateAssertion)(nil),         // 34: plusultra.v1.SimulateAssertion
+	(*SimulateDiff)(nil),              // 35: plusultra.v1.SimulateDiff
+	(*SimulateMealDay)(nil),           // 36: plusultra.v1.SimulateMealDay
+	(*ActivateProgramRequest)(nil),    // 37: plusultra.v1.ActivateProgramRequest
+	(*ActivateProgramResponse)(nil),   // 38: plusultra.v1.ActivateProgramResponse
+	(*FinishProgramRequest)(nil),      // 39: plusultra.v1.FinishProgramRequest
+	(*FinishProgramResponse)(nil),     // 40: plusultra.v1.FinishProgramResponse
+	(*ListRevisionsRequest)(nil),      // 41: plusultra.v1.ListRevisionsRequest
+	(*ListRevisionsResponse)(nil),     // 42: plusultra.v1.ListRevisionsResponse
+	(*GetResolvedDaysRequest)(nil),    // 43: plusultra.v1.GetResolvedDaysRequest
+	(*GetResolvedDaysResponse)(nil),   // 44: plusultra.v1.GetResolvedDaysResponse
+	(*CatalogProgram)(nil),            // 45: plusultra.v1.CatalogProgram
+	(*ListCatalogRequest)(nil),        // 46: plusultra.v1.ListCatalogRequest
+	(*ListCatalogResponse)(nil),       // 47: plusultra.v1.ListCatalogResponse
+	(*GetCatalogProgramRequest)(nil),  // 48: plusultra.v1.GetCatalogProgramRequest
+	(*GetCatalogProgramResponse)(nil), // 49: plusultra.v1.GetCatalogProgramResponse
+	nil,                               // 50: plusultra.v1.SimulateAssumptions.RepsEntry
+	nil,                               // 51: plusultra.v1.SimulateOverrides.RoundingEntry
+	nil,                               // 52: plusultra.v1.SimulateOverrides.Rm1Entry
+	nil,                               // 53: plusultra.v1.SimulateSession.PromptsEntry
+	nil,                               // 54: plusultra.v1.SessionTrace.StateBeforeEntry
+	nil,                               // 55: plusultra.v1.SessionTrace.StateAfterEntry
+	(*timestamppb.Timestamp)(nil),     // 56: google.protobuf.Timestamp
+	(*Weight)(nil),                    // 57: plusultra.v1.Weight
+	(*ResolvedDay)(nil),               // 58: plusultra.v1.ResolvedDay
+	(*ResolvedMealDay)(nil),           // 59: plusultra.v1.ResolvedMealDay
+	(*Macros)(nil),                    // 60: plusultra.v1.Macros
+	(*Rounding)(nil),                  // 61: plusultra.v1.Rounding
 }
 var file_plusultra_v1_program_proto_depIdxs = []int32{
 	0,  // 0: plusultra.v1.Program.kind:type_name -> plusultra.v1.ProgramKind
 	1,  // 1: plusultra.v1.Program.status:type_name -> plusultra.v1.ProgramStatus
-	51, // 2: plusultra.v1.Program.created_at:type_name -> google.protobuf.Timestamp
-	51, // 3: plusultra.v1.Program.updated_at:type_name -> google.protobuf.Timestamp
+	56, // 2: plusultra.v1.Program.created_at:type_name -> google.protobuf.Timestamp
+	56, // 3: plusultra.v1.Program.updated_at:type_name -> google.protobuf.Timestamp
 	4,  // 4: plusultra.v1.Program.structure:type_name -> plusultra.v1.ProgramStructure
 	6,  // 5: plusultra.v1.Program.cursor:type_name -> plusultra.v1.ProgramCursor
 	2,  // 6: plusultra.v1.Program.mode:type_name -> plusultra.v1.ProgramMode
 	5,  // 7: plusultra.v1.ProgramStructure.days:type_name -> plusultra.v1.StructureDay
-	51, // 8: plusultra.v1.ProgramRevision.created_at:type_name -> google.protobuf.Timestamp
+	56, // 8: plusultra.v1.ProgramRevision.created_at:type_name -> google.protobuf.Timestamp
 	4,  // 9: plusultra.v1.ProgramRevision.structure:type_name -> plusultra.v1.ProgramStructure
-	45, // 10: plusultra.v1.SimulateAssumptions.reps:type_name -> plusultra.v1.SimulateAssumptions.RepsEntry
+	50, // 10: plusultra.v1.SimulateAssumptions.reps:type_name -> plusultra.v1.SimulateAssumptions.RepsEntry
 	0,  // 11: plusultra.v1.ListProgramsRequest.kind:type_name -> plusultra.v1.ProgramKind
 	1,  // 12: plusultra.v1.ListProgramsRequest.status:type_name -> plusultra.v1.ProgramStatus
 	3,  // 13: plusultra.v1.ListProgramsResponse.programs:type_name -> plusultra.v1.Program
@@ -3631,63 +3961,69 @@ var file_plusultra_v1_program_proto_depIdxs = []int32{
 	28, // 26: plusultra.v1.SimulateProgramRequest.filter:type_name -> plusultra.v1.SimulateFilter
 	29, // 27: plusultra.v1.SimulateProgramRequest.expect:type_name -> plusultra.v1.SimulateExpectation
 	26, // 28: plusultra.v1.SimulateProgramRequest.compare_scenario:type_name -> plusultra.v1.SimulateSession
-	46, // 29: plusultra.v1.SimulateOverrides.rounding:type_name -> plusultra.v1.SimulateOverrides.RoundingEntry
-	47, // 30: plusultra.v1.SimulateOverrides.rm1:type_name -> plusultra.v1.SimulateOverrides.Rm1Entry
-	52, // 31: plusultra.v1.SimulateOverrides.bodyweight:type_name -> plusultra.v1.Weight
+	51, // 29: plusultra.v1.SimulateOverrides.rounding:type_name -> plusultra.v1.SimulateOverrides.RoundingEntry
+	52, // 30: plusultra.v1.SimulateOverrides.rm1:type_name -> plusultra.v1.SimulateOverrides.Rm1Entry
+	57, // 31: plusultra.v1.SimulateOverrides.bodyweight:type_name -> plusultra.v1.Weight
 	27, // 32: plusultra.v1.SimulateSession.sets:type_name -> plusultra.v1.SimulateSet
-	52, // 33: plusultra.v1.SimulateSession.weight:type_name -> plusultra.v1.Weight
-	52, // 34: plusultra.v1.SimulateSession.weight_delta:type_name -> plusultra.v1.Weight
-	48, // 35: plusultra.v1.SimulateSession.prompts:type_name -> plusultra.v1.SimulateSession.PromptsEntry
-	52, // 36: plusultra.v1.SimulateSet.weight:type_name -> plusultra.v1.Weight
-	52, // 37: plusultra.v1.SimulateExpectation.weight:type_name -> plusultra.v1.Weight
-	53, // 38: plusultra.v1.SimulateProgramResponse.days:type_name -> plusultra.v1.ResolvedDay
+	57, // 33: plusultra.v1.SimulateSession.weight:type_name -> plusultra.v1.Weight
+	57, // 34: plusultra.v1.SimulateSession.weight_delta:type_name -> plusultra.v1.Weight
+	53, // 35: plusultra.v1.SimulateSession.prompts:type_name -> plusultra.v1.SimulateSession.PromptsEntry
+	57, // 36: plusultra.v1.SimulateSet.weight:type_name -> plusultra.v1.Weight
+	57, // 37: plusultra.v1.SimulateExpectation.weight:type_name -> plusultra.v1.Weight
+	58, // 38: plusultra.v1.SimulateProgramResponse.days:type_name -> plusultra.v1.ResolvedDay
 	8,  // 39: plusultra.v1.SimulateProgramResponse.errors:type_name -> plusultra.v1.ScriptError
-	54, // 40: plusultra.v1.SimulateProgramResponse.meal_days:type_name -> plusultra.v1.ResolvedMealDay
+	59, // 40: plusultra.v1.SimulateProgramResponse.meal_days:type_name -> plusultra.v1.ResolvedMealDay
 	31, // 41: plusultra.v1.SimulateProgramResponse.trace:type_name -> plusultra.v1.SessionTrace
 	33, // 42: plusultra.v1.SimulateProgramResponse.warnings:type_name -> plusultra.v1.SimulateWarning
 	34, // 43: plusultra.v1.SimulateProgramResponse.assertions:type_name -> plusultra.v1.SimulateAssertion
 	35, // 44: plusultra.v1.SimulateProgramResponse.diff:type_name -> plusultra.v1.SimulateDiff
 	36, // 45: plusultra.v1.SimulateProgramResponse.meals:type_name -> plusultra.v1.SimulateMealDay
-	49, // 46: plusultra.v1.SessionTrace.state_before:type_name -> plusultra.v1.SessionTrace.StateBeforeEntry
-	50, // 47: plusultra.v1.SessionTrace.state_after:type_name -> plusultra.v1.SessionTrace.StateAfterEntry
+	54, // 46: plusultra.v1.SessionTrace.state_before:type_name -> plusultra.v1.SessionTrace.StateBeforeEntry
+	55, // 47: plusultra.v1.SessionTrace.state_after:type_name -> plusultra.v1.SessionTrace.StateAfterEntry
 	32, // 48: plusultra.v1.SessionTrace.writes:type_name -> plusultra.v1.OverlayWrite
 	29, // 49: plusultra.v1.SimulateAssertion.expect:type_name -> plusultra.v1.SimulateExpectation
-	55, // 50: plusultra.v1.SimulateMealDay.totals:type_name -> plusultra.v1.Macros
-	55, // 51: plusultra.v1.SimulateMealDay.target:type_name -> plusultra.v1.Macros
+	60, // 50: plusultra.v1.SimulateMealDay.totals:type_name -> plusultra.v1.Macros
+	60, // 51: plusultra.v1.SimulateMealDay.target:type_name -> plusultra.v1.Macros
 	3,  // 52: plusultra.v1.ActivateProgramResponse.program:type_name -> plusultra.v1.Program
 	3,  // 53: plusultra.v1.FinishProgramResponse.program:type_name -> plusultra.v1.Program
 	7,  // 54: plusultra.v1.ListRevisionsResponse.revisions:type_name -> plusultra.v1.ProgramRevision
-	53, // 55: plusultra.v1.GetResolvedDaysResponse.days:type_name -> plusultra.v1.ResolvedDay
-	54, // 56: plusultra.v1.GetResolvedDaysResponse.meal_days:type_name -> plusultra.v1.ResolvedMealDay
-	56, // 57: plusultra.v1.SimulateOverrides.RoundingEntry.value:type_name -> plusultra.v1.Rounding
-	52, // 58: plusultra.v1.SimulateOverrides.Rm1Entry.value:type_name -> plusultra.v1.Weight
-	11, // 59: plusultra.v1.ProgramService.ListPrograms:input_type -> plusultra.v1.ListProgramsRequest
-	13, // 60: plusultra.v1.ProgramService.GetProgram:input_type -> plusultra.v1.GetProgramRequest
-	15, // 61: plusultra.v1.ProgramService.CreateProgram:input_type -> plusultra.v1.CreateProgramRequest
-	17, // 62: plusultra.v1.ProgramService.UpdateProgram:input_type -> plusultra.v1.UpdateProgramRequest
-	19, // 63: plusultra.v1.ProgramService.DeleteProgram:input_type -> plusultra.v1.DeleteProgramRequest
-	21, // 64: plusultra.v1.ProgramService.ValidateProgram:input_type -> plusultra.v1.ValidateProgramRequest
-	23, // 65: plusultra.v1.ProgramService.SimulateProgram:input_type -> plusultra.v1.SimulateProgramRequest
-	37, // 66: plusultra.v1.ProgramService.ActivateProgram:input_type -> plusultra.v1.ActivateProgramRequest
-	39, // 67: plusultra.v1.ProgramService.FinishProgram:input_type -> plusultra.v1.FinishProgramRequest
-	41, // 68: plusultra.v1.ProgramService.ListRevisions:input_type -> plusultra.v1.ListRevisionsRequest
-	43, // 69: plusultra.v1.ProgramService.GetResolvedDays:input_type -> plusultra.v1.GetResolvedDaysRequest
-	12, // 70: plusultra.v1.ProgramService.ListPrograms:output_type -> plusultra.v1.ListProgramsResponse
-	14, // 71: plusultra.v1.ProgramService.GetProgram:output_type -> plusultra.v1.GetProgramResponse
-	16, // 72: plusultra.v1.ProgramService.CreateProgram:output_type -> plusultra.v1.CreateProgramResponse
-	18, // 73: plusultra.v1.ProgramService.UpdateProgram:output_type -> plusultra.v1.UpdateProgramResponse
-	20, // 74: plusultra.v1.ProgramService.DeleteProgram:output_type -> plusultra.v1.DeleteProgramResponse
-	22, // 75: plusultra.v1.ProgramService.ValidateProgram:output_type -> plusultra.v1.ValidateProgramResponse
-	30, // 76: plusultra.v1.ProgramService.SimulateProgram:output_type -> plusultra.v1.SimulateProgramResponse
-	38, // 77: plusultra.v1.ProgramService.ActivateProgram:output_type -> plusultra.v1.ActivateProgramResponse
-	40, // 78: plusultra.v1.ProgramService.FinishProgram:output_type -> plusultra.v1.FinishProgramResponse
-	42, // 79: plusultra.v1.ProgramService.ListRevisions:output_type -> plusultra.v1.ListRevisionsResponse
-	44, // 80: plusultra.v1.ProgramService.GetResolvedDays:output_type -> plusultra.v1.GetResolvedDaysResponse
-	70, // [70:81] is the sub-list for method output_type
-	59, // [59:70] is the sub-list for method input_type
-	59, // [59:59] is the sub-list for extension type_name
-	59, // [59:59] is the sub-list for extension extendee
-	0,  // [0:59] is the sub-list for field type_name
+	58, // 55: plusultra.v1.GetResolvedDaysResponse.days:type_name -> plusultra.v1.ResolvedDay
+	59, // 56: plusultra.v1.GetResolvedDaysResponse.meal_days:type_name -> plusultra.v1.ResolvedMealDay
+	45, // 57: plusultra.v1.ListCatalogResponse.programs:type_name -> plusultra.v1.CatalogProgram
+	45, // 58: plusultra.v1.GetCatalogProgramResponse.program:type_name -> plusultra.v1.CatalogProgram
+	61, // 59: plusultra.v1.SimulateOverrides.RoundingEntry.value:type_name -> plusultra.v1.Rounding
+	57, // 60: plusultra.v1.SimulateOverrides.Rm1Entry.value:type_name -> plusultra.v1.Weight
+	11, // 61: plusultra.v1.ProgramService.ListPrograms:input_type -> plusultra.v1.ListProgramsRequest
+	13, // 62: plusultra.v1.ProgramService.GetProgram:input_type -> plusultra.v1.GetProgramRequest
+	15, // 63: plusultra.v1.ProgramService.CreateProgram:input_type -> plusultra.v1.CreateProgramRequest
+	17, // 64: plusultra.v1.ProgramService.UpdateProgram:input_type -> plusultra.v1.UpdateProgramRequest
+	19, // 65: plusultra.v1.ProgramService.DeleteProgram:input_type -> plusultra.v1.DeleteProgramRequest
+	21, // 66: plusultra.v1.ProgramService.ValidateProgram:input_type -> plusultra.v1.ValidateProgramRequest
+	23, // 67: plusultra.v1.ProgramService.SimulateProgram:input_type -> plusultra.v1.SimulateProgramRequest
+	37, // 68: plusultra.v1.ProgramService.ActivateProgram:input_type -> plusultra.v1.ActivateProgramRequest
+	39, // 69: plusultra.v1.ProgramService.FinishProgram:input_type -> plusultra.v1.FinishProgramRequest
+	41, // 70: plusultra.v1.ProgramService.ListRevisions:input_type -> plusultra.v1.ListRevisionsRequest
+	43, // 71: plusultra.v1.ProgramService.GetResolvedDays:input_type -> plusultra.v1.GetResolvedDaysRequest
+	46, // 72: plusultra.v1.ProgramService.ListCatalog:input_type -> plusultra.v1.ListCatalogRequest
+	48, // 73: plusultra.v1.ProgramService.GetCatalogProgram:input_type -> plusultra.v1.GetCatalogProgramRequest
+	12, // 74: plusultra.v1.ProgramService.ListPrograms:output_type -> plusultra.v1.ListProgramsResponse
+	14, // 75: plusultra.v1.ProgramService.GetProgram:output_type -> plusultra.v1.GetProgramResponse
+	16, // 76: plusultra.v1.ProgramService.CreateProgram:output_type -> plusultra.v1.CreateProgramResponse
+	18, // 77: plusultra.v1.ProgramService.UpdateProgram:output_type -> plusultra.v1.UpdateProgramResponse
+	20, // 78: plusultra.v1.ProgramService.DeleteProgram:output_type -> plusultra.v1.DeleteProgramResponse
+	22, // 79: plusultra.v1.ProgramService.ValidateProgram:output_type -> plusultra.v1.ValidateProgramResponse
+	30, // 80: plusultra.v1.ProgramService.SimulateProgram:output_type -> plusultra.v1.SimulateProgramResponse
+	38, // 81: plusultra.v1.ProgramService.ActivateProgram:output_type -> plusultra.v1.ActivateProgramResponse
+	40, // 82: plusultra.v1.ProgramService.FinishProgram:output_type -> plusultra.v1.FinishProgramResponse
+	42, // 83: plusultra.v1.ProgramService.ListRevisions:output_type -> plusultra.v1.ListRevisionsResponse
+	44, // 84: plusultra.v1.ProgramService.GetResolvedDays:output_type -> plusultra.v1.GetResolvedDaysResponse
+	47, // 85: plusultra.v1.ProgramService.ListCatalog:output_type -> plusultra.v1.ListCatalogResponse
+	49, // 86: plusultra.v1.ProgramService.GetCatalogProgram:output_type -> plusultra.v1.GetCatalogProgramResponse
+	74, // [74:87] is the sub-list for method output_type
+	61, // [61:74] is the sub-list for method input_type
+	61, // [61:61] is the sub-list for extension type_name
+	61, // [61:61] is the sub-list for extension extendee
+	0,  // [0:61] is the sub-list for field type_name
 }
 
 func init() { file_plusultra_v1_program_proto_init() }
@@ -3704,7 +4040,7 @@ func file_plusultra_v1_program_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_plusultra_v1_program_proto_rawDesc), len(file_plusultra_v1_program_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   48,
+			NumMessages:   53,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

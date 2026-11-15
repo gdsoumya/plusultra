@@ -34,6 +34,10 @@ var _ProgramService_ListRevisions_InputSchema = protomcp.MustParseSchema(`{"prop
 var _ProgramService_ListRevisions_OutputSchema = protomcp.MustParseSchema(`{"properties":{"hasMore":{"description":"True when more results follow; call again with cursor set to next_cursor.","type":"boolean"},"nextCursor":{"description":"Cursor for the next page; empty when has_more is false.","type":"string"},"revisions":{"description":"Revisions, newest first.","items":{"properties":{"createdAt":{"description":"When it was saved.","format":"date-time","type":["string","null"]},"createdBy":{"description":"Who saved it: \"user\", \"api\" or \"mcp\".","type":"string"},"revision":{"description":"Revision number, starting at 1.","type":"integer"},"script":{"description":"Script of this revision; empty unless include_script was set.","type":"string"},"structure":{"description":"Summary of this revision's weeks and days.","properties":{"days":{"description":"Every declared day, in week then day order.","items":{"properties":{"day":{"description":"1-based day within the week; 0 for a meal day picked by kind.","type":"integer"},"kind":{"description":"Day kind: \"training\", \"conditioning\", \"rest\" or \"note\".","type":"string"},"name":{"description":"Day name.","type":"string"},"week":{"description":"1-based week.","type":"integer"}},"type":"object"},"type":"array"},"loop":{"description":"True when a floating program starts again at week 1 after the last week.","type":"boolean"},"weeks":{"description":"Number of weeks.","type":"integer"}},"type":"object"}},"type":"object"},"type":"array"}},"type":"object"}`)
 var _ProgramService_GetResolvedDays_InputSchema = protomcp.MustParseSchema(`{"properties":{"programId":{"description":"Program id of an active program.","format":"uuid","type":"string"},"week":{"description":"1-based week to return; 0 returns every week.","minimum":0,"type":"integer"}},"type":"object"}`)
 var _ProgramService_GetResolvedDays_OutputSchema = protomcp.MustParseSchema(`{"properties":{"days":{"description":"Workout days, in week then day order; empty for a meal program.","items":{"properties":{"date":{"description":"Date of the day, YYYY-MM-DD, for anchored programs; empty for floating programs.","type":"string"},"day":{"description":"1-based day within the week; Monday is 1 in anchored programs.","type":"integer"},"desc":{"description":"Day description.","type":"string"},"exercises":{"description":"Exercises in order.","items":{"properties":{"alternates":{"description":"Every alternate exercise name; they share sets, weights and progression.","items":{"type":"string"},"type":"array"},"current":{"description":"1-based index of name in alternates.","type":"integer"},"desc":{"description":"Description shown with the exercise.","type":"string"},"equipment":{"description":"Equipment variant, for example \"barbell\".","type":"string"},"label":{"description":"Label that tells apart two instances of the same exercise with different progressions.","type":"string"},"name":{"description":"Exercise name to do today, the current alternate, for example \"Bench Press\".","type":"string"},"progression":{"description":"Short summary of the exercise's progression, for example \"Linear: +2.5 kg after a successful workout\"; empty when it has none.","type":"string"},"sets":{"description":"Sets to do, warmups first.","items":{"properties":{"amrap":{"description":"True when the set is as many reps as possible.","type":"boolean"},"ask":{"description":"True when the user is asked for the weight when doing the set.","type":"boolean"},"auto":{"description":"True when the work timer advances to the next set on its own.","type":"boolean"},"countUp":{"description":"True when the timer keeps counting up past the work time.","type":"boolean"},"label":{"description":"Set group label, for example \"Work\" or \"Backoff\".","type":"string"},"logRpe":{"description":"True when the user should log the RPE they reached.","type":"boolean"},"minReps":{"description":"Bottom of the rep range; equal to reps for a fixed rep count.","type":"integer"},"reps":{"description":"Target reps; the top of the range when the set has a rep range.","type":"integer"},"rest":{"description":"Rest timer after the set, in seconds; 0 when none.","type":"integer"},"rpe":{"description":"Target RPE (rate of perceived exertion, 1 to 10); 0 when none.","type":"number"},"warmup":{"description":"True for a warmup set; warmups come before working sets.","type":"boolean"},"weight":{"description":"Weight to lift.","properties":{"unit":{"description":"Unit of the amount; unspecified means the user's preferred unit.","enum":["UNIT_UNSPECIFIED","UNIT_KG","UNIT_LB"],"enumDescriptions":["No unit given; the server uses the user's preferred unit.","Kilograms.","Pounds."],"type":"string"},"value":{"description":"Amount in the given unit, for example 82.5.","type":"number"}},"type":"object"},"work":{"description":"Work timer for the set, in seconds; 0 when none.","type":"integer"}},"type":"object"},"type":"array"},"slug":{"description":"Catalog slug of name, for example \"bench-press-barbell\"; empty when the name is not in the catalog.","type":"string"},"superset":{"description":"Superset group; exercises with the same group are done back to back.","type":"string"},"unilateral":{"description":"True when the user does name one side at a time, from their exercise data; left and right reps are then logged separately.","type":"boolean"}},"type":"object"},"type":"array"},"kind":{"description":"Day kind: \"training\", \"conditioning\", \"rest\" or \"note\".","type":"string"},"name":{"description":"Day name, for example \"Upper A\".","type":"string"},"programId":{"description":"Program the day belongs to.","type":"string"},"week":{"description":"1-based week of the program.","type":"integer"}},"type":"object"},"type":"array"},"mealDays":{"description":"Meal days, in week then day order; empty for a workout program.","items":{"properties":{"date":{"description":"Date of the day, YYYY-MM-DD, for anchored programs; empty for floating programs.","type":"string"},"day":{"description":"1-based day within the week; 0 for a day picked by kind.","type":"integer"},"desc":{"description":"Day description.","type":"string"},"kind":{"description":"Workout day kind this meal day serves: \"training\" or \"rest\".","type":"string"},"meals":{"description":"Planned meals.","items":{"properties":{"desc":{"description":"Description.","maxLength":2000,"type":"string"},"items":{"description":"Items eaten or planned.","items":{"properties":{"edited":{"description":"True when the user overrode this item's macros; the food's per100g/per_unit are then the user's values and the catalog is not consulted.","type":"boolean"},"food":{"description":"The food.","properties":{"name":{"description":"Food name, for example \"Chicken breast, raw\".","maxLength":200,"minLength":1,"type":"string"},"per100g":{"description":"Macros per 100 g.","properties":{"carbs":{"description":"Carbohydrates in grams.","minimum":0,"type":"number"},"fat":{"description":"Fat in grams.","minimum":0,"type":"number"},"fiber":{"description":"Fiber in grams.","minimum":0,"type":"number"},"kcal":{"description":"Energy in kilocalories.","minimum":0,"type":"number"},"protein":{"description":"Protein in grams.","minimum":0,"type":"number"},"waterMl":{"description":"Water in millilitres.","minimum":0,"type":"number"}},"type":"object"},"perUnit":{"description":"Macros per unit for foods counted in units, such as eggs; unset otherwise.","properties":{"carbs":{"description":"Carbohydrates in grams.","minimum":0,"type":"number"},"fat":{"description":"Fat in grams.","minimum":0,"type":"number"},"fiber":{"description":"Fiber in grams.","minimum":0,"type":"number"},"kcal":{"description":"Energy in kilocalories.","minimum":0,"type":"number"},"protein":{"description":"Protein in grams.","minimum":0,"type":"number"},"waterMl":{"description":"Water in millilitres.","minimum":0,"type":"number"}},"type":"object"},"ref":{"description":"Opaque text: the food's id from food_search or food_get (SearchFoods or GetFood) when a user or model builds an item, or the script's ref when filled from a plan; empty for a food typed in by hand. Only scripts require \"\u003csource\u003e:\u003csource_id\u003e\". When ref is set and per100g is unset, the server fills the macros from the catalog on save and freezes them.","maxLength":64,"type":"string"},"unit":{"description":"Unit name for per_unit, for example \"egg\"; empty when the food is weighed in grams.","maxLength":100,"type":"string"}},"type":"object"},"macros":{"description":"Macros for this quantity; computed by the server.","properties":{"carbs":{"description":"Carbohydrates in grams.","minimum":0,"type":"number"},"fat":{"description":"Fat in grams.","minimum":0,"type":"number"},"fiber":{"description":"Fiber in grams.","minimum":0,"type":"number"},"kcal":{"description":"Energy in kilocalories.","minimum":0,"type":"number"},"protein":{"description":"Protein in grams.","minimum":0,"type":"number"},"waterMl":{"description":"Water in millilitres.","minimum":0,"type":"number"}},"type":"object"},"note":{"description":"Free-text note.","maxLength":500,"type":"string"},"planned":{"description":"True when the item came from the meal plan, false when added ad hoc.","type":"boolean"},"qty":{"description":"Quantity in unit; 0 means planned but not eaten, and macros scale to 0.","maximum":100000,"minimum":0,"type":"number"},"unit":{"description":"\"g\" or the food's unit, for example \"egg\".","maxLength":100,"type":"string"}},"required":["food"],"type":"object"},"maxItems":200,"type":"array"},"name":{"description":"Meal name, for example \"Lunch\".","maxLength":100,"minLength":1,"type":"string"},"time":{"description":"Planned time of day, for example \"13:00\"; may be empty.","maxLength":16,"type":"string"}},"type":"object"},"type":"array"},"name":{"description":"Day name.","type":"string"},"programId":{"description":"Meal program the day belongs to.","type":"string"},"target":{"description":"Daily target; the sum of the items when the program sets none. A field of 0 means no target for it.","properties":{"carbs":{"description":"Carbohydrates in grams.","minimum":0,"type":"number"},"fat":{"description":"Fat in grams.","minimum":0,"type":"number"},"fiber":{"description":"Fiber in grams.","minimum":0,"type":"number"},"kcal":{"description":"Energy in kilocalories.","minimum":0,"type":"number"},"protein":{"description":"Protein in grams.","minimum":0,"type":"number"},"waterMl":{"description":"Water in millilitres.","minimum":0,"type":"number"}},"type":"object"},"totals":{"description":"Sum of the planned items' macros.","properties":{"carbs":{"description":"Carbohydrates in grams.","minimum":0,"type":"number"},"fat":{"description":"Fat in grams.","minimum":0,"type":"number"},"fiber":{"description":"Fiber in grams.","minimum":0,"type":"number"},"kcal":{"description":"Energy in kilocalories.","minimum":0,"type":"number"},"protein":{"description":"Protein in grams.","minimum":0,"type":"number"},"waterMl":{"description":"Water in millilitres.","minimum":0,"type":"number"}},"type":"object"},"week":{"description":"1-based week of the program.","type":"integer"}},"type":"object"},"type":"array"}},"type":"object"}`)
+var _ProgramService_ListCatalog_InputSchema = protomcp.MustParseSchema(`{"properties":{},"type":"object"}`)
+var _ProgramService_ListCatalog_OutputSchema = protomcp.MustParseSchema(`{"properties":{"programs":{"description":"Every built-in program, beginners first.","items":{"properties":{"author":{"description":"Whose method the program follows, such as \"Jim Wendler\".","type":"string"},"daysPerWeek":{"description":"Training days a week.","type":"integer"},"level":{"description":"\"beginner\", \"intermediate\" or \"advanced\".","type":"string"},"loop":{"description":"True when a floating run starts again at week 1 after the last week.","type":"boolean"},"maxes":{"description":"Exercises loaded as a percentage of a 1RM, which the user must set before activating.","items":{"type":"string"},"type":"array"},"name":{"description":"Name, as the script declares it.","type":"string"},"script":{"description":"The Starlark script; empty in lists.","type":"string"},"slug":{"description":"Stable id, such as \"gzclp\".","type":"string"},"summary":{"description":"One or two sentences on how the program works.","type":"string"},"weeks":{"description":"Weeks the script declares.","type":"integer"}},"type":"object"},"type":"array"}},"type":"object"}`)
+var _ProgramService_GetCatalogProgram_InputSchema = protomcp.MustParseSchema(`{"properties":{"slug":{"description":"Slug from ListCatalog.","maxLength":100,"minLength":1,"type":"string"}},"type":"object"}`)
+var _ProgramService_GetCatalogProgram_OutputSchema = protomcp.MustParseSchema(`{"properties":{"program":{"description":"The program, with its script.","properties":{"author":{"description":"Whose method the program follows, such as \"Jim Wendler\".","type":"string"},"daysPerWeek":{"description":"Training days a week.","type":"integer"},"level":{"description":"\"beginner\", \"intermediate\" or \"advanced\".","type":"string"},"loop":{"description":"True when a floating run starts again at week 1 after the last week.","type":"boolean"},"maxes":{"description":"Exercises loaded as a percentage of a 1RM, which the user must set before activating.","items":{"type":"string"},"type":"array"},"name":{"description":"Name, as the script declares it.","type":"string"},"script":{"description":"The Starlark script; empty in lists.","type":"string"},"slug":{"description":"Stable id, such as \"gzclp\".","type":"string"},"summary":{"description":"One or two sentences on how the program works.","type":"string"},"weeks":{"description":"Weeks the script declares.","type":"integer"}},"type":"object"}},"type":"object"}`)
 
 // ProgramService manages workout and meal programs written as Starlark scripts. Read the program language reference before writing a script, check it with ValidateProgram, preview it with SimulateProgram, then create and activate it.
 //
@@ -570,6 +574,106 @@ func RegisterProgramServiceMCPTools(srv *protomcp.Server, client ProgramServiceC
 				return nil, fmt.Errorf("GRPCData.Input: want *%s, got %T", "GetResolvedDaysRequest", g.Input)
 			}
 			resp, err := client.GetResolvedDays(ctx, upstream)
+			if err != nil {
+				return nil, err
+			}
+			g.Output = resp
+			outBytes, err := srv.MarshalProto(resp)
+			if err != nil {
+				return nil, err
+			}
+			return &mcp.CallToolResult{
+				Content:           []mcp.Content{&mcp.TextContent{Text: string(outBytes)}},
+				StructuredContent: json.RawMessage(outBytes),
+			}, nil
+		}
+
+		result, err := srv.ToolChain(final)(ctx, req, g)
+		return srv.FinishToolCall(ctx, req, g, result, err)
+	})
+
+	mcp.AddTool(srv.SDK(), &mcp.Tool{
+		Name:         "program_catalog_list",
+		Title:        "List Program Catalog",
+		Description:  "Lists the built-in workout programs shipped with the server: slug, name, author, level (beginner, intermediate or advanced), training days a week, weeks and a summary, without scripts. To give the user one, read it with program_catalog_get and save it with program_create; it becomes a draft the user activates with dates of their choosing.",
+		InputSchema:  _ProgramService_ListCatalog_InputSchema,
+		OutputSchema: _ProgramService_ListCatalog_OutputSchema,
+		Annotations:  &mcp.ToolAnnotations{ReadOnlyHint: true, IdempotentHint: true},
+	}, func(ctx context.Context, req *mcp.CallToolRequest, raw json.RawMessage) (*mcp.CallToolResult, any, error) {
+		var in ListCatalogRequest
+		if err := srv.UnmarshalProto(raw, &in); err != nil {
+			return srv.FinishToolCall(ctx, req, nil, nil, fmt.Errorf("invalid arguments: %w", err))
+		}
+		// Clear OUTPUT_ONLY fields: the schema hides them but the
+		// wire format does not, so the upstream gRPC server must
+		// never see client-supplied values for server-computed fields.
+		protomcp.ClearOutputOnly(&in)
+		// ToolMiddleware may mutate &in or replace the pointer; the
+		// final handler reads from g.Input so both forms propagate.
+		g := &protomcp.GRPCData{Input: &in, Metadata: metadata.MD{}}
+		// Forward the MCP progress token as a gRPC metadata header so
+		// downstream interceptors can correlate logs and traces.
+		if tok := req.Params.GetProgressToken(); tok != nil {
+			g.Metadata.Set(srv.ProgressTokenHeader(), protomcp.SanitizeMetadataValue(fmt.Sprintf("%v", tok)))
+		}
+
+		final := func(ctx context.Context, _ *mcp.CallToolRequest, g *protomcp.GRPCData) (*mcp.CallToolResult, error) {
+			ctx = metadata.NewOutgoingContext(ctx, g.Metadata)
+			upstream, ok := g.Input.(*ListCatalogRequest)
+			if !ok {
+				return nil, fmt.Errorf("GRPCData.Input: want *%s, got %T", "ListCatalogRequest", g.Input)
+			}
+			resp, err := client.ListCatalog(ctx, upstream)
+			if err != nil {
+				return nil, err
+			}
+			g.Output = resp
+			outBytes, err := srv.MarshalProto(resp)
+			if err != nil {
+				return nil, err
+			}
+			return &mcp.CallToolResult{
+				Content:           []mcp.Content{&mcp.TextContent{Text: string(outBytes)}},
+				StructuredContent: json.RawMessage(outBytes),
+			}, nil
+		}
+
+		result, err := srv.ToolChain(final)(ctx, req, g)
+		return srv.FinishToolCall(ctx, req, g, result, err)
+	})
+
+	mcp.AddTool(srv.SDK(), &mcp.Tool{
+		Name:         "program_catalog_get",
+		Title:        "Get Catalog Program",
+		Description:  "Returns one built-in program by slug (from program_catalog_list) with its full Starlark script. Save it for the user with program_create, adapting weights or exercises first when asked; it starts as a draft with no dates.",
+		InputSchema:  _ProgramService_GetCatalogProgram_InputSchema,
+		OutputSchema: _ProgramService_GetCatalogProgram_OutputSchema,
+		Annotations:  &mcp.ToolAnnotations{ReadOnlyHint: true, IdempotentHint: true},
+	}, func(ctx context.Context, req *mcp.CallToolRequest, raw json.RawMessage) (*mcp.CallToolResult, any, error) {
+		var in GetCatalogProgramRequest
+		if err := srv.UnmarshalProto(raw, &in); err != nil {
+			return srv.FinishToolCall(ctx, req, nil, nil, fmt.Errorf("invalid arguments: %w", err))
+		}
+		// Clear OUTPUT_ONLY fields: the schema hides them but the
+		// wire format does not, so the upstream gRPC server must
+		// never see client-supplied values for server-computed fields.
+		protomcp.ClearOutputOnly(&in)
+		// ToolMiddleware may mutate &in or replace the pointer; the
+		// final handler reads from g.Input so both forms propagate.
+		g := &protomcp.GRPCData{Input: &in, Metadata: metadata.MD{}}
+		// Forward the MCP progress token as a gRPC metadata header so
+		// downstream interceptors can correlate logs and traces.
+		if tok := req.Params.GetProgressToken(); tok != nil {
+			g.Metadata.Set(srv.ProgressTokenHeader(), protomcp.SanitizeMetadataValue(fmt.Sprintf("%v", tok)))
+		}
+
+		final := func(ctx context.Context, _ *mcp.CallToolRequest, g *protomcp.GRPCData) (*mcp.CallToolResult, error) {
+			ctx = metadata.NewOutgoingContext(ctx, g.Metadata)
+			upstream, ok := g.Input.(*GetCatalogProgramRequest)
+			if !ok {
+				return nil, fmt.Errorf("GRPCData.Input: want *%s, got %T", "GetCatalogProgramRequest", g.Input)
+			}
+			resp, err := client.GetCatalogProgram(ctx, upstream)
 			if err != nil {
 				return nil, err
 			}

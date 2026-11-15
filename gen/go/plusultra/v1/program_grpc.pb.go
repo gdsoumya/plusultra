@@ -19,17 +19,19 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ProgramService_ListPrograms_FullMethodName    = "/plusultra.v1.ProgramService/ListPrograms"
-	ProgramService_GetProgram_FullMethodName      = "/plusultra.v1.ProgramService/GetProgram"
-	ProgramService_CreateProgram_FullMethodName   = "/plusultra.v1.ProgramService/CreateProgram"
-	ProgramService_UpdateProgram_FullMethodName   = "/plusultra.v1.ProgramService/UpdateProgram"
-	ProgramService_DeleteProgram_FullMethodName   = "/plusultra.v1.ProgramService/DeleteProgram"
-	ProgramService_ValidateProgram_FullMethodName = "/plusultra.v1.ProgramService/ValidateProgram"
-	ProgramService_SimulateProgram_FullMethodName = "/plusultra.v1.ProgramService/SimulateProgram"
-	ProgramService_ActivateProgram_FullMethodName = "/plusultra.v1.ProgramService/ActivateProgram"
-	ProgramService_FinishProgram_FullMethodName   = "/plusultra.v1.ProgramService/FinishProgram"
-	ProgramService_ListRevisions_FullMethodName   = "/plusultra.v1.ProgramService/ListRevisions"
-	ProgramService_GetResolvedDays_FullMethodName = "/plusultra.v1.ProgramService/GetResolvedDays"
+	ProgramService_ListPrograms_FullMethodName      = "/plusultra.v1.ProgramService/ListPrograms"
+	ProgramService_GetProgram_FullMethodName        = "/plusultra.v1.ProgramService/GetProgram"
+	ProgramService_CreateProgram_FullMethodName     = "/plusultra.v1.ProgramService/CreateProgram"
+	ProgramService_UpdateProgram_FullMethodName     = "/plusultra.v1.ProgramService/UpdateProgram"
+	ProgramService_DeleteProgram_FullMethodName     = "/plusultra.v1.ProgramService/DeleteProgram"
+	ProgramService_ValidateProgram_FullMethodName   = "/plusultra.v1.ProgramService/ValidateProgram"
+	ProgramService_SimulateProgram_FullMethodName   = "/plusultra.v1.ProgramService/SimulateProgram"
+	ProgramService_ActivateProgram_FullMethodName   = "/plusultra.v1.ProgramService/ActivateProgram"
+	ProgramService_FinishProgram_FullMethodName     = "/plusultra.v1.ProgramService/FinishProgram"
+	ProgramService_ListRevisions_FullMethodName     = "/plusultra.v1.ProgramService/ListRevisions"
+	ProgramService_GetResolvedDays_FullMethodName   = "/plusultra.v1.ProgramService/GetResolvedDays"
+	ProgramService_ListCatalog_FullMethodName       = "/plusultra.v1.ProgramService/ListCatalog"
+	ProgramService_GetCatalogProgram_FullMethodName = "/plusultra.v1.ProgramService/GetCatalogProgram"
 )
 
 // ProgramServiceClient is the client API for ProgramService service.
@@ -60,6 +62,10 @@ type ProgramServiceClient interface {
 	ListRevisions(ctx context.Context, in *ListRevisionsRequest, opts ...grpc.CallOption) (*ListRevisionsResponse, error)
 	// GetResolvedDays returns an active program's days with concrete sets or meals for the user.
 	GetResolvedDays(ctx context.Context, in *GetResolvedDaysRequest, opts ...grpc.CallOption) (*GetResolvedDaysResponse, error)
+	// ListCatalog lists the built-in programs shipped with the server, without scripts.
+	ListCatalog(ctx context.Context, in *ListCatalogRequest, opts ...grpc.CallOption) (*ListCatalogResponse, error)
+	// GetCatalogProgram returns one built-in program with its script.
+	GetCatalogProgram(ctx context.Context, in *GetCatalogProgramRequest, opts ...grpc.CallOption) (*GetCatalogProgramResponse, error)
 }
 
 type programServiceClient struct {
@@ -180,6 +186,26 @@ func (c *programServiceClient) GetResolvedDays(ctx context.Context, in *GetResol
 	return out, nil
 }
 
+func (c *programServiceClient) ListCatalog(ctx context.Context, in *ListCatalogRequest, opts ...grpc.CallOption) (*ListCatalogResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListCatalogResponse)
+	err := c.cc.Invoke(ctx, ProgramService_ListCatalog_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *programServiceClient) GetCatalogProgram(ctx context.Context, in *GetCatalogProgramRequest, opts ...grpc.CallOption) (*GetCatalogProgramResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetCatalogProgramResponse)
+	err := c.cc.Invoke(ctx, ProgramService_GetCatalogProgram_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ProgramServiceServer is the server API for ProgramService service.
 // All implementations must embed UnimplementedProgramServiceServer
 // for forward compatibility.
@@ -208,6 +234,10 @@ type ProgramServiceServer interface {
 	ListRevisions(context.Context, *ListRevisionsRequest) (*ListRevisionsResponse, error)
 	// GetResolvedDays returns an active program's days with concrete sets or meals for the user.
 	GetResolvedDays(context.Context, *GetResolvedDaysRequest) (*GetResolvedDaysResponse, error)
+	// ListCatalog lists the built-in programs shipped with the server, without scripts.
+	ListCatalog(context.Context, *ListCatalogRequest) (*ListCatalogResponse, error)
+	// GetCatalogProgram returns one built-in program with its script.
+	GetCatalogProgram(context.Context, *GetCatalogProgramRequest) (*GetCatalogProgramResponse, error)
 	mustEmbedUnimplementedProgramServiceServer()
 }
 
@@ -250,6 +280,12 @@ func (UnimplementedProgramServiceServer) ListRevisions(context.Context, *ListRev
 }
 func (UnimplementedProgramServiceServer) GetResolvedDays(context.Context, *GetResolvedDaysRequest) (*GetResolvedDaysResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetResolvedDays not implemented")
+}
+func (UnimplementedProgramServiceServer) ListCatalog(context.Context, *ListCatalogRequest) (*ListCatalogResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListCatalog not implemented")
+}
+func (UnimplementedProgramServiceServer) GetCatalogProgram(context.Context, *GetCatalogProgramRequest) (*GetCatalogProgramResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetCatalogProgram not implemented")
 }
 func (UnimplementedProgramServiceServer) mustEmbedUnimplementedProgramServiceServer() {}
 func (UnimplementedProgramServiceServer) testEmbeddedByValue()                        {}
@@ -470,6 +506,42 @@ func _ProgramService_GetResolvedDays_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProgramService_ListCatalog_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListCatalogRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProgramServiceServer).ListCatalog(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProgramService_ListCatalog_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProgramServiceServer).ListCatalog(ctx, req.(*ListCatalogRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProgramService_GetCatalogProgram_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCatalogProgramRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProgramServiceServer).GetCatalogProgram(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProgramService_GetCatalogProgram_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProgramServiceServer).GetCatalogProgram(ctx, req.(*GetCatalogProgramRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ProgramService_ServiceDesc is the grpc.ServiceDesc for ProgramService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -520,6 +592,14 @@ var ProgramService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetResolvedDays",
 			Handler:    _ProgramService_GetResolvedDays_Handler,
+		},
+		{
+			MethodName: "ListCatalog",
+			Handler:    _ProgramService_ListCatalog_Handler,
+		},
+		{
+			MethodName: "GetCatalogProgram",
+			Handler:    _ProgramService_GetCatalogProgram_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

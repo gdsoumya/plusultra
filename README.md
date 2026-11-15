@@ -30,6 +30,9 @@ log for you with the same rights you grant it.
 
 - **Programs as code**: workout and meal programs are short Starlark scripts the server resolves
   into each day's plan; validate, simulate weeks ahead and activate them from the app or over MCP.
+- **Program catalog**: popular programs (GZCLP, 5/3/1, Starting Strength, StrongLifts, nSuns,
+  PPL, PHUL and more) ship with the server as scripts; add one as a draft, edit it, then activate
+  it with your own start date.
 - **Workout logging**: tick sets as you go, edit reps and weight inline, switch alternates, add
   ad hoc exercises, and see what you did last time for every exercise. Rest and timed sets count
   down with a get-ready countdown, beeps and notifications; 1RM percentages round to your plates.
@@ -136,8 +139,8 @@ The response holds the key once, prefixed `lsk_`. Scopes are `READ`, `WRITE` and
 (users and invites).
 
 The MCP endpoint is `POST $PUBLIC_URL/mcp` (streamable HTTP, stateless) with
-`Authorization: Bearer lsk_...`. Every annotated RPC is a tool: programs, calendar, workouts,
-meals, check-ins, catalogs, insights and the reference docs. The reference tools and
+`Authorization: Bearer lsk_...`. Every annotated RPC is a tool: programs and the program catalog, calendar,
+workouts, meals, check-ins, catalogs, insights and the reference docs. The reference tools and
 `$PUBLIC_URL/llms.txt` work without a key. For Claude Desktop or Claude Code add the server as a
 remote MCP server with that URL and header.
 

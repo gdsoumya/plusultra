@@ -118,6 +118,26 @@ service ProgramService {
       idempotent: true
     };
   }
+  // ListCatalog lists the built-in programs shipped with the server, without scripts.
+  rpc ListCatalog(ListCatalogRequest) returns (ListCatalogResponse) {
+    option (protomcp.v1.tool) = {
+      name: "catalog_list"
+      title: "List Program Catalog"
+      description: "Lists the built-in workout programs shipped with the server: slug, name, author, level (beginner, intermediate or advanced), training days a week, weeks and a summary, without scripts. To give the user one, read it with program_catalog_get and save it with program_create; it becomes a draft the user activates with dates of their choosing."
+      read_only: true
+      idempotent: true
+    };
+  }
+  // GetCatalogProgram returns one built-in program with its script.
+  rpc GetCatalogProgram(GetCatalogProgramRequest) returns (GetCatalogProgramResponse) {
+    option (protomcp.v1.tool) = {
+      name: "catalog_get"
+      title: "Get Catalog Program"
+      description: "Returns one built-in program by slug (from program_catalog_list) with its full Starlark script. Save it for the user with program_create, adapting weights or exercises first when asked; it starts as a draft with no dates."
+      read_only: true
+      idempotent: true
+    };
+  }
 }
 
 // ProgramKind is what a program plans.
@@ -753,4 +773,52 @@ message GetResolvedDaysResponse {
   repeated ResolvedDay days = 1;
   // Meal days, in week then day order; empty for a workout program.
   repeated ResolvedMealDay meal_days = 2;
+}
+
+// CatalogProgram is a built-in program shipped with the server.
+message CatalogProgram {
+  // Stable id, such as "gzclp".
+  string slug = 1;
+  // Name, as the script declares it.
+  string name = 2;
+  // Whose method the program follows, such as "Jim Wendler".
+  string author = 3;
+  // "beginner", "intermediate" or "advanced".
+  string level = 4;
+  // Training days a week.
+  int32 days_per_week = 5;
+  // Weeks the script declares.
+  int32 weeks = 6;
+  // True when a floating run starts again at week 1 after the last week.
+  bool loop = 7;
+  // One or two sentences on how the program works.
+  string summary = 8;
+  // The Starlark script; empty in lists.
+  string script = 9;
+  // Exercises loaded as a percentage of a 1RM, which the user must set before activating.
+  repeated string maxes = 10;
+}
+
+// ListCatalogRequest is the input of ListCatalog.
+message ListCatalogRequest {}
+
+// ListCatalogResponse is the output of ListCatalog.
+message ListCatalogResponse {
+  // Every built-in program, beginners first.
+  repeated CatalogProgram programs = 1;
+}
+
+// GetCatalogProgramRequest is the input of GetCatalogProgram.
+message GetCatalogProgramRequest {
+  // Slug from ListCatalog.
+  string slug = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 100
+  }];
+}
+
+// GetCatalogProgramResponse is the output of GetCatalogProgram.
+message GetCatalogProgramResponse {
+  // The program, with its script.
+  CatalogProgram program = 1;
 }

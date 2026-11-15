@@ -41,12 +41,16 @@ gen/go/            generated Go messages and connect handlers; never edit
 app/src/gen/       generated TypeScript (protoc-gen-es); never edit
 internal/api/      connect server under /api/v1: handlers, interceptors, /healthz, /llms routes
 internal/llmdocs/  docs for LLMs (/llms.txt, ReferenceService)
+internal/programcatalog/ built-in programs: programs/<slug>.star plus an Entry in a batch file; its test runs every script
 internal/mcp/      MCP endpoint (/mcp) over the generated protomcp registrars
 internal/web/      embedded web export (dist/, from make web) served at /, placeholder without it
 docs/              specs and plans
 ```
 
 Other packages under `internal/`: engine, programs, logs, catalog, sync, insights, auth, db (sqlc, migrations).
+A catalog program needs an exact program() name, exact exercise names (the e2e smoke validates them against the
+shipped exercise catalog) and must pass `internal/programcatalog`'s test, which resolves it for a lifter with 1RMs for the
+four main lifts only.
 
 ## Rules
 
