@@ -53,5 +53,22 @@ describe("ComboChart", () => {
     expect(screen.queryByText("Sets")).toBeNull();
   });
 
+  it("hugs the edge with a label that would run past the chart", async () => {
+    const labels = Array.from({ length: 6 }, (_, i) => `Nov ${i + 10}`);
+    await renderThemed(
+      <ComboChart
+        width={160}
+        labels={labels}
+        bars={labels.map(() => 10)}
+        format={String}
+        summary="sets"
+        table={{ columns: ["Day", "Sets"], rows: [] }}
+      />,
+    );
+    const anchors = screen.getAllByTestId("x-label").map((t) => t.props.font.textAnchor);
+    expect(anchors[0]).toBe("middle");
+    expect(anchors.at(-1)).toBe("end");
+  });
+
   snapshots(() => chart);
 });

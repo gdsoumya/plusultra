@@ -67,8 +67,12 @@ export function ComboChart({
     const last = all[all.length - 1] ?? [];
     return [...all.slice(0, -1), [...last, { x: mid(i), y: lineY(v) }]];
   }, []);
-  // About six x labels, evenly spread.
+  // About six x labels, evenly spread; one that would run past an edge hugs it instead.
   const every = Math.ceil(labels.length / 6);
+  const anchor = (x: number, label: string) => {
+    const half = label.length * fontSize * 0.3;
+    return x - half < 0 ? "start" : x + half > width ? "end" : "middle";
+  };
 
   return (
     <ChartFrame summary={summary} table={table} testID={testID}>
@@ -142,11 +146,12 @@ export function ComboChart({
             i % every === 0 && (
               <SvgText
                 key={label}
+                testID="x-label"
                 x={mid(i)}
                 y={top + height + fontSize + space[1]}
                 fill={colors.textMuted}
                 fontSize={fontSize}
-                textAnchor="middle"
+                textAnchor={anchor(mid(i), label)}
               >
                 {label}
               </SvgText>

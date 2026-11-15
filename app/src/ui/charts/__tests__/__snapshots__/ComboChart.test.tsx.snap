@@ -777,6 +777,7 @@ exports[`ComboChart matches snapshot (1 x) 1`] = `
             ]
           }
           rotate={[]}
+          testID="x-label"
           x={
             [
               70,
@@ -826,6 +827,7 @@ exports[`ComboChart matches snapshot (1 x) 1`] = `
             ]
           }
           rotate={[]}
+          testID="x-label"
           x={
             [
               130,
@@ -875,6 +877,7 @@ exports[`ComboChart matches snapshot (1 x) 1`] = `
             ]
           }
           rotate={[]}
+          testID="x-label"
           x={
             [
               190,
@@ -924,6 +927,7 @@ exports[`ComboChart matches snapshot (1 x) 1`] = `
             ]
           }
           rotate={[]}
+          testID="x-label"
           x={
             [
               250,
@@ -1901,6 +1905,7 @@ exports[`ComboChart matches snapshot (1.3 x) 1`] = `
             ]
           }
           rotate={[]}
+          testID="x-label"
           x={
             [
               70,
@@ -1950,6 +1955,7 @@ exports[`ComboChart matches snapshot (1.3 x) 1`] = `
             ]
           }
           rotate={[]}
+          testID="x-label"
           x={
             [
               130,
@@ -1999,6 +2005,7 @@ exports[`ComboChart matches snapshot (1.3 x) 1`] = `
             ]
           }
           rotate={[]}
+          testID="x-label"
           x={
             [
               190,
@@ -2048,6 +2055,7 @@ exports[`ComboChart matches snapshot (1.3 x) 1`] = `
             ]
           }
           rotate={[]}
+          testID="x-label"
           x={
             [
               250,
@@ -3025,6 +3033,7 @@ exports[`ComboChart matches snapshot (2 x) 1`] = `
             ]
           }
           rotate={[]}
+          testID="x-label"
           x={
             [
               70,
@@ -3074,6 +3083,7 @@ exports[`ComboChart matches snapshot (2 x) 1`] = `
             ]
           }
           rotate={[]}
+          testID="x-label"
           x={
             [
               130,
@@ -3123,6 +3133,7 @@ exports[`ComboChart matches snapshot (2 x) 1`] = `
             ]
           }
           rotate={[]}
+          testID="x-label"
           x={
             [
               190,
@@ -3172,6 +3183,7 @@ exports[`ComboChart matches snapshot (2 x) 1`] = `
             ]
           }
           rotate={[]}
+          testID="x-label"
           x={
             [
               250,
