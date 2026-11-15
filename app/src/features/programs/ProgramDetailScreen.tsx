@@ -46,7 +46,7 @@ import {
   kindLabel,
   modeLabel,
   plural,
-  statusLabel,
+  statusText,
   withMaxesHint,
 } from "./summary";
 import { WeekPlan } from "./WeekPlan";
@@ -189,7 +189,7 @@ export default function ProgramDetailScreen({ id, unit = "kg" }: { id: string; u
       ) : (
         <>
           <Card>
-            <Text variant="label">{`${kindLabel[view.kind]}, ${statusLabel[view.status]}`}</Text>
+            <Text variant="label">{`${kindLabel[view.kind]}, ${statusText(view, now)}`}</Text>
             <Text>{modeLabel(view, now)}</Text>
             {structure && (
               <Text color="textMuted">

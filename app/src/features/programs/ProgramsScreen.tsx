@@ -114,7 +114,7 @@ export default function ProgramsScreen() {
           action={{ title: "Browse the catalog", onPress: () => setTab("catalog") }}
         />
       ) : (
-        sections(programs).map((section) => (
+        sections(programs, today()).map((section) => (
           <View key={section.title} style={{ gap: space[2] }}>
             <Text variant="heading">{section.title}</Text>
             <ListCard>

@@ -4,6 +4,7 @@ import {
   isPast,
   modeLabel,
   sections,
+  statusText,
   sortPrograms,
   spanLabel,
   withMaxesHint,
@@ -41,10 +42,19 @@ describe("sortPrograms", () => {
   });
 
   it("groups into non-empty sections", () => {
-    expect(sections([finished, workout]).map((s) => [s.title, s.programs.length])).toEqual([
+    expect(
+      sections([finished, workout], "2026-11-11").map((s) => [s.title, s.programs.length]),
+    ).toEqual([
       ["Active", 1],
       ["Finished", 1],
     ]);
+    const ended = at({ name: "ended", status: "active", mode: "anchored", endDate: "2026-11-10" });
+    expect(sections([ended, workout], "2026-11-11").map((s) => s.title)).toEqual([
+      "Active",
+      "Ended",
+    ]);
+    expect(statusText(ended, "2026-11-11")).toBe("Ended");
+    expect(statusText(ended, "2026-11-10")).toBe("Active");
   });
 });
 
