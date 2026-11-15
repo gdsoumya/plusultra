@@ -89,8 +89,7 @@ describe("AccountScreen", () => {
     await fireEvent.press(screen.getByRole("button", { name: "Cancel" }));
     expect(screen.getByRole("button", { name: "Sign out" })).toBeOnTheScreen();
     await fireEvent.press(screen.getByRole("button", { name: "Sign out" }));
-    const [, confirm] = screen.getAllByRole("button", { name: "Sign out" });
-    await fireEvent.press(confirm);
+    await fireEvent.press(screen.getByRole("button", { name: "Yes, sign out" }));
     await waitFor(() => expect(mockSession.logout).toHaveBeenCalled());
     expect(store.getKv(SETTINGS_KEY)).toBeUndefined();
   });

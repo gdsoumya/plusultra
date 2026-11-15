@@ -111,7 +111,7 @@ export default function AccountScreen() {
         open={signingOut}
         title="Sign out?"
         message="This device's copy of your data is removed. Changes that have not synced yet are lost."
-        action="Sign out"
+        action="Yes, sign out"
         onConfirm={() => void signOut(session, store)}
         onClose={() => setSigningOut(false)}
       />

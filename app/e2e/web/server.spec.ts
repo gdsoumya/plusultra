@@ -160,6 +160,11 @@ test("register, program, workout, meals, check-in and keys against the server", 
     await logWorkout(page);
     await shot("05-workout-done");
     await page.getByTestId("finish-workout").click();
+    // Unticked sets ask first.
+    await page
+      .getByRole("button", { name: "Finish workout" })
+      .click({ timeout: 2000 })
+      .catch(() => {});
     await expect(page.getByTestId("today-screen")).toBeVisible();
     await expect(page.getByRole("button", { name: "View workout" })).toBeVisible();
 
@@ -325,6 +330,11 @@ test("timed and unilateral sets against the server", async ({ page, baseURL }, {
 
   await test.step("the server keeps the work times and both sides", async () => {
     await page.getByTestId("finish-workout").click();
+    // Unticked sets ask first.
+    await page
+      .getByRole("button", { name: "Finish workout" })
+      .click({ timeout: 2000 })
+      .catch(() => {});
     await expect(page.getByTestId("today-screen")).toBeVisible();
     await expect(page.getByText("per side")).toBeVisible();
     const { token } = await rpc<{ token: string }>(page, "AuthService/Login", {
