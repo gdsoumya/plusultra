@@ -81,7 +81,7 @@ describe("CatalogProgramScreen", () => {
       }),
     );
     expect(
-      screen.getByText("Needs your 1RM for Deadlift. Set them here or under Settings › 1RMs."),
+      screen.getByText("Needs your 1RM for Deadlift. Set it here or under Settings › 1RMs."),
     ).toBeOnTheScreen();
 
     await fireEvent.press(screen.getByRole("checkbox", { name: "Set Deadlift 1RM" }));

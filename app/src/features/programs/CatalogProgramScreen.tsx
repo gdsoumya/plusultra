@@ -132,7 +132,7 @@ export default function CatalogProgramScreen({ slug, unit = "kg" }: { slug: stri
           {missing.length > 0 && (
             <>
               <Text color="textMuted">
-                {`Needs your 1RM for ${missing.join(", ")}. Set them here or under Settings › 1RMs.`}
+                {`Needs your 1RM for ${missing.join(", ")}. Set ${missing.length === 1 ? "it" : "them"} here or under Settings › 1RMs.`}
               </Text>
               <ChipStrip>
                 {missing.map((name) => (
