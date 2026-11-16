@@ -76,6 +76,15 @@ export default function TodayScreen({
     changed();
   }
 
+  function toggleRest() {
+    const rest = data.dayLog?.status !== "rest";
+    dayLogsRepo(store).save({
+      ...(data.dayLog ?? { ...newRow(), version: 0, notes: "" }),
+      status: rest ? "rest" : "planned",
+    });
+    changed();
+  }
+
   function logMeals() {
     if (!mealPlan) return;
     const log = data.mealLog;
@@ -164,6 +173,7 @@ export default function TodayScreen({
           unit={unit}
           onOpen={openWorkout}
           onDone={doneAsPlanned}
+          onRest={toggleRest}
           menu={
             data.record
               ? [resetItem(() => setResetting("workout"))]

@@ -31,10 +31,10 @@ log for you with the same rights you grant it.
 - **Programs as code**: workout and meal programs are short Starlark scripts the server resolves
   into each day's plan; validate, simulate weeks ahead and activate them from the app or over MCP.
 - **Program catalog**: popular programs (GZCLP, 5/3/1, Starting Strength, StrongLifts, nSuns,
-  PPL, PHUL and more) ship with the server as scripts; add one as a draft, edit it, then activate
-  it with your own start date.
+  PPL, PHUL and more) ship with the server as scripts; preview them with placeholder 1RMs until you
+  set yours, add one as a draft, edit it, then activate it with your own start date.
 - **Workout logging**: tick sets as you go, edit reps and weight inline, switch alternates, add
-  ad hoc exercises, and see what you did last time for every exercise. Rest and timed sets count
+  ad hoc exercises, mark a day as rest, and see what you did last time for every exercise. Rest and timed sets count
   down with a get-ready countdown, beeps and notifications; 1RM percentages round to your plates.
 - **Nutrition**: meal plans and meal logs against a food catalog (USDA SR Legacy, IFCT 2017 staples,
   your own foods) with barcode lookup through Open Food Facts and per-item macro edits.

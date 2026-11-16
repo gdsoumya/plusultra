@@ -14,6 +14,7 @@ type Props = {
   unit: Unit;
   onOpen: () => void;
   onDone: () => void;
+  onRest: () => void;
   menu: MenuItem[];
 };
 
@@ -28,11 +29,23 @@ function statusOf(record?: WorkoutRecord, dayLog?: DayLog) {
 // The planned day with its exercises, while today's record (if any) is that day; any other record
 // (ad hoc, another program's day, or a floating day the cursor has moved past) lists its own; a
 // rest day with neither says so, and so does a program without a day for the date.
-export function WorkoutCard({ program, plan, record, dayLog, unit, onOpen, onDone, menu }: Props) {
+export function WorkoutCard({
+  program,
+  plan,
+  record,
+  dayLog,
+  unit,
+  onOpen,
+  onDone,
+  onRest,
+  menu,
+}: Props) {
   const ofPlan =
     !record ||
     (record.programId === program?.id && record.week === plan?.week && record.day === plan?.day);
-  const planned = !!plan && plan.kind !== "rest" && plan.exercises.length > 0 && ofPlan;
+  // A day the user marked as rest hides its plan until they undo that; a record overrides it.
+  const rested = !record && dayLog?.status === "rest";
+  const planned = !!plan && plan.kind !== "rest" && plan.exercises.length > 0 && ofPlan && !rested;
   const ended = record?.finalized || record?.finalizeRequested;
   const status = statusOf(record, dayLog);
   const lines =
@@ -65,7 +78,7 @@ export function WorkoutCard({ program, plan, record, dayLog, unit, onOpen, onDon
               ? plan.name
               : record
                 ? record.dayName || "Workout"
-                : plan
+                : plan || rested
                   ? "Rest day"
                   : "No workout today"}
           </Text>
@@ -103,9 +116,11 @@ export function WorkoutCard({ program, plan, record, dayLog, unit, onOpen, onDon
         <Text variant="caption" color="textMuted">
           {record
             ? "No exercises yet. Continue to add some."
-            : plan
-              ? "Nothing planned. Recover well."
-              : "Your program has no day for this date."}
+            : rested
+              ? "You marked today as rest. Undo to see the plan again."
+              : plan
+                ? "Nothing planned. Recover well."
+                : "Your program has no day for this date."}
         </Text>
       )}
       {status && <Text variant="label">{status}</Text>}
@@ -122,6 +137,17 @@ export function WorkoutCard({ program, plan, record, dayLog, unit, onOpen, onDon
           variant="secondary"
           icon="checkmark-done"
           onPress={onDone}
+        />
+      )}
+      {planned && !record && (
+        <Button title="Rest today" variant="ghost" icon="bed-outline" onPress={onRest} />
+      )}
+      {rested && (
+        <Button
+          title="Undo rest day"
+          variant="secondary"
+          icon="arrow-undo-outline"
+          onPress={onRest}
         />
       )}
     </Card>

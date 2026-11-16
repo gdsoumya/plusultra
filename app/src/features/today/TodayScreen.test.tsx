@@ -164,6 +164,26 @@ describe("Today", () => {
     noButton("Done as planned");
   });
 
+  it("marks today as a rest day and brings the plan back on undo", async () => {
+    clearToday();
+    await renderToday();
+    const name = todaysPlan().payload.name;
+    await fireEvent.press(button("Rest today"));
+    expect(screen.getByText("Rest day")).toBeOnTheScreen();
+    expect(
+      screen.getByText("You marked today as rest. Undo to see the plan again."),
+    ).toBeOnTheScreen();
+    expect(screen.queryByText(name)).toBeNull();
+    expect(dayLogsRepo(store).byDate(today)[0]).toMatchObject({ status: "rest", dirty: true });
+    noButton("Start workout");
+    noButton("Done as planned");
+    await fireEvent.press(button("Undo rest day"));
+    expect(screen.getByText(name)).toBeOnTheScreen();
+    expect(button("Start workout")).toBeOnTheScreen();
+    noButton("Undo rest day");
+    expect(dayLogsRepo(store).byDate(today)[0].status).toBe("planned");
+  });
+
   it("says the program has no day for today when none is planned", async () => {
     clearToday();
     store.delete("resolvedDays", todaysPlan().id);
