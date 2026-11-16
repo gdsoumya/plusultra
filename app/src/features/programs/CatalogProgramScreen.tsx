@@ -6,8 +6,10 @@ import { fromProto } from "../../api/convert";
 import { useApi } from "../../api/useApi";
 import { rememberExerciseData } from "../../data/exerciseData";
 import { useStore } from "../../data/StoreProvider";
-import type { ResolvedDay, Unit } from "../../domain/types";
+import type { ResolvedDay, Unit as UnitName } from "../../domain/types";
+import { formatWeight } from "../../domain/units";
 import type { ExerciseData } from "../../gen/plusultra/v1/exercise_pb";
+import { Unit } from "../../gen/plusultra/v1/common_pb";
 import { ProgramKind, type CatalogProgram } from "../../gen/plusultra/v1/program_pb";
 import {
   BackButton,
@@ -32,8 +34,23 @@ const hasMax = (name: string, data: ExerciseData[]) => {
   return data.some((d) => d.rm1 && (d.slug === slug || d.slug.startsWith(`${slug}-`)));
 };
 
+// Stands in for a 1RM the user has not set, so the preview still shows weights.
+const placeholderKg: Record<string, number> = {
+  Squat: 100,
+  "Bench Press": 70,
+  Deadlift: 120,
+  "Overhead Press": 45,
+};
+const placeholder = (name: string) => ({ value: placeholderKg[name] ?? 60, unit: Unit.KG });
+
 // A built-in program: what it is, a simulated preview, and a button that copies it into a draft.
-export default function CatalogProgramScreen({ slug, unit = "kg" }: { slug: string; unit?: Unit }) {
+export default function CatalogProgramScreen({
+  slug,
+  unit = "kg",
+}: {
+  slug: string;
+  unit?: UnitName;
+}) {
   const api = useApi();
   const store = useStore();
   const [program, setProgram] = useState<CatalogProgram>();
@@ -50,8 +67,13 @@ export default function CatalogProgramScreen({ slug, unit = "kg" }: { slug: stri
   const [maxError, setMaxError] = useState<string>();
 
   const preview = useCallback(
-    async (p: CatalogProgram) => {
-      const r = await api.programs.simulateProgram({ script: p.script, weeks: p.weeks });
+    async (p: CatalogProgram, missing: string[]) => {
+      const rm1 = Object.fromEntries(missing.map((n) => [n, placeholder(n)]));
+      const r = await api.programs.simulateProgram({
+        script: p.script,
+        weeks: p.weeks,
+        overrides: missing.length ? { rm1 } : undefined,
+      });
       setPreviewError(r.errors[0] && withMaxesHint(r.errors[0].message));
       setDays(r.days.map((d) => fromProto.resolvedDay(d).payload));
     },
@@ -64,11 +86,13 @@ export default function CatalogProgramScreen({ slug, unit = "kg" }: { slug: stri
       .then(async ({ program: p }) => {
         if (!p) return;
         setProgram(p);
+        let names: string[] = [];
         if (p.maxes.length) {
           const { items } = await api.exercises.listExerciseData({});
-          setMissing(p.maxes.filter((m) => !hasMax(m, items)));
+          names = p.maxes.filter((m) => !hasMax(m, items));
+          setMissing(names);
         }
-        await preview(p);
+        await preview(p, names);
       })
       .catch((e) => setMessage(errorMessage(e)));
   }, [api, slug, preview]);
@@ -92,8 +116,9 @@ export default function CatalogProgramScreen({ slug, unit = "kg" }: { slug: stri
       rememberExerciseData(store, r.data ?? data);
       setLift(undefined);
       if (data.rm1) {
-        setMissing((m) => m.filter((n) => n !== lift!.name));
-        await preview(program!);
+        const left = missing.filter((n) => n !== lift!.name);
+        setMissing(left);
+        await preview(program!, left);
       }
     } catch (e) {
       setMaxError(errorMessage(e));
@@ -132,7 +157,9 @@ export default function CatalogProgramScreen({ slug, unit = "kg" }: { slug: stri
           {missing.length > 0 && (
             <>
               <Text color="textMuted">
-                {`Needs your 1RM for ${missing.join(", ")}. Set ${missing.length === 1 ? "it" : "them"} here or under Settings › 1RMs.`}
+                {`Preview uses ${missing.length === 1 ? "a placeholder 1RM" : "placeholder 1RMs"}: ${missing
+                  .map((n) => `${n} ${formatWeight({ ...placeholder(n), unit: "kg" }, unit)}`)
+                  .join(", ")}. Set yours here or under Settings › 1RMs.`}
               </Text>
               <ChipStrip>
                 {missing.map((name) => (
@@ -175,7 +202,11 @@ export default function CatalogProgramScreen({ slug, unit = "kg" }: { slug: stri
           <ConfirmSheet
             open={adding}
             title={`Add ${program.name}?`}
-            message="It's saved as a draft under Mine, with no dates. Review or edit it there, then Activate to pick a start date or run it floating (one day after another, no dates)."
+            message={`It's saved as a draft under Mine, with no dates. Review or edit it there, then Activate to pick a start date or run it floating (one day after another, no dates).${
+              missing.length
+                ? ` Set your ${missing.join(", ")} 1RM${missing.length === 1 ? "" : "s"} under Settings › 1RMs before activating.`
+                : ""
+            }`}
             action="Add as draft"
             variant="primary"
             busy={busy}

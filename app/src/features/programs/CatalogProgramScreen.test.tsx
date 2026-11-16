@@ -4,6 +4,7 @@ import { fireEvent, screen, waitFor } from "@testing-library/react-native";
 import { router } from "expo-router";
 
 import type { Api } from "../../api/clients";
+import { Unit } from "../../gen/plusultra/v1/common_pb";
 import { SimulateProgramResponseSchema } from "../../gen/plusultra/v1/program_pb";
 import CatalogProgramScreen from "./CatalogProgramScreen";
 import { renderWith, setup, type Harness } from "./test-utils";
@@ -30,7 +31,7 @@ describe("CatalogProgramScreen", () => {
     expect(screen.getByText("4-week cycle, repeats")).toBeOnTheScreen();
     expect(screen.getByText("After Cody Lefever")).toBeOnTheScreen();
     expect(screen.getByText(/^Four workouts rotate/)).toBeOnTheScreen();
-    expect(screen.queryByText(/your 1RM/)).toBeNull();
+    expect(screen.queryByText(/placeholder/)).toBeNull();
     expect(screen.queryByRole("button", { name: "Open 1RMs" })).toBeNull();
     expect(screen.getByText("Preview")).toBeOnTheScreen();
     expect(screen.getByText("1. A1")).toBeOnTheScreen();
@@ -40,37 +41,35 @@ describe("CatalogProgramScreen", () => {
     expect(screen.getByText("2. B1")).toBeOnTheScreen();
   });
 
-  it("sets a missing 1RM in place and shows the preview once all are set", async () => {
+  it("previews with placeholder 1RMs and lets the user set a missing one in place", async () => {
     for (const slug of ["squat-barbell", "deadlift-barbell"]) {
       await h.api.exercises.setExerciseData({ data: { slug } });
     }
-    // The mock server has no days for 5/3/1: fail the first preview, then serve GZCLP's days.
+    // The mock server has no days for 5/3/1: serve GZCLP's days instead.
     const { program: gzclp } = await h.api.programs.getCatalogProgram({ slug: "gzclp" });
     const planned = await h.api.programs.simulateProgram({ script: gzclp!.script, weeks: 4 });
-    jest
-      .spyOn(h.api.programs, "simulateProgram")
-      .mockResolvedValueOnce(
-        create(SimulateProgramResponseSchema, {
-          errors: [{ line: 3, col: 1, message: "week 1 day 1: no 1RM for Squat" }],
-        }),
-      )
-      .mockResolvedValue(planned);
+    const simulate = jest.spyOn(h.api.programs, "simulateProgram").mockResolvedValue(planned);
     const set = jest.spyOn(h.api.exercises, "setExerciseData");
     await renderWith(h, <CatalogProgramScreen slug="531-for-beginners" />);
     expect(
       await screen.findByText(
-        "Needs your 1RM for Squat, Deadlift. Set them here or under Settings › 1RMs.",
+        "Preview uses placeholder 1RMs: Squat 100 kg, Deadlift 120 kg. Set yours here or under Settings › 1RMs.",
       ),
     ).toBeOnTheScreen();
+    expect(simulate).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        overrides: {
+          rm1: { Squat: { value: 100, unit: Unit.KG }, Deadlift: { value: 120, unit: Unit.KG } },
+        },
+      }),
+    );
     expect(screen.getByRole("checkbox", { name: "Set Squat 1RM" })).toBeOnTheScreen();
     expect(screen.getByRole("checkbox", { name: "Set Deadlift 1RM" })).toBeOnTheScreen();
     expect(screen.queryByRole("checkbox", { name: "Set Bench Press 1RM" })).toBeNull();
-    expect(screen.queryByRole("button", { name: "Open 1RMs" })).toBeNull();
-    expect(screen.queryByRole("checkbox", { name: "Week 1" })).toBeNull();
+    expect(screen.getByRole("checkbox", { name: "Week 1" })).toBeOnTheScreen();
 
     await fireEvent.press(screen.getByRole("checkbox", { name: "Set Squat 1RM" }));
-    expect(await screen.findByText("Squat")).toBeOnTheScreen();
-    await fireEvent.changeText(screen.getByLabelText("1RM (kg)"), "100");
+    await fireEvent.changeText(await screen.findByLabelText("1RM (kg)"), "100");
     await fireEvent.press(screen.getByRole("button", { name: "Save" }));
     await waitFor(() =>
       expect(screen.queryByRole("checkbox", { name: "Set Squat 1RM" })).toBeNull(),
@@ -81,21 +80,39 @@ describe("CatalogProgramScreen", () => {
       }),
     );
     expect(
-      screen.getByText("Needs your 1RM for Deadlift. Set it here or under Settings › 1RMs."),
+      screen.getByText(
+        "Preview uses a placeholder 1RM: Deadlift 120 kg. Set yours here or under Settings › 1RMs.",
+      ),
     ).toBeOnTheScreen();
+    expect(simulate).toHaveBeenLastCalledWith(
+      expect.objectContaining({ overrides: { rm1: { Deadlift: { value: 120, unit: Unit.KG } } } }),
+    );
 
     await fireEvent.press(screen.getByRole("checkbox", { name: "Set Deadlift 1RM" }));
     await fireEvent.changeText(await screen.findByLabelText("1RM (kg)"), "140");
     await fireEvent.press(screen.getByRole("button", { name: "Save" }));
-    expect(await screen.findByRole("checkbox", { name: "Week 1" })).toBeOnTheScreen();
-    expect(screen.queryByText(/your 1RM/)).toBeNull();
+    await waitFor(() => expect(screen.queryByText(/placeholder/)).toBeNull());
+    expect(screen.getByRole("checkbox", { name: "Week 1" })).toBeOnTheScreen();
     expect(router.push).not.toHaveBeenCalled();
+
+    await fireEvent.press(screen.getByRole("button", { name: "Add to my programs" }));
+    expect(screen.queryByText(/before activating/)).toBeNull();
+  });
+
+  it("reminds about missing 1RMs when adding as a draft", async () => {
+    await h.api.exercises.setExerciseData({ data: { slug: "squat-barbell" } });
+    await renderWith(h, <CatalogProgramScreen slug="531-for-beginners" />);
+    await screen.findByText(/placeholder 1RM/);
+    await fireEvent.press(screen.getByRole("button", { name: "Add to my programs" }));
+    expect(
+      screen.getByText(/Set your Squat 1RM under Settings › 1RMs before activating\.$/),
+    ).toBeOnTheScreen();
   });
 
   it("says nothing about 1RMs the user already has", async () => {
     await renderWith(h, <CatalogProgramScreen slug="531-for-beginners" />);
     await screen.findByText("3-week cycle, repeats");
-    expect(screen.queryByText(/your 1RM/)).toBeNull();
+    expect(screen.queryByText(/placeholder/)).toBeNull();
     expect(screen.queryByRole("button", { name: "Open 1RMs" })).toBeNull();
   });
 
