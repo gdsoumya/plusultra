@@ -192,7 +192,7 @@ describe("ProgramDetailScreen", () => {
     );
     await renderWith(h, <ProgramDetailScreen id={id} />);
     expect(
-      await screen.findByText("week 1 day 1: no 1RM for Squat. Set it under Settings › 1RMs."),
+      await screen.findByText("Week 1 day 1: no 1RM for Squat. Set it under Settings › 1RMs."),
     ).toBeOnTheScreen();
   });
 
@@ -333,7 +333,7 @@ describe("activation", () => {
     await press("Activate");
     await press("Start program");
     expect(
-      await screen.findByText("week 1 day 1: no 1RM for Squat. Set it under Settings › 1RMs."),
+      await screen.findByText("Week 1 day 1: no 1RM for Squat. Set it under Settings › 1RMs."),
     ).toBeOnTheScreen();
   });
 

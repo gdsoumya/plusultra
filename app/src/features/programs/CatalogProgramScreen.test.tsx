@@ -124,7 +124,7 @@ describe("CatalogProgramScreen", () => {
     );
     await renderWith(h, <CatalogProgramScreen slug="531-for-beginners" />);
     expect(
-      await screen.findByText("week 1 day 1: no 1RM for Squat. Set it under Settings › 1RMs."),
+      await screen.findByText("Week 1 day 1: no 1RM for Squat. Set it under Settings › 1RMs."),
     ).toBeOnTheScreen();
     expect(screen.getByText("Preview")).toBeOnTheScreen();
     expect(screen.queryByRole("checkbox", { name: "Week 1" })).toBeNull();

@@ -7,6 +7,7 @@ import {
   statusText,
   sortPrograms,
   spanLabel,
+  andList,
   withMaxesHint,
 } from "./summary";
 
@@ -82,10 +83,22 @@ describe("spanLabel", () => {
   });
 });
 
+describe("andList", () => {
+  it("joins names with commas and a final and", () => {
+    expect(andList([])).toBe("");
+    expect(andList(["Squat"])).toBe("Squat");
+    expect(andList(["Squat", "Bench Press"])).toBe("Squat and Bench Press");
+    expect(andList(["Squat", "Bench Press", "Deadlift"])).toBe("Squat, Bench Press and Deadlift");
+  });
+});
+
 describe("withMaxesHint", () => {
   it("adds the 1RMs pointer as a sentence and leaves other errors alone", () => {
     expect(withMaxesHint("week 1 day 1: no 1RM for Squat")).toBe(
-      "week 1 day 1: no 1RM for Squat. Set it under Settings › 1RMs.",
+      "Week 1 day 1: no 1RM for Squat. Set it under Settings › 1RMs.",
+    );
+    expect(withMaxesHint("week 1 day 1: no 1RM for Squat and Deadlift")).toBe(
+      "Week 1 day 1: no 1RM for Squat and Deadlift. Set them under Settings › 1RMs.",
     );
     expect(withMaxesHint("Squat needs a 1RM.")).toBe(
       "Squat needs a 1RM. Set it under Settings › 1RMs.",

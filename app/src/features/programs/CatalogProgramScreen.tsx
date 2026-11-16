@@ -1,5 +1,6 @@
 import { router } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
+import { View } from "react-native";
 
 import { errorMessage } from "../../api/errors";
 import { fromProto } from "../../api/convert";
@@ -16,15 +17,15 @@ import {
   Button,
   Card,
   Chip,
-  ChipStrip,
   ConfirmSheet,
   ErrorLine,
   Screen,
   Text,
+  space,
 } from "../../ui";
 import { MaxSheet } from "../settings/MaxSheet";
 import { remember } from "./programStore";
-import { levelLabel, spanLabel, withMaxesHint } from "./summary";
+import { andList, levelLabel, spanLabel, withMaxesHint } from "./summary";
 import { WeekPlan } from "./WeekPlan";
 
 // shortcut: a lift's 1RM is looked up by slug prefix ("Bench Press" -> "bench-press-barbell"), as
@@ -161,11 +162,11 @@ export default function CatalogProgramScreen({
                   .map((n) => `${n} ${formatWeight({ ...placeholder(n), unit: "kg" }, unit)}`)
                   .join(", ")}. Set yours here or under Settings › 1RMs.`}
               </Text>
-              <ChipStrip>
+              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: space[2] }}>
                 {missing.map((name) => (
                   <Chip key={name} label={`Set ${name} 1RM`} onPress={() => openMax(name)} />
                 ))}
-              </ChipStrip>
+              </View>
             </>
           )}
           {lift && (
@@ -204,7 +205,7 @@ export default function CatalogProgramScreen({
             title={`Add ${program.name}?`}
             message={`Saved as a draft under Mine, with no dates. Review or edit it there, then Activate to pick a start date or run it floating (no dates).${
               missing.length
-                ? ` Set your ${missing.join(", ")} 1RM${missing.length === 1 ? "" : "s"} under Settings › 1RMs before activating.`
+                ? ` Set your ${andList(missing)} 1RM${missing.length === 1 ? "" : "s"} under Settings › 1RMs before activating.`
                 : ""
             }`}
             action="Add as draft"

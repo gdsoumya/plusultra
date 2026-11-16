@@ -84,10 +84,17 @@ export const createdByLabel: Record<string, string> = {
   mcp: "by an assistant",
 };
 
-// A missing 1RM is fixed in Settings, not in the script; the server's text ends without a period.
+// "Squat", "Squat and Bench Press", "Squat, Bench Press and Deadlift".
+export const andList = (names: string[]) =>
+  names.length < 2 ? names.join("") : `${names.slice(0, -1).join(", ")} and ${names.at(-1)}`;
+
+// A missing 1RM is fixed in Settings, not in the script; the server's text ends without a period
+// and starts lowercase.
 export const withMaxesHint = (message: string) =>
   message.includes("1RM")
-    ? `${message.replace(/\.$/, "")}. Set it under Settings › 1RMs.`
+    ? `${message[0].toUpperCase()}${message.slice(1).replace(/\.$/, "")}. Set ${
+        message.includes(" and ") ? "them" : "it"
+      } under Settings › 1RMs.`
     : message;
 
 // The week today falls in for an active program, clamped to its span; week 1 otherwise.
