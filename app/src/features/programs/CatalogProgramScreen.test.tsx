@@ -137,7 +137,7 @@ describe("CatalogProgramScreen", () => {
     expect(screen.getByText("Add 16-Week Strength & Recomp — Bulk block?")).toBeOnTheScreen();
     expect(
       screen.getByText(
-        "It's saved as a draft under Mine, with no dates. Review or edit it there, then Activate to pick a start date or run it floating (one day after another, no dates).",
+        "Saved as a draft under Mine, with no dates. Review or edit it there, then Activate to pick a start date or run it floating (no dates).",
       ),
     ).toBeOnTheScreen();
     await fireEvent.press(screen.getByRole("button", { name: "Add as draft" }));

@@ -32,7 +32,14 @@ export function ConfirmSheet({
   onClose,
 }: ConfirmSheetProps) {
   return (
-    <Sheet open={open} onClose={onClose} title={title} snapPoints={[0.4]}>
+    // shortcut: height guessed from the message length, since the sheet cannot size to its content;
+    // upgrade if Sheet learns to.
+    <Sheet
+      open={open}
+      onClose={onClose}
+      title={title}
+      snapPoints={[message.length > 140 ? 0.55 : 0.4]}
+    >
       <Text color="textMuted">{message}</Text>
       <ErrorLine message={error} />
       <Button title={action} variant={variant} onPress={onConfirm} loading={busy} />

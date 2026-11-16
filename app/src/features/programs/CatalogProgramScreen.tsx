@@ -202,7 +202,7 @@ export default function CatalogProgramScreen({
           <ConfirmSheet
             open={adding}
             title={`Add ${program.name}?`}
-            message={`It's saved as a draft under Mine, with no dates. Review or edit it there, then Activate to pick a start date or run it floating (one day after another, no dates).${
+            message={`Saved as a draft under Mine, with no dates. Review or edit it there, then Activate to pick a start date or run it floating (no dates).${
               missing.length
                 ? ` Set your ${missing.join(", ")} 1RM${missing.length === 1 ? "" : "s"} under Settings › 1RMs before activating.`
                 : ""
