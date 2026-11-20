@@ -63,7 +63,20 @@ async function pullAll({ api, store, userId }: Context, limit: number): Promise<
       const programs = page.programs.map(fromProto.program);
       const active = new Set(programs.map((p) => p.id));
       for (const p of store.list("programs")) {
-        if (p.status === "active" && !active.has(p.id)) store.delete("programs", p.id);
+        if (p.status === "active" && !active.has(p.id)) {
+          store.delete("programs", p.id);
+          resolvedDaysRepo(store).dropProgram(p.id);
+          mealDaysRepo(store).dropProgram(p.id);
+        }
+      }
+      // An edited or re-dated program is resolved again, so its days fetched for the calendar's
+      // later months are stale.
+      for (const p of programs) {
+        const old = programsRepo(store).get(p.id);
+        if (old && (old.revision !== p.revision || old.startDate !== p.startDate)) {
+          resolvedDaysRepo(store).dropProgram(p.id);
+          mealDaysRepo(store).dropProgram(p.id);
+        }
       }
       programsRepo(store).upsertFromServer(programs);
       const days = page.resolvedDays.map(fromProto.resolvedDay);

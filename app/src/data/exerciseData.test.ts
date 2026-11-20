@@ -5,7 +5,7 @@ import { create } from "@bufbuild/protobuf";
 import { ExerciseDataSchema } from "../gen/plusultra/v1/exercise_pb";
 import { fetchUnilateral, rememberExerciseData } from "./exerciseData";
 import { workoutDays } from "../features/calendar/programDays";
-import { fetchPastPlan } from "./plans";
+import { fetchPlan } from "./plans";
 import { programsRepo } from "./repositories/programs";
 import { resolvedDaysRepo } from "./repositories/resolvedDays";
 import { seedStore } from "./seedStore";
@@ -71,7 +71,7 @@ describe("days fetched from the server", () => {
     store.delete("resolvedDays", past.id);
     rememberExerciseData(store, create(ExerciseDataSchema, { slug, unilateral: false }));
 
-    await fetchPastPlan(api, store, past.date!);
+    await fetchPlan(api, store, past.date!);
     const fetched = resolvedDaysRepo(store).byDate(past.date!)[0].payload.exercises;
     expect(fetched.filter((e) => e.slug === slug).map((e) => !!e.unilateral)).toEqual([false]);
 

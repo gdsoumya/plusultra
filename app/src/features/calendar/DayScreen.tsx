@@ -3,7 +3,7 @@ import { useFocusEffect, useRouter } from "expo-router";
 import { useEffect, useReducer, useState } from "react";
 
 import { useApi } from "../../api/useApi";
-import { fetchPastPlan, plannedDay, plannedMealDay } from "../../data/plans";
+import { fetchPlan, plannedDay, plannedMealDay } from "../../data/plans";
 import { checkinsRepo } from "../../data/repositories/checkins";
 import { dayLogsRepo } from "../../data/repositories/dayLogs";
 import { mealLogsRepo } from "../../data/repositories/mealLogs";
@@ -43,8 +43,8 @@ export default function DayScreen({ date, today, unit, userId }: Props) {
   const api = useApi();
   useEffect(() => {
     // Offline the cached plan, if any, stands.
-    if (date < today) fetchPastPlan(api, store, date).then(changed, () => {});
-  }, [api, store, date, today]);
+    fetchPlan(api, store, date).then(changed, () => {});
+  }, [api, store, date]);
   const logs = dayLogsRepo(store);
   const log = logs.byDate(date)[0];
   const refresh = useRefresh(changed);

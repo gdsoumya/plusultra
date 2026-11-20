@@ -2,6 +2,7 @@ import { Code, ConnectError } from "@connectrpc/connect";
 
 import { createClients, type Api } from "../api/clients";
 import { fromProto, toProto, type ServerRows } from "../api/convert";
+import { strength16Script } from "../api/fixtures/strength16Script";
 import { createMockTransport, type MockTransport } from "../api/mockTransport";
 import { adHocWorkout, workoutFromDay } from "../domain/quickfill";
 import { dayTotals } from "../domain/totals";
@@ -10,6 +11,7 @@ import type { Meal, WorkoutRecord } from "../domain/types";
 import { createMemoryStore } from "./memoryStore";
 import { plannedWorkout } from "./plans";
 import { checkinsRepo } from "./repositories/checkins";
+import { resolvedDaysRepo } from "./repositories/resolvedDays";
 import { dayLogsRepo } from "./repositories/dayLogs";
 import { mealLogsRepo } from "./repositories/mealLogs";
 import { programsRepo } from "./repositories/programs";
@@ -439,6 +441,25 @@ describe("syncOnce", () => {
     expect(await sync()).toMatchObject({ pushed: 1 });
     expect(dirtyCount()).toBe(0);
     expect((await onServer("dayLogs")).some((r) => r.id === phone)).toBe(true);
+  });
+
+  it("keeps days fetched for later months until the program is edited", async () => {
+    await sync();
+    const later = {
+      programId: "program-strength16",
+      week: 8,
+      day: 1,
+      date: "2026-12-14",
+      payload: { week: 8, day: 1, kind: "training" as const, name: "", desc: "", exercises: [] },
+    };
+    resolvedDaysRepo(store).upsertFromServer([later]);
+    await sync();
+    expect(resolvedDaysRepo(store).byDate(later.date)).toHaveLength(1);
+
+    await api.programs.updateProgram({ id: later.programId, script: strength16Script });
+    await sync();
+    expect(resolvedDaysRepo(store).byDate(later.date)).toEqual([]);
+    expect(store.list("resolvedDays")).toHaveLength(28);
   });
 
   it("replaces the cached plans when the active program changes", async () => {

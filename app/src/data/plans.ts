@@ -1,6 +1,6 @@
 import type { Api } from "../api/clients";
 import { fromProto } from "../api/convert";
-import { daysBetween } from "../domain/dates";
+import { addDays, daysBetween } from "../domain/dates";
 import { withKnownFlags } from "./exerciseData";
 import type { ProgramSummary, ResolvedDay } from "../domain/types";
 import { programsRepo } from "./repositories/programs";
@@ -76,25 +76,26 @@ function floatingMealDay(
   return byKind(kind) ?? (kind === "conditioning" ? byKind("training") : undefined);
 }
 
-// The pull only sends days from today on, so a past date's week is fetched from the server for an
-// anchored program that covers the date but has no cached day for it.
-export async function fetchPastPlan(api: Api, store: Store, date: string) {
-  const programs = activePrograms(store).filter(
-    (p) =>
-      p.mode === "anchored" &&
-      p.startDate &&
-      p.startDate <= date &&
-      !(p.kind === "workout" ? plannedDay(store, date) : plannedMealDay(store, date)),
-  );
-  for (const p of programs) {
-    const week = Math.floor(daysBetween(p.startDate!, date) / 7) + 1;
-    if (week > p.weeks) continue;
-    const { days, mealDays } = await api.programs.getResolvedDays({ programId: p.id, week });
-    resolvedDaysRepo(store).upsertFromServer(
-      days
-        .map(fromProto.resolvedDay)
-        .map((d) => ({ ...d, payload: withKnownFlags(store, d.payload) })),
-    );
-    mealDaysRepo(store).upsertFromServer(mealDays.map(fromProto.mealDay));
+// The pull caches only the next four weeks, so the other weeks of a date range are fetched for
+// the anchored programs that cover dates in it without a cached day; offline the cache stands.
+export async function fetchPlan(api: Api, store: Store, from: string, to = from) {
+  for (const p of activePrograms(store)) {
+    if (p.mode !== "anchored" || !p.startDate) continue;
+    const planned = p.kind === "workout" ? plannedDay : plannedMealDay;
+    const weeks = new Set<number>();
+    for (let date = from < p.startDate ? p.startDate : from; date <= to; date = addDays(date, 1)) {
+      const week = Math.floor(daysBetween(p.startDate, date) / 7) + 1;
+      if (week > p.weeks) break;
+      if (!planned(store, date)) weeks.add(week);
+    }
+    for (const week of weeks) {
+      const { days, mealDays } = await api.programs.getResolvedDays({ programId: p.id, week });
+      resolvedDaysRepo(store).upsertFromServer(
+        days
+          .map(fromProto.resolvedDay)
+          .map((d) => ({ ...d, payload: withKnownFlags(store, d.payload) })),
+      );
+      mealDaysRepo(store).upsertFromServer(mealDays.map(fromProto.mealDay));
+    }
   }
 }

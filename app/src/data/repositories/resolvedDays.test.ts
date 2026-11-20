@@ -25,18 +25,20 @@ describe("resolved days repository", () => {
     expect(repo.range("2026-11-01", "2026-11-30").map((r) => r.day)).toEqual([1, 2]);
   });
 
-  it("drops cached days the server no longer plans and keeps days before its window", () => {
+  it("drops cached days the server no longer plans and keeps days outside its window", () => {
     const repo = resolvedDaysRepo(createMemoryStore());
     repo.upsertFromServer([
       day(1, 1, "2026-11-11"),
       day(1, 2, "2026-11-12"),
       day(1, 4, "2026-11-14"),
+      day(6, 1, "2026-12-20"),
     ]);
-    // The window starts today, the 12th: the 11th is past and stays for the calendar.
+    // The window starts today, the 12th: the 11th is past and the 20th of December is beyond it,
+    // fetched for the calendar; both stay.
     repo.replaceFromServer([day(1, 2, "2026-11-12"), day(1, 3, "2026-11-13")]);
-    expect(repo.range("2026-11-01", "2026-11-30").map((r) => r.day)).toEqual([1, 2, 3]);
+    expect(repo.range("2026-11-01", "2026-12-31").map((r) => r.day)).toEqual([1, 2, 3, 1]);
     repo.replaceFromServer([]);
-    expect(repo.range("2026-11-01", "2026-11-30")).toEqual([]);
+    expect(repo.range("2026-11-01", "2026-12-31")).toEqual([]);
   });
 
   it("keys dated meal days by date, since kind-picked days share day 0", () => {

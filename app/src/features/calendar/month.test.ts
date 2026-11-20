@@ -1,7 +1,9 @@
 import { checkinsRepo } from "../../data/repositories/checkins";
 import { dayLogsRepo } from "../../data/repositories/dayLogs";
 import { resolvedDaysRepo } from "../../data/repositories/resolvedDays";
-import { buildMonth } from "./month";
+import { createClients } from "../../api/clients";
+import { createMockTransport } from "../../api/mockTransport";
+import { buildMonth, fetchMonth } from "./month";
 import { makeFloating, seedStore } from "../../data/seedStore";
 
 const today = "2026-11-11";
@@ -54,5 +56,21 @@ describe("buildMonth", () => {
     const { weeks } = buildMonth(await seedStore(today), "2026-11", today);
     expect(weeks[0][0]).toBe("2026-10-26");
     expect(weeks).toHaveLength(6);
+  });
+});
+
+describe("fetchMonth", () => {
+  it("fetches the shown month's planned weeks the pull did not cache", async () => {
+    const store = await seedStore(today);
+    const api = createClients(createMockTransport({ today }).transport);
+    const repo = resolvedDaysRepo(store);
+    const december = repo.range("2026-12-01", "2026-12-31");
+    expect(december.length).toBeGreaterThan(0);
+    december.forEach((d) => store.delete("resolvedDays", d.id));
+
+    await fetchMonth(api, store, "2026-12");
+    expect(repo.range("2026-12-01", "2026-12-31").map((d) => d.id)).toEqual(
+      december.map((d) => d.id),
+    );
   });
 });

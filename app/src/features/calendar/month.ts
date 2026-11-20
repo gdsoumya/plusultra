@@ -5,7 +5,7 @@ import { workoutRecordsRepo } from "../../data/repositories/workoutRecords";
 import type { Store } from "../../data/store";
 import { monthGrid } from "../../domain/dates";
 import type { DayStatus, ResolvedDay, WorkoutRecord } from "../../domain/types";
-import { activeProgram, plannedDays } from "../../data/plans";
+import { activeProgram, fetchPlan, plannedDays } from "../../data/plans";
 import { resolvedDaysRepo } from "../../data/repositories/resolvedDays";
 
 export interface MonthDay {
@@ -24,13 +24,16 @@ const byDate = <R extends { date: string }>(rows: R[]) => new Map(rows.map((r) =
 
 const kindsKey = (month: string) => `calendarKinds:${month}`;
 
-// The pull only caches days from today on, so a shown month asks the server what it planned on
-// its other dates; the answer is kept per month so the grid marks them offline too.
+// The pull only caches the next four weeks, so a shown month fetches its other planned weeks and
+// asks the server what it planned on every date; the answer is kept per month so the grid marks
+// them offline too.
 export async function fetchMonth(api: Api, store: Store, month: string) {
   const weeks = monthGrid(month);
-  const { days } = await api.calendar.getCalendar({
-    dates: { from: weeks[0][0], to: weeks[weeks.length - 1][6] },
-  });
+  const [from, to] = [weeks[0][0], weeks[weeks.length - 1][6]];
+  const [{ days }] = await Promise.all([
+    api.calendar.getCalendar({ dates: { from, to } }),
+    fetchPlan(api, store, from, to),
+  ]);
   const kinds: Record<string, string> = {};
   for (const d of days) if (d.workoutWeek) kinds[d.date] = d.kind;
   store.setKv(kindsKey(month), kinds);

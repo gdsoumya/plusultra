@@ -1,3 +1,4 @@
+import { addDays } from "../../domain/dates";
 import type { Rows, Store } from "../store";
 
 type DayTable = "resolvedDays" | "mealDays";
@@ -23,21 +24,25 @@ function dayCacheRepo<T extends DayTable>(store: Store, table: T) {
     range: (from: string, to: string) => store.list(table, { dateFrom: from, dateTo: to }),
     upsertFromServer: (rows: (Omit<Rows[T], "id"> & DayPosition)[]) =>
       store.transaction(() => rows.forEach((row) => store.put(table, withId(row)))),
-    // The server sends its whole window from today on, so days it no longer plans are dropped;
-    // dated days before the window stay, since past dates on the calendar still show their plan.
+    // The server sends its whole window from today on, so days in it that it no longer plans are
+    // dropped; dated days outside it stay, fetched for the calendar's past and later months.
     replaceFromServer: (rows: (Omit<Rows[T], "id"> & DayPosition)[]) =>
       store.transaction(() => {
         const next = rows.map(withId);
         const keep = new Set(next.map((row) => row.id));
-        const from = next.reduce<string | undefined>(
-          (min, { date }) => (date && (!min || date < min) ? date : min),
-          undefined,
-        );
+        const from = next.flatMap(({ date }) => (date ? [date] : [])).sort()[0];
+        // shortcut: mirrors the server's 28-day pull window, counted from the first day it sent.
+        const to = from && addDays(from, 27);
         for (const { id, date } of store.list(table)) {
-          if (!keep.has(id) && !(from && date && date < from)) store.delete(table, id);
+          const outside = from && date && (date < from || date > to);
+          if (!keep.has(id) && !outside) store.delete(table, id);
         }
         next.forEach((row) => store.put(table, row));
       }),
+    dropProgram: (programId: string) =>
+      store.transaction(() =>
+        store.list(table, { programId }).forEach(({ id }) => store.delete(table, id)),
+      ),
   };
 }
 
