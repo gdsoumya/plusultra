@@ -292,6 +292,21 @@ describe("Today", () => {
     expect(mockPush).toHaveBeenCalledWith(`/workout/${todaysRecord().id}`);
   });
 
+  it("picks a program day from the cached plan while the server is unreachable", async () => {
+    clearToday();
+    const { payload, programId } = todaysPlan();
+    jest
+      .spyOn(mockApi.programs, "getResolvedDays")
+      .mockRejectedValue(new TypeError("Network request failed"));
+    await renderToday();
+    await fireEvent.press(button("Workout options"));
+    await fireEvent.press(await screen.findByRole("button", { name: "From a program" }));
+    expect(await screen.findByRole("button", { name: /Planned for this date/ })).toBeOnTheScreen();
+    expect(screen.queryByText("Plan not available")).toBeNull();
+    await fireEvent.press(button("Create"));
+    expect(todaysRecord()).toMatchObject({ programId, week: payload.week, day: payload.day });
+  });
+
   it("adds ad hoc meals from the menu", async () => {
     clearToday();
     await renderToday();

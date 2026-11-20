@@ -2,6 +2,7 @@ import type { Api } from "../../api/clients";
 import type { Store } from "../../data/store";
 import { setsSummary } from "../../domain/sets";
 import type { MealDay, ProgramSummary, ResolvedDay, Unit } from "../../domain/types";
+import { cachedDays, cachedMealDays } from "../programs/programStore";
 import { kcal } from "./format";
 import { mealDays, workoutDays } from "./programDays";
 import type { Planned } from "./ProgramDayPicker";
@@ -25,20 +26,21 @@ export const workoutPicker = (
   programs: ProgramSummary[],
   planned: Row | undefined,
   create: (programId: string, day: ResolvedDay) => void,
-) => ({
-  title: "Workout from a program",
-  programs: offered(programs, "workout"),
-  finishedOnly: finishedOnly(programs, "workout"),
-  planned: asPlanned(planned),
-  loadDays: (p: ProgramSummary) =>
-    workoutDays(api, store, p).then((days) =>
-      days.map((d) => ({
-        ...d,
-        summary: d.exercises.map((e) => `${e.name} ${setsSummary(e.sets, unit)}`).join(" · "),
-        create: () => create(p.id, d),
-      })),
-    ),
-});
+) => {
+  const pick = (p: ProgramSummary) => (d: ResolvedDay) => ({
+    ...d,
+    summary: d.exercises.map((e) => `${e.name} ${setsSummary(e.sets, unit)}`).join(" · "),
+    create: () => create(p.id, d),
+  });
+  return {
+    title: "Workout from a program",
+    programs: offered(programs, "workout"),
+    finishedOnly: finishedOnly(programs, "workout"),
+    planned: asPlanned(planned),
+    cached: (p: ProgramSummary) => cachedDays(store, p.id).map(pick(p)),
+    loadDays: (p: ProgramSummary) => workoutDays(api, store, p).then((days) => days.map(pick(p))),
+  };
+};
 
 export const mealPicker = (
   api: Api,
@@ -46,19 +48,20 @@ export const mealPicker = (
   programs: ProgramSummary[],
   planned: Row | undefined,
   create: (programId: string, day: MealDay) => void,
-) => ({
-  title: "Meals from a program",
-  programs: offered(programs, "meal"),
-  finishedOnly: finishedOnly(programs, "meal"),
-  planned: asPlanned(planned),
-  loadDays: (p: ProgramSummary) =>
-    mealDays(api, store, p).then((days) =>
-      days.map((d) => ({
-        ...d,
-        summary: [d.target && `Target ${kcal(d.target.kcal)}`, `${d.meals.length} meals`]
-          .filter(Boolean)
-          .join(" · "),
-        create: () => create(p.id, d),
-      })),
-    ),
-});
+) => {
+  const pick = (p: ProgramSummary) => (d: MealDay) => ({
+    ...d,
+    summary: [d.target && `Target ${kcal(d.target.kcal)}`, `${d.meals.length} meals`]
+      .filter(Boolean)
+      .join(" · "),
+    create: () => create(p.id, d),
+  });
+  return {
+    title: "Meals from a program",
+    programs: offered(programs, "meal"),
+    finishedOnly: finishedOnly(programs, "meal"),
+    planned: asPlanned(planned),
+    cached: (p: ProgramSummary) => cachedMealDays(store, p.id).map(pick(p)),
+    loadDays: (p: ProgramSummary) => mealDays(api, store, p).then((days) => days.map(pick(p))),
+  };
+};

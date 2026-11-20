@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react-native";
+import { act, fireEvent, render, screen } from "@testing-library/react-native";
 
 import type { ProgramSummary } from "../../domain/types";
 import { ThemeProvider } from "../../ui";
@@ -38,6 +38,46 @@ describe("ProgramDayPicker", () => {
     );
     await fireEvent.press(await screen.findByRole("checkbox", { name: "Week 2" }));
     expect(screen.getByText("No days in week 2")).toBeOnTheScreen();
+  });
+
+  it("shows cached days at once, replaced by the server's", async () => {
+    await render(
+      <ThemeProvider>
+        <ProgramDayPicker
+          open
+          onClose={jest.fn()}
+          title="Pick"
+          programs={[program]}
+          cached={() => [day(1)]}
+          loadDays={async () => [day(1), day(3)]}
+          planned={{ programId: "p1", week: 1, day: 1, kind: "training" }}
+        />
+      </ThemeProvider>,
+    );
+    expect(await screen.findByText("1. Day")).toBeOnTheScreen();
+    expect(await screen.findByRole("checkbox", { name: "Week 3" })).toBeOnTheScreen();
+  });
+
+  it("keeps cached days when the server fails", async () => {
+    await render(
+      <ThemeProvider>
+        <ProgramDayPicker
+          open
+          onClose={jest.fn()}
+          title="Pick"
+          programs={[program]}
+          cached={() => [day(1)]}
+          loadDays={async () => {
+            throw new TypeError("Network request failed");
+          }}
+          planned={{ programId: "p1", week: 1, day: 1, kind: "training" }}
+        />
+      </ThemeProvider>,
+    );
+    expect(await screen.findByText("1. Day")).toBeOnTheScreen();
+    await act(() => Promise.resolve());
+    expect(screen.queryByText("Plan not available")).toBeNull();
+    expect(screen.getByText("1. Day")).toBeOnTheScreen();
   });
 
   it("shows why a plan could not load, and says when only finished programs exist", async () => {

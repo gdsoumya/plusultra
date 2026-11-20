@@ -38,6 +38,8 @@ type Props = {
   /** No draft or active program of the kind, though finished ones exist. */
   finishedOnly?: boolean;
   loadDays(program: ProgramSummary): Promise<PickDay[]>;
+  /** Days known offline, shown at once; loadDays' answer replaces them and its failure keeps them. */
+  cached?(program: ProgramSummary): PickDay[];
   // The calendar's own day for the date: preselected, never applied by itself.
   planned?: Planned;
 };
@@ -63,10 +65,17 @@ export function ProgramDayPicker({ open, onClose, title, ...body }: Props) {
   );
 }
 
+// An anchored program repeats a day per date; each is listed once.
+function unique(all: PickDay[]) {
+  const seen = new Set<string>();
+  return all.filter((d) => !seen.has(dayKey(d)) && !!seen.add(dayKey(d)));
+}
+
 function Body({
   programs,
   finishedOnly,
   loadDays,
+  cached,
   planned,
   onClose,
 }: Omit<Props, "open" | "title">) {
@@ -75,21 +84,21 @@ function Body({
   const [error, setError] = useState<string>();
   const [week, setWeek] = useState(planned?.week ?? 1);
   const [selected, setSelected] = useState(planned && dayKey(planned));
-  const load = useRef(loadDays);
+  const source = useRef({ loadDays, cached });
   useEffect(() => {
-    load.current = loadDays;
+    source.current = { loadDays, cached };
   });
   useEffect(() => {
     if (!program) return;
     let stale = false;
-    load.current(program).then(
+    const known = source.current.cached?.(program) ?? [];
+    if (known.length) setDays(unique(known));
+    source.current.loadDays(program).then(
       (all) => {
-        // An anchored program repeats a day per date; each is listed once.
-        const seen = new Set<string>();
-        if (!stale) setDays(all.filter((d) => !seen.has(dayKey(d)) && !!seen.add(dayKey(d))));
+        if (!stale) setDays(unique(all));
       },
       (e) => {
-        if (stale) return;
+        if (stale || known.length) return;
         setError(errorMessage(e));
         setDays([]);
       },
